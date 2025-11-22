@@ -286,7 +286,7 @@ main {
 .video-block video {
     width: 100%;
     height: 100%;
-    object-fit: fill;
+    object-fit: cover;
     image-rendering: pixelated;
 }
 
@@ -547,5 +547,21 @@ body.boot-complete footer {
     outline: none !important;
     border: none !important;
     box-shadow: none !important;
+}
+/* New Neon Boot Loading Bar */
+.neon-loader {
+    width: 100%;
+    height: 10px;
+    padding: 2px;
+    border: 1px solid #4af626;
+    margin-top: 12px;
+}
+
+.neon-progress {
+    height: 100%;
+    width: 0%;
+    background: #4af626;
+    box-shadow: 0 0 8px #4af626;
+    transition: width 0.16s linear;
 }
 
