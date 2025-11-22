@@ -909,4 +909,99 @@ body.boot-complete footer {
         font-size: 0.8rem;
     }
 }
+/* ---------------------------------------
+   MOBILE FIXES (FOR SCREENS < 640px)
+------------------------------------------*/
+@media (max-width: 640px) {
+
+    /* Make whole page scrollable */
+    body {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    /* Stack everything vertically */
+    main {
+        flex-direction: column;
+        overflow: visible;
+        height: auto;
+    }
+
+    /* Visual panel (iCard Section) */
+    .visual-panel {
+        width: 100% !important;
+        height: auto;
+        padding: 20px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* iCard scaling */
+    .card-3d-container {
+        width: 90vw;
+        max-width: 360px;
+        margin: 0 auto;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .card-3d {
+        width: 100%;
+        height: auto;
+        transform: none !important;
+    }
+
+    /* Remove hover 3D tilt on mobile (touch devices) */
+    .card-3d-container:hover .card-3d {
+        transform: none !important;
+    }
+
+    /* Scroll for terminal indicator */
+    .scroll-indicator {
+        display: block;
+        text-align: center;
+        margin-top: 10px;
+        font-size: 0.85rem;
+        color: var(--terminal-green);
+        opacity: 0.7;
+    }
+
+    /* Terminal panel */
+    .terminal-panel {
+        width: 100% !important;
+        max-height: none;
+        padding-top: 40px;
+        z-index: 5;
+    }
+
+    /* Terminal nav (sticky at top when scrolling terminal) */
+    .terminal-nav {
+        position: sticky;
+        top: 0;
+        background: #000;
+        border-bottom: 1px solid var(--terminal-green);
+        padding: 12px 20px;
+        z-index: 10;
+    }
+
+    /* Terminal window */
+    .terminal-window {
+        padding: 22px;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* Prevent keyboard popping up by avoiding autoFocus */
+    #cmd-input {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Footer resizing */
+    footer {
+        font-size: 0.75rem;
+        padding: 6px 16px;
+    }
+}
 
