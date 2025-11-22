@@ -827,6 +827,74 @@ body.boot-complete footer {
     }
 }
 @media (max-width: 900px) {
+        /* Terminal takes full screen height */
+    .terminal-panel {
+        width: 100% !important;
+        height: 100vh !important;
+        overflow-y: auto !important;
+        flex: none !important;
+    }
+
+    /* iCard area becomes a scrollable intro section */
+    .visual-panel {
+        width: 100% !important;
+        height: auto !important;
+        padding: 25px 0 40px 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        display: block !important;
+    }
+
+    /* Remove vertical split bar */
+    #drag-bar {
+        display: none !important;
+    }
+
+    /* Matrix background stays above, not full height */
+    #matrix-bg {
+        position: absolute;
+        top: 0;
+        width: 100% !important;
+        height: 350px !important;  /* Adjust brightness area */
+        opacity: 0.45;
+    }
+
+    /* Center card on mobile */
+    .card-3d-container {
+        margin: 0 auto !important;
+        width: 100% !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Reduce card size slightly for comfortable mobile view */
+    .card-3d {
+        width: 92vw !important;
+        max-width: 360px !important;
+        height: auto !important;
+    }
+
+    /* Remove tilt on mobile */
+    .card-3d-container:hover .card-3d {
+        transform: none !important;
+    }
+
+    /* Make the iCard flip cleaner on touch */
+    .card-3d {
+        transition: transform 0.4s ease;
+    }
+
+    /* Add spacing between sections */
+    main {
+        flex-direction: column !important;
+    }
+
+    /* Terminal window spacing */
+    .terminal-window {
+        padding-top: 40px !important;
+    }
+
     .visual-panel {
         width: 100% !important;
         min-width: 100% !important;
