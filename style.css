@@ -632,6 +632,10 @@ body.boot-complete footer {
     }
 
     #matrix-bg {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        display: block;
         opacity: 0.25; /* soften matrix so card is readable */
     }
 
@@ -644,6 +648,8 @@ body.boot-complete footer {
     }
 
     .card-3d {
+        transform: none !important;
+        margin: 0 auto;
         width: 85vw;
         height: auto;
         max-width: 330px;
@@ -721,6 +727,8 @@ body.boot-complete footer {
 /* SMALLER SCREENS */
 @media (max-width: 480px) {
     .card-3d {
+        transform: none !important;
+        margin: 0 auto;
         max-width: 300px;
     }
 
@@ -758,9 +766,10 @@ body.boot-complete footer {
 
     /* Matrix stays behind, full-screen */
     #matrix-bg {
-        width: 100% !important;
-        height: 100% !important;
-        opacity: 0.4;
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        display: block;
     }
 
     /* iCard becomes big */
@@ -774,6 +783,8 @@ body.boot-complete footer {
     }
 
     .card-3d {
+        transform: none !important;
+        margin: 0 auto;
         width: 92vw !important;
         height: auto;
         transform: none !important;
@@ -813,6 +824,26 @@ body.boot-complete footer {
     /* Fix terminal spacing */
     .terminal-window {
         padding: 20px;
+    }
+}
+@media (max-width: 900px) {
+    .visual-panel {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 20px;
+        overflow: hidden;
+    }
+
+    #matrix-bg {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        display: block;
     }
 }
 

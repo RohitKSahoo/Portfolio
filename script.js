@@ -93,11 +93,14 @@ let columns, drops;
 function resizeMatrix() {
     const panel = document.querySelector(".visual-panel");
     if (!panel) return;
-    canvas.width = panel.clientWidth;
-    canvas.height = panel.clientHeight;
+
+    canvas.width = panel.offsetWidth;
+    canvas.height = panel.offsetHeight;
+
     columns = Math.floor(canvas.width / fontSize);
     drops = Array(columns).fill(1);
 }
+
 resizeMatrix();
 
 function drawMatrix() {
