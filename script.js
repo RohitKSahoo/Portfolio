@@ -9,6 +9,9 @@
     const progressBar = document.getElementById("boot-progress-bar");
     const body = document.body;
 
+    // Ensure all UI stays hidden until boot ends
+    body.classList.add("booting");
+
     if (!bootScreen || !bootText) {
         body.classList.remove("booting");
         body.classList.add("boot-complete");
@@ -17,16 +20,18 @@
 
     const lines = [
         "ROHIT BIOS v1.9  (C) 2025 Rohit Systems, Inc.",
-        "Main Processor : Intel(R) Core(TM) i9 Virtual @ 3.60GHz",
+        "Main Processor : Intel(R) Core(TM) i7 Virtual @ 3.60GHz",
         "Memory Testing : 16384MB OK",
         "",
         "Detecting IDE Drives...",
-        "  SATA0: 2TB NVMe SSD            OK",
+        "  SATA0: 512GB NVMe SSD            OK",
         "  SATA1: USB BOOT DEVICE           OK",
         "",
         "Checking system configuration...   OK",
         "Initializing video interface...    OK",
         "Loading RohitOS Portfolio Loader...",
+        "Initializing Matrix Renderer...",
+        "Initializing Identity Card Module...",
         "Initializing Terminal Shell...",
         "",
         "Boot Priority: [RohitOS-Portfolio]",
@@ -54,22 +59,25 @@
                 index++;
 
                 const progress = Math.round((index / lines.length) * 100);
-                progressBar.style.width = progress + "%";
+                if (progressBar) progressBar.style.width = progress + "%";
 
                 setTimeout(typeLine, line.trim() === "" ? 40 : 80);
             }
         }
-
         typeChar();
     }
 
     function finishBoot() {
         setTimeout(() => {
             bootScreen.classList.add("fade-out");
-            bootScreen.addEventListener("animationend", () => bootScreen.remove());
-            body.classList.remove("booting");
-            body.classList.add("boot-complete");
-        }, 200);
+
+            bootScreen.addEventListener("animationend", () => {
+                bootScreen.remove();
+                body.classList.remove("booting");
+                body.classList.add("boot-complete");
+            });
+
+        }, 300);
     }
 
     window.addEventListener("load", () => typeLine());
@@ -106,9 +114,7 @@ function drawMatrix() {
         const char = letters[Math.floor(Math.random() * letters.length)];
         ctx.fillText(char, i * fontSize, drop * fontSize);
 
-        if (drop * fontSize > canvas.height && Math.random() > 0.975) {
-            drops[i] = 0;
-        }
+        if (drop * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
         drops[i]++;
     });
 }
@@ -117,7 +123,45 @@ setInterval(drawMatrix, 35);
 window.addEventListener("resize", resizeMatrix);
 
 /* ============================================================
-   3D ID CARD (MOUSE LIGHT + ROTATION + FLIP)
+   DRAGGABLE SPLITTER
+============================================================ */
+const dragBar = document.getElementById("drag-bar");
+const visualPanel = document.querySelector(".visual-panel");
+const terminalPanel = document.querySelector(".terminal-panel");
+const mainEl = document.querySelector("main");
+
+if (dragBar && visualPanel && terminalPanel && mainEl) {
+    let dragging = false;
+
+    dragBar.addEventListener("mousedown", (e) => {
+        dragging = true;
+        document.body.style.userSelect = "none";
+    });
+
+    window.addEventListener("mouseup", () => {
+        dragging = false;
+        document.body.style.userSelect = "";
+    });
+
+    window.addEventListener("mousemove", (e) => {
+        if (!dragging) return;
+
+        const rect = mainEl.getBoundingClientRect();
+        let newWidth = e.clientX - rect.left;
+
+        const minWidth = 260;
+        const maxWidth = rect.width * 0.75;
+
+        newWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+
+        visualPanel.style.width = newWidth + "px";
+
+        resizeMatrix();
+    });
+}
+
+/* ============================================================
+   3D CARD TILT + FLIP
 ============================================================ */
 const cardContainer = document.getElementById("card-3d-container");
 const card = document.getElementById("card-3d");
@@ -153,47 +197,7 @@ if (cardContainer && card && light) {
 }
 
 /* ============================================================
-   DRAGGABLE SPLITTER (RESIZE LEFT PANEL)
-============================================================ */
-const dragBar = document.getElementById("drag-bar");
-const visualPanel = document.querySelector(".visual-panel");
-const terminalPanel = document.querySelector(".terminal-panel");
-const mainEl = document.querySelector("main");
-
-if (dragBar && visualPanel && terminalPanel && mainEl) {
-    let dragging = false;
-
-    dragBar.addEventListener("mousedown", (e) => {
-        dragging = true;
-        document.body.style.userSelect = "none";
-        e.preventDefault();
-    });
-
-    window.addEventListener("mouseup", () => {
-        dragging = false;
-        document.body.style.userSelect = "";
-    });
-
-    window.addEventListener("mousemove", (e) => {
-        if (!dragging) return;
-
-        const rect = mainEl.getBoundingClientRect();
-        let newWidth = e.clientX - rect.left;
-
-        const minWidth = 260;
-        const maxWidth = rect.width * 0.75;
-        if (newWidth < minWidth) newWidth = minWidth;
-        if (newWidth > maxWidth) newWidth = maxWidth;
-
-        visualPanel.style.width = newWidth + "px";
-
-        // update matrix canvas size
-        resizeMatrix();
-    });
-}
-
-/* ============================================================
-   TERMINAL WITH TYPING EFFECT
+   TERMINAL TYPING
 ============================================================ */
 const cmdInput = document.getElementById("cmd-input");
 const inputDisplay = document.getElementById("input-display");
@@ -209,53 +213,43 @@ const commands = {
   contact     - Contact details
   clear       - Clear the terminal`,
 
-    about: `Name: Rohit Kumar Sahoo
-Role: Student in CSE
-Focus: Learning interactive web development.`,
+    about: `Hi, I'm Rohit Kumar Sahoo — a CSE student constantly exploring and learning whatever sparks my curiosity.`,
 
-    projects: `1. Portfolio v2
-2. Practice Projects
-3. Learning Builds`,
+    projects: `Some things I've worked on:
+- Portfolio v2 (this site)
+- Practice projects in C, C++, Python, and JavaScript
+- Experiments with web UIs, terminals, and animations`,
 
-    skills: `[Languages] C, C++, Python, JS
-[Web] HTML, CSS, JS
-[Tools] Git, GitHub`,
+    skills: `[Languages] C, C++, Python, JavaScript
+[Web] HTML, CSS, JavaScript
+[Tools] Git, GitHub, VS Code
+[Exploring] React, backend basics, 3D on the web`,
 
-    experience: `Exploring:
+    experience: `Currently a CSE student, focusing on:
 > Problem solving
-> Web development
-> Computer science fundamentals`,
+> Understanding core CS concepts
+> Building interactive web experiments like this portfolio`,
 
-    contact: `Email: rohitkumarsahoo37@gmail.com
-LinkedIn: linkedin.com/in/rohit-kumar-sahoo-a68a452b0
-GitHub: github.com/RohitKSahoo`
+    contact: `You can reach me at:
+Email:    rohitkumarsahoo37@gmail.com
+LinkedIn: www.linkedin.com/in/rohit-kumar-sahoo-a68a452b0
+GitHub:   github.com/RohitKSahoo`
 };
 
-if (cmdInput && inputDisplay && historyEl && terminalWindow) {
-    cmdInput.addEventListener("input", () => {
-        inputDisplay.textContent = cmdInput.value;
+function typeOutput(text, el) {
+    return new Promise(async (resolve) => {
+        for (let i = 0; i < text.length; i++) {
+            el.innerHTML += text[i] === "\n" ? "<br>" : text[i];
+            terminalWindow.scrollTop = terminalWindow.scrollHeight;
+            await new Promise(res => setTimeout(res, 8));
+        }
+        resolve();
     });
-
-    cmdInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") runCommand(cmdInput.value);
-    });
-
-    document.addEventListener("click", () => cmdInput.focus());
-    cmdInput.focus();
-}
-
-async function typeOutput(text, el) {
-    for (let i = 0; i < text.length; i++) {
-        el.innerHTML += text[i] === "\n" ? "<br>" : text[i];
-        terminalWindow.scrollTop = terminalWindow.scrollHeight;
-        await new Promise(res => setTimeout(res, 8));
-    }
 }
 
 async function runCommand(cmd) {
-    if (!historyEl || !terminalWindow) return;
-
     const clean = cmd.trim().toLowerCase();
+    if (!clean) return;
 
     const prompt = document.createElement("div");
     prompt.className = "output-line";
@@ -263,10 +257,8 @@ async function runCommand(cmd) {
         `<span class="p-user">rohit</span><span class="p-host">@portfolio</span><span class="p-symbol">:~$</span> <span class="user-text">${cmd}</span>`;
     historyEl.appendChild(prompt);
 
-    if (cmdInput && inputDisplay) {
-        cmdInput.value = "";
-        inputDisplay.textContent = "";
-    }
+    cmdInput.value = "";
+    inputDisplay.textContent = "";
 
     if (clean === "clear") {
         historyEl.innerHTML = "";
@@ -279,25 +271,31 @@ async function runCommand(cmd) {
 
     if (commands[clean]) {
         await typeOutput(commands[clean], output);
-    } else if (clean !== "") {
+    } else {
         await typeOutput(`Command not found: ${clean}`, output);
     }
 
     terminalWindow.scrollTop = terminalWindow.scrollHeight;
 }
 
-/* ============================================================
-   NAV HEADER → RUN TERMINAL COMMAND
-============================================================ */
+cmdInput.addEventListener("input", () => {
+    inputDisplay.textContent = cmdInput.value;
+});
+
+cmdInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") runCommand(cmdInput.value);
+});
+
+document.addEventListener("click", (e) => {
+    if (!e.target.closest('.nav-item')) cmdInput.focus();
+});
+
 document.querySelectorAll(".nav-item").forEach(item => {
-    item.addEventListener("click", () => {
-        const cmd = item.getAttribute("data-cmd");
-        if (cmd) runCommand(cmd);
-    });
+    item.addEventListener("click", () => runCommand(item.dataset.cmd));
 });
 
 /* ============================================================
-   FOOTER CLOCK
+   CLOCK
 ============================================================ */
 (function () {
     const clockEl = document.getElementById("realtime-clock");
