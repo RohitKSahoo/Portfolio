@@ -606,4 +606,307 @@ body.boot-complete footer {
     box-shadow: 0 0 8px #4af626;
     transition: width 0.16s linear;
 }
+/* ============================================================
+   MOBILE RESPONSIVE FIXES — FINAL POLISHED VERSION
+============================================================ */
+@media (max-width: 768px) {
+
+    body {
+        overflow: auto; /* allow full page scroll */
+    }
+
+    main {
+        flex-direction: column;
+    }
+
+    /* ---- VISUAL PANEL ---- */
+    .visual-panel {
+        width: 100% !important;
+        height: auto;
+        min-height: 380px;
+        padding: 20px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    #matrix-bg {
+        opacity: 0.25; /* soften matrix so card is readable */
+    }
+
+    /* ---- 3D CARD ---- */
+    .card-3d-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .card-3d {
+        width: 85vw;
+        height: auto;
+        max-width: 330px;
+        aspect-ratio: 3/4.5;
+    }
+
+    .id-card {
+        border-radius: 18px;
+    }
+
+    /* reduce tilt intensity for touch devices */
+    .card-3d-container:hover .card-3d {
+        transform: none !important;
+    }
+
+    /* ---- HIDE DRAG BAR ---- */
+    #drag-bar {
+        display: none;
+    }
+
+    /* ---- TERMINAL ---- */
+    .terminal-panel {
+        width: 100%;
+        min-height: 400px;
+        padding-top: 10px;
+    }
+
+    .terminal-window {
+        padding: 20px;
+        font-size: 0.92rem;
+        line-height: 1.45;
+    }
+
+    .prompt-container {
+        margin-top: 15px;
+    }
+
+    /* ---- NAV ---- */
+    .terminal-nav {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    .terminal-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-item {
+        padding: 4px 8px;
+    }
+
+    /* ---- BOOT SCREEN ---- */
+    #boot-screen .boot-inner {
+        width: 90%;
+        max-width: 360px;
+    }
+
+    .boot-text {
+        font-size: 0.75rem;
+    }
+
+    .boot-progress {
+        height: 10px;
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+    }
+}
+
+/* SMALLER SCREENS */
+@media (max-width: 480px) {
+    .card-3d {
+        max-width: 300px;
+    }
+
+    .terminal-window {
+        font-size: 0.85rem;
+    }
+
+    .nav-item {
+        font-size: 0.8rem;
+    }
+}
+/* ============================================================
+   MOBILE LAYOUT & BEHAVIOUR (≤ 768px)
+============================================================ */
+@media (max-width: 768px) {
+
+    body {
+        overflow-y: auto;
+    }
+
+    main {
+        flex-direction: column;
+    }
+
+    /* --- Visual panel / iCard at the top --- */
+    .visual-panel {
+        order: 1;
+        width: 100% !important;
+        min-height: 70vh;
+        padding: 24px 0 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        z-index: 10;
+    }
+
+    #matrix-bg {
+        opacity: 0.25; /* soften matrix for readability on mobile */
+    }
+
+    .card-3d-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .card-3d {
+        width: 85vw;
+        max-width: 340px;
+        height: min(430px, 70vh); /* your 70% height feel */
+        animation: cardEnterMobile 0.85s cubic-bezier(0.3, 0.2, 0.15, 1) 0.12s both;
+    }
+
+    @keyframes cardEnterMobile {
+        0% {
+            opacity: 0;
+            transform: translateY(20px) scale(0.96) rotateX(6deg);
+        }
+        60% {
+            opacity: 1;
+            transform: translateY(-4px) scale(1.01);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* --- Scroll hint below the card --- */
+    .scroll-hint-mobile {
+        margin-top: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.78rem;
+        color: #7ede99;
+        opacity: 0.7;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        animation: hintPulse 1.6s ease-in-out infinite;
+    }
+
+    .scroll-arrow {
+        font-size: 1.2rem;
+    }
+
+    @keyframes hintPulse {
+        0%   { opacity: 0.3; transform: translateY(0); }
+        50%  { opacity: 1;   transform: translateY(3px); }
+        100% { opacity: 0.3; transform: translateY(0); }
+    }
+
+    /* --- Terminal overlaps the card visually as you scroll --- */
+    .terminal-panel {
+        order: 2;
+        width: 100%;
+        position: relative;
+        z-index: 30;
+        margin-top: -60px; /* pulls terminal over the card */
+        background: #000;
+        border-top: 1px solid rgba(74, 246, 38, 0.3);
+        box-shadow: 0 -16px 40px rgba(0,0,0,0.95);
+        border-radius: 24px 24px 0 0;
+        padding-top: 18px;
+    }
+
+    .terminal-window {
+        padding: 18px 18px 24px 18px;
+        font-size: 0.92rem;
+        line-height: 1.45;
+    }
+
+    /* --- Hide drag bar on mobile (not needed here) --- */
+    #drag-bar {
+        display: none;
+    }
+
+    /* --- Make nav swipeable and thumb-friendly --- */
+    .terminal-nav {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 10px 16px 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .terminal-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-item {
+        padding: 4px 8px;
+        border-bottom-width: 1px;
+    }
+
+    /* --- Prevent keyboard popping up all the time --- */
+    #cmd-input {
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+        height: 0;
+    }
+
+    .cursor {
+        display: none;
+    }
+
+    /* --- Footer compact on mobile --- */
+    footer {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+
+    /* --- Boot screen tweaks for small screens --- */
+    #boot-screen .boot-inner {
+        width: 90%;
+        max-width: 360px;
+    }
+
+    .boot-text {
+        font-size: 0.75rem;
+    }
+
+    .boot-progress {
+        height: 10px;
+    }
+}
+
+/* Smaller phones */
+@media (max-width: 480px) {
+    .card-3d {
+        width: 88vw;
+        max-width: 320px;
+    }
+
+    .terminal-window {
+        font-size: 0.85rem;
+    }
+
+    .nav-item {
+        font-size: 0.8rem;
+    }
+}
 

@@ -284,8 +284,19 @@ cmdInput.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("click", (e) => {
-    if (!e.target.closest('.nav-item')) cmdInput.focus();
+    // On mobile, don't auto focus (avoids keyboard popping up)
+    if (window.innerWidth <= 768) return;
+
+    if (!e.target.closest('.nav-item')) {
+        cmdInput.focus();
+    }
 });
+
+// Initial focus only on desktop
+if (window.innerWidth > 768) {
+    cmdInput.focus();
+}
+
 
 document.querySelectorAll(".nav-item").forEach(item => {
     item.addEventListener("click", () => runCommand(item.dataset.cmd));
