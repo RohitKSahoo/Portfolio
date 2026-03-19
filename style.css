@@ -1,0 +1,1107 @@
+/* --- VARIABLES --- */
+:root {
+    --bg-color: #000000;
+    --terminal-green: #4af626;
+    --terminal-blue: #3b8eea;
+    --terminal-dim: #333;
+    --text-white: #ffffff;
+    --font-stack: 'Courier New', Courier, monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--terminal-green);
+    font-family: var(--font-stack);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================================
+   CUSTOM SCROLLBAR — neon green, thin
+============================================================ */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+::-webkit-scrollbar-track {
+    background: #000;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--terminal-green);
+    border-radius: 2px;
+    box-shadow: 0 0 6px rgba(74, 246, 38, 0.6);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #7fff5e;
+}
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--terminal-green) #000;
+}
+
+/* --- HEADER --- */
+header {
+    padding: 16px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #000;
+    flex-shrink: 0;
+    z-index: 10;
+    position: relative;
+}
+
+/* subtle scanline on header */
+header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.015) 0px,
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events: none;
+}
+
+.brand h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    text-shadow: 0 0 5px rgba(74, 246, 38, 0.5);
+}
+
+/* blinking cursor after the name */
+.header-cursor {
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+    opacity: 0.8;
+}
+
+.brand .role {
+    color: #888;
+    font-size: 0.9rem;
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ONLINE badge */
+.online-badge {
+    display: inline-block;
+    color: var(--terminal-green);
+    font-size: 0.72rem;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.featured-link {
+    color: var(--terminal-green);
+    font-size: 0.8rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--terminal-green);
+    padding-bottom: 2px;
+    opacity: 0.8;
+    transition: all 0.15s;
+}
+.featured-link:hover {
+    color: #ffffff;
+    text-decoration: none;
+    border-bottom: 1px solid #fff;
+    opacity: 1;
+}
+
+/* --- SEPARATOR --- */
+.separator {
+    width: 100%;
+    height: 1px;
+    background-color: #000;
+    border-bottom: 1px solid var(--terminal-green);
+    position: relative;
+    flex-shrink: 0;
+    z-index: 10;
+}
+.separator::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--terminal-green), transparent);
+    opacity: 1;
+}
+
+/* --- MAIN LAYOUT --- */
+main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    /* Fix 3: cap width on ultrawide monitors */
+    max-width: 1600px;
+    width: 100%;
+    align-self: center;
+}
+
+/* NAV ITEMS */
+.nav-item {
+    cursor: pointer;
+    padding: 2px 5px;
+    transition: all 0.15s ease-in-out;
+    border-bottom: 2px solid transparent;
+}
+.nav-item:hover {
+    color: #0dff00;
+    border-bottom: 2px solid #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+}
+.nav-item.active {
+    color: #fff;
+    border-bottom: 2px solid var(--terminal-green);
+}
+
+/* --- LEFT: VISUAL PANEL --- */
+.visual-panel {
+    width: 30%;
+    min-width: 260px;
+    max-width: 400px; /* Fix 4: cap panel width on wide desktops */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    perspective: 1000px;
+    background: radial-gradient(circle at center, rgba(20, 40, 20, 0.8) 0%, #000000 80%);
+    overflow: hidden;
+    box-shadow: inset 0 0 80px rgba(74, 246, 38, 0.2);
+}
+
+#matrix-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* ============================================================
+   HUD CORNER OVERLAYS
+============================================================ */
+.hud {
+    position: absolute;
+    z-index: 5;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: rgba(74, 246, 38, 0.55);
+    font-family: var(--font-stack);
+    pointer-events: none;
+    text-transform: uppercase;
+}
+.hud-tl { top: 12px; left: 14px; }
+.hud-tr { top: 12px; right: 14px; }
+.hud-bl { bottom: 12px; left: 14px; }
+.hud-br { bottom: 12px; right: 14px; }
+
+/* card flip hint */
+.card-hint-label {
+    position: absolute;
+    bottom: 34px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+    font-size: 0.6rem;
+    color: rgba(74, 246, 38, 0.4);
+    letter-spacing: 0.1em;
+    pointer-events: none;
+    animation: pulse-badge 3s ease-in-out infinite;
+}
+
+/* DRAG BAR */
+#drag-bar {
+    width: 3px;
+    background: var(--terminal-green);
+    box-shadow: 0 0 8px rgba(74, 246, 38, 0.6);
+    cursor: col-resize;
+    flex-shrink: 0;
+}
+
+/* ============================================================
+   3D ID CARD
+============================================================ */
+
+.card-3d-container {
+    position: relative;
+    width: 100%;
+    height: 430px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+    perspective: 1400px;
+    perspective-origin: center;
+    user-select: none;
+    z-index: 2;
+}
+
+.card-3d {
+    width: 290px;
+    height: 430px;
+    position: relative;
+    pointer-events: none;
+    transform-style: preserve-3d;
+    transform-origin: center center;
+    transition: transform 0.2s cubic-bezier(0.3, 0.2, 0.15, 1);
+}
+
+.card-3d.flip {
+    transform: rotateY(180deg);
+}
+
+/* CARD BASE */
+.id-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 290px;
+    height: 430px;
+    border-radius: 18px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
+    border: 1px solid rgba(0,255,80,0.45);
+    box-shadow:
+        0 20px 45px rgba(0,0,0,0.85),
+        0 0 18px rgba(0,255,80,0.25);
+}
+
+/* FRONT DESIGN */
+.card-front {
+    background: radial-gradient(circle at top left, rgba(0,255,80,0.28), rgba(0,0,0,0.92));
+    transform: rotateY(0deg);
+}
+
+/* ============================================================
+   CARD BACK — redesigned
+============================================================ */
+.card-back {
+    transform: rotateY(180deg);
+    background: #000;
+    color: var(--terminal-green);
+    display: flex;
+    pointer-events: auto;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 290px;
+    height: 430px;
+    overflow: hidden;
+}
+
+/* subtle grid on back */
+.card-back-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(74, 246, 38, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(74, 246, 38, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+}
+
+.card-back-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid rgba(74, 246, 38, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.card-back-title {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: var(--terminal-green);
+    letter-spacing: 0.06em;
+}
+
+.card-back-id {
+    font-size: 0.65rem;
+    color: rgba(74, 246, 38, 0.5);
+    letter-spacing: 0.1em;
+}
+
+.card-back-status {
+    padding: 8px 16px;
+    font-size: 0.62rem;
+    color: rgba(74, 246, 38, 0.55);
+    letter-spacing: 0.12em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid rgba(74, 246, 38, 0.12);
+    position: relative;
+    z-index: 1;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--terminal-green);
+    box-shadow: 0 0 6px var(--terminal-green);
+    animation: pulse-badge 1.5s ease-in-out infinite;
+    display: inline-block;
+}
+
+.contact-rows {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 16px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.contact-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: var(--terminal-green);
+    transition: all 0.15s ease;
+    border-left: 2px solid transparent;
+    gap: 10px;
+}
+.contact-row:hover {
+    background: rgba(74, 246, 38, 0.08);
+    border-left: 2px solid var(--terminal-green);
+    color: #fff;
+}
+.contact-row:hover .contact-row-icon {
+    color: #fff;
+    text-shadow: 0 0 8px var(--terminal-green);
+}
+
+.contact-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    font-weight: bold;
+    color: rgba(74, 246, 38, 0.55);
+}
+
+.contact-row-icon {
+    font-size: 1.3rem;
+    color: var(--terminal-green);
+    transition: all 0.15s;
+}
+
+.card-back-footer {
+    padding: 10px 16px 14px;
+    border-top: 1px solid rgba(74, 246, 38, 0.15);
+    position: relative;
+    z-index: 1;
+}
+
+.card-back-barcode {
+    height: 14px;
+    margin-bottom: 8px;
+    background-image: repeating-linear-gradient(
+        to right,
+        rgba(0,255,80,0.1) 0px,
+        rgba(0,255,80,0.1) 1px,
+        rgba(0,255,80,0.9) 1px,
+        rgba(0,255,80,0.9) 2px,
+        transparent 2px,
+        transparent 3px
+    );
+    border-radius: 2px;
+}
+
+.card-back-note {
+    font-size: 0.58rem;
+    color: rgba(74, 246, 38, 0.35);
+    text-align: center;
+    letter-spacing: 0.1em;
+}
+
+/* LIGHT SPOT FOLLOWING MOUSE */
+.light {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(13, 228, 128, 0.695), transparent 50%);
+    top: -150%;
+    left: -150%;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    transition: transform 0.08s linear;
+}
+
+/* GRID LAYOUT */
+.card-layout {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    height: 100%;
+}
+
+/* SIDE VERTICAL LABEL */
+.card-side-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.8);
+    border-right: 1px solid rgba(0,255,80,0.45);
+}
+
+.vertical-label {
+    writing-mode: vertical-rl;
+    font-family: 'Courier New', monospace;
+    transform: rotate(180deg);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #00ff88;
+    opacity: 0.95;
+}
+
+/* MAIN BLOCK */
+.card-main {
+    position: relative;
+    padding: 20px 18px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* DOT GRID */
+.dots-grid {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 70px;
+    height: 70px;
+    background-image: radial-gradient(circle, rgba(0,255,80,0.75) 1px, transparent 1px);
+    background-size: 6px 6px;
+    opacity: 0.25;
+}
+
+/* VIDEO AREA */
+.video-block {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.85);
+    border: 1px solid rgba(0,255,80,0.6);
+    overflow: hidden;
+    box-shadow:
+        0 0 16px rgba(0,255,80,0.28),
+        inset 0 0 22px rgba(0,255,80,0.12);
+}
+
+.video-block video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: pixelated;
+}
+
+/* TEXT */
+.card-text-block {
+    margin-top: 4px;
+}
+
+.card-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #e5ffe7;
+    letter-spacing: 0.04em;
+}
+
+.card-role {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #9dffb5;
+    opacity: 0.9;
+    margin-top: 2px;
+}
+
+.card-subline {
+    margin-top: 4px;
+    font-size: 0.72rem;
+    color: #84ffa8;
+    opacity: 0.8;
+    letter-spacing: 0.05em;
+}
+
+/* BARCODE ROW */
+.card-barcode-row {
+    margin-top: auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.barcode {
+    flex: 1;
+    height: 22px;
+    background-image: repeating-linear-gradient(
+        to right,
+        rgba(0,255,80,0.1) 0px,
+        rgba(0,255,80,0.1) 1px,
+        rgba(0,255,80,0.9) 1px,
+        rgba(0,255,80,0.9) 2px,
+        transparent 2px,
+        transparent 3px
+    );
+    border-radius: 2px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+}
+.barcode:hover {
+    box-shadow: 0 0 8px rgba(74, 246, 38, 0.5);
+}
+
+.id-code {
+    font-size: 0.65rem;
+    color: #b0ffca;
+    opacity: 0.9;
+}
+
+/* CARD HOVER LIFT */
+.card-3d-container:hover .id-card {
+    box-shadow:
+        0 26px 60px rgba(0,0,0,0.9),
+        0 0 32px rgba(0,255,80,0.45);
+}
+
+/* ============================================================
+   TERMINAL PANEL
+============================================================ */
+
+.terminal-panel {
+    flex: 1;
+    min-width: 30%;
+    display: flex;
+    flex-direction: column;
+    background: #000;
+    z-index: 10;
+}
+
+.terminal-nav {
+    padding: 15px 30px;
+    border-bottom: 1px solid var(--terminal-green);
+    font-size: 0.9rem;
+    color: var(--terminal-green);
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
+/* hide scrollbar on nav */
+.terminal-nav::-webkit-scrollbar { display: none; }
+
+.terminal-window {
+    flex: 1;
+    padding: 28px 36px; /* Fix 7: slightly more padding for reading comfort */
+    overflow-y: auto;
+    font-size: 1rem;
+    line-height: 1.65; /* Fix 7: looser line-height for dense monospace */
+    position: relative;
+    max-width: 960px; /* Fix 7: prevent ultra-long lines on wide screens */
+}
+
+/* scanline overlay on terminal */
+.terminal-window::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.03) 0px,
+        rgba(255,255,255,0.03) 2px,
+        transparent 2px,
+        transparent 4px
+    );
+    opacity: 0.1;
+}
+
+.output-line {
+    color: #ffffff !important;
+    margin-bottom: 15px;
+    white-space: pre-wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.system-output {
+    color: rgba(255,255,255,0.9) !important;
+}
+
+/* Styled prompt segments */
+.p-host { color: var(--terminal-blue); }
+.p-user { color: var(--terminal-green); }
+.p-symbol {
+    color: rgba(255, 255, 255, 0.55);
+    margin-right: 6px;
+}
+
+/* clickable links inside terminal output */
+.term-link {
+    color: var(--terminal-green);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(74, 246, 38, 0.4);
+    transition: all 0.15s;
+}
+.term-link:hover {
+    color: #fff;
+    border-bottom: 1px solid #fff;
+}
+
+/* star rating in skills */
+.skill-star { color: var(--terminal-green); }
+.skill-star-dim { color: rgba(74, 246, 38, 0.2); }
+
+/* PROMPT */
+.prompt-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    z-index: 1;
+    position: relative;
+}
+
+.cursor {
+    width: 10px;
+    height: 1.2em;
+    background-color: var(--terminal-green);
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+/* autocomplete hint */
+.autocomplete-hint {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    background: rgba(0, 20, 0, 0.95);
+    border: 1px solid rgba(74, 246, 38, 0.3);
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    color: var(--terminal-green);
+    display: none;
+    z-index: 20;
+    min-width: 160px;
+    border-radius: 2px;
+}
+.autocomplete-hint.visible { display: block; }
+
+/* FOOTER */
+footer {
+    background-color: #000;
+    border-top: 1px solid var(--terminal-green);
+    padding: 8px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--terminal-green);
+    flex-shrink: 0;
+}
+
+/* ============================================================
+   MOBILE INPUT BAR
+============================================================ */
+.mobile-input-bar {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-top: 1px solid rgba(74, 246, 38, 0.3);
+    background: #000;
+    flex-shrink: 0;
+}
+
+.mobile-input-bar input {
+    flex: 1;
+    background: rgba(74, 246, 38, 0.06);
+    border: 1px solid rgba(74, 246, 38, 0.3);
+    color: var(--terminal-green);
+    font-family: var(--font-stack);
+    font-size: 0.9rem;
+    padding: 6px 10px;
+    border-radius: 2px;
+    outline: none;
+}
+.mobile-input-bar input::placeholder {
+    color: rgba(74, 246, 38, 0.25);
+}
+.mobile-input-bar input:focus {
+    border-color: var(--terminal-green);
+    box-shadow: 0 0 6px rgba(74, 246, 38, 0.2);
+}
+
+#mobile-send-btn {
+    background: rgba(74, 246, 38, 0.12);
+    border: 1px solid rgba(74, 246, 38, 0.4);
+    color: var(--terminal-green);
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-radius: 2px;
+    transition: all 0.15s;
+}
+#mobile-send-btn:hover {
+    background: rgba(74, 246, 38, 0.25);
+    border-color: var(--terminal-green);
+}
+
+/* ============================================================
+   BIOS BOOT SCREEN
+============================================================ */
+#boot-screen {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    color: #e0e0e0;
+    font-family: 'Courier New', monospace;
+    z-index: 999999 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.boot-inner {
+    width: 70%;
+    max-width: 650px;
+    text-align: center;
+}
+
+.boot-header {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--terminal-green);
+    margin-bottom: 4px;
+    letter-spacing: 0.1em;
+}
+
+.boot-meta {
+    font-size: 0.75rem;
+    color: #555;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+}
+
+.boot-text {
+    text-align: left;
+    min-height: 200px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #ccc;
+    margin-bottom: 12px;
+}
+
+.boot-hint {
+    margin-top: 14px;
+    font-size: 0.68rem;
+    color: #444;
+    letter-spacing: 0.06em;
+}
+
+.boot-key {
+    color: #999;
+    border: 1px solid #555;
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-size: 0.65rem;
+}
+
+#boot-screen.fade-out {
+    animation: fadeBoot 0.8s ease forwards;
+}
+
+@keyframes fadeBoot {
+    from { opacity: 1; }
+    to { opacity: 0; visibility: hidden; }
+}
+
+body.booting header,
+body.booting .separator,
+body.booting main,
+body.booting footer {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(10px) scale(1.01);
+    filter: blur(3px);
+}
+
+body.boot-complete header,
+body.boot-complete .separator,
+body.boot-complete main,
+body.boot-complete footer {
+    opacity: 1 !important;
+    pointer-events: all !important;
+    animation: pageReveal 0.7s ease-out forwards;
+}
+
+@keyframes pageReveal {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(1.02);
+        filter: blur(3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* Neon Boot Loading Bar */
+.neon-loader {
+    width: 100%;
+    height: 10px;
+    padding: 2px;
+    border: 1px solid #4af626;
+    margin-top: 12px;
+}
+
+.neon-progress {
+    height: 100%;
+    width: 0%;
+    background: #4af626;
+    box-shadow: 0 0 8px #4af626;
+    transition: width 0.16s linear;
+}
+
+/* hidden real input */
+#cmd-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    color: transparent !important;
+    z-index: -999;
+}
+#cmd-input:focus {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* ============================================================
+   RESPONSIVE — TABLET  (769px – 1024px)
+============================================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .visual-panel {
+        width: 36% !important;
+        max-width: 320px;
+    }
+
+    .card-3d-container { height: 370px; }
+
+    .card-3d {
+        width: 240px !important;
+        height: 360px !important;
+    }
+
+    .id-card,
+    .card-back {
+        width: 240px !important;
+        height: 360px !important;
+    }
+
+    .terminal-window {
+        padding: 22px 26px;
+        font-size: 0.93rem;
+    }
+
+    .terminal-nav { padding: 12px 18px; font-size: 0.85rem; }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE  (≤ 768px)
+============================================================ */
+@media (max-width: 768px) {
+    body { overflow: auto; }
+
+    main { flex-direction: column; overflow: visible; }
+
+    /* Fix 1: cap card panel at 52vh so terminal is visible on first load */
+    .visual-panel {
+        transition: opacity 0.3s ease;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 52vh !important;
+        min-height: 300px !important;
+        max-height: 480px;
+        position: relative;
+        padding: 0;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Scroll cue at bottom of card panel */
+    .visual-panel::after {
+        content: '▼ scroll for terminal';
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.6rem;
+        color: rgba(74, 246, 38, 0.45);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        animation: blink 2s step-end infinite;
+        pointer-events: none;
+        white-space: nowrap;
+        z-index: 10;
+    }
+
+    #matrix-bg {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .card-3d-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 0;
+    }
+
+    /* Fix 1b: smaller card so it fits within the 52vh panel */
+    .card-3d {
+        transform: none !important;
+        margin: 0 auto;
+        width: min(260px, 72vw) !important;
+        height: auto !important;
+        aspect-ratio: 3 / 4.5;
+    }
+
+    .id-card, .card-back {
+        border-radius: 14px;
+        width: min(260px, 72vw) !important;
+        height: auto !important;
+        aspect-ratio: 3 / 4.5;
+    }
+
+    .card-3d-container:hover .card-3d { transform: none !important; }
+
+    #drag-bar { display: none !important; }
+
+    .terminal-panel {
+        width: 100% !important;
+        min-height: 50vh;
+        padding-top: 6px;
+    }
+
+    .terminal-window {
+        padding: 18px 20px;
+        font-size: 0.9rem;
+        line-height: 1.55;
+        max-width: 100%;
+    }
+
+    /* show mobile input bar */
+    .mobile-input-bar { display: flex; }
+
+    /* hide desktop style prompt on mobile */
+    .prompt-container { display: none; }
+
+    /* Fix 2: nav wraps instead of overflowing horizontally */
+    .terminal-nav {
+        display: flex;
+        flex-wrap: wrap;
+        overflow-x: unset;
+        white-space: normal;
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        gap: 2px 0;
+    }
+
+    .nav-item { padding: 5px 7px; }
+
+    #boot-screen .boot-inner { width: 90%; max-width: 360px; }
+    .boot-text { font-size: 0.75rem; }
+
+    footer { font-size: 0.75rem; padding: 6px 12px; }
+
+    .hud { display: none; }
+    .card-hint-label { bottom: 10px; font-size: 0.55rem; }
+
+    /* Fix 6: header adapts — hide tagline on very narrow screens */
+    header { padding: 10px 14px; }
+    .brand h1 { font-size: 1.2rem; }
+
+    .vertical-label { font-size: 0.85rem; letter-spacing: 0.2em; }
+
+    .scrolled .visual-panel { opacity: 0.25; }
+}
+
+/* Fix 6: hide tagline on small screens to clean up header */
+@media (max-width: 599px) {
+    .featured-link { display: none; }
+}
+
+/* Fix 5: very small phones */
+@media (max-width: 480px) {
+    .card-3d {
+        transform: none !important;
+        width: min(230px, 70vw) !important;
+    }
+    .id-card, .card-back {
+        width: min(230px, 70vw) !important;
+    }
+    .terminal-window { font-size: 0.83rem; padding: 14px 16px; }
+    .nav-item { font-size: 0.75rem; }
+    header { padding: 8px 12px; }
+    .brand h1 { font-size: 1.1rem; }
+}
