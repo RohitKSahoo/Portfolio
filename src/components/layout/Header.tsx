@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { StatusIndicator } from '../dashboard/StatusIndicator';
-import { Sun, Moon, Menu } from 'lucide-react';
+import { Sun, Moon, Menu, Mail } from 'lucide-react';
 
 interface HeaderProps {
   activeTab?: string;
   onMenuToggle?: () => void;
 }
 
-const TAB_TITLES: Record<string, string> = {
-  profile: 'DASHBOARD',
-  projects: 'PROJECTS',
-  experience: 'EXPERIENCE',
-  metrics: 'METRICS',
-  contact: 'CONTACT'
+const TAB_TITLES: Record<string, { title: string; num: string }> = {
+  profile: { title: 'DASHBOARD', num: '/01' },
+  projects: { title: 'PROJECTS', num: '/02' },
+  experience: { title: 'EXPERIENCE', num: '/03' },
+  metrics: { title: 'METRICS', num: '/04' },
+  contact: { title: 'CONTACT', num: '/05' }
 };
 
 export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuToggle }) => {
@@ -43,6 +43,8 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
     return `${y}.${m}.${d} | ${hh}:${mm}`;
   };
 
+  const currentTab = TAB_TITLES[activeTab] || TAB_TITLES.profile;
+
   return (
     <header 
       className="fixed top-4 left-4 right-4 lg:top-6 lg:left-6 lg:right-6 h-16 lg:h-20 px-4 lg:px-8 flex justify-between items-center z-[130] transition-all duration-500 rounded-[1.25rem] border border-[var(--glass-border)]"
@@ -62,43 +64,33 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
         </button>
 
         <div className="flex flex-col gap-0.5">
-          <div className="flex items-center gap-3">
-             <span className="text-[var(--theme-accent)] font-mono text-xs opacity-50 font-bold tracking-tighter">/01</span>
+          <div className="flex items-center gap-6">
+             <span className="text-[var(--theme-accent)] font-mono text-lg font-black tracking-tighter">
+               {currentTab.num}
+             </span>
              <h1 className="text-sm md:text-xl lg:text-2xl font-bold tracking-[0.1em] text-tier-1 uppercase truncate max-w-[200px] md:max-w-none">
-               {TAB_TITLES[activeTab] || 'SYSTEM_OS'}
+               {currentTab.title}
              </h1>
-          </div>
-          <div className="flex items-center gap-2 lg:gap-3">
-            <span className="text-[0.45rem] lg:text-[0.55rem] text-tier-3 tracking-[0.3em] uppercase font-mono truncate max-w-[150px] md:max-w-none opacity-60">
-               CURRENT_NODE // ACCESS_TERMINAL
-            </span>
           </div>
         </div>
       </div>
       
-      <div className="flex items-center gap-4 lg:gap-10">
-        <div className="hidden lg:flex items-center gap-10">
-          <div className="flex flex-col items-end gap-1">
-            <span className="text-[0.55rem] text-tier-3 font-mono tracking-widest">SYSTEM_STATUS</span>
-            <StatusIndicator status="active" label="STABLE_NODE_01" />
-          </div>
-          
-          <div className="h-8 w-[1px] bg-[var(--border-muted)]" />
+      <div className="flex items-center gap-4 lg:gap-8">
+        <a 
+          href="mailto:rohitkumarsahoo37@gmail.com"
+          className="hidden md:flex items-center gap-3 px-4 py-2.5 border-2 border-[var(--theme-accent)] bg-[var(--theme-accent)]/10 hover:bg-[var(--theme-accent)] text-[var(--theme-accent)] hover:text-black transition-all rounded-lg font-mono text-[0.65rem] tracking-[0.2em] uppercase font-bold shadow-[0_0_15px_rgba(var(--theme-accent-rgb),0.15)]"
+        >
+          <Mail size={14} strokeWidth={2.5} />
+          <span>LETS_CONNECT</span>
+        </a>
 
+        <div className="hidden lg:flex items-center gap-8">
           <div className="flex flex-col items-end gap-1">
-            <span className="text-[0.55rem] text-tier-3 font-mono tracking-widest">LOCAL_TIME</span>
+            <span className="text-[0.55rem] text-tier-3 font-mono tracking-widest uppercase truncate max-w-[200px]">
+              BHUBANESWAR, OD // LOCAL_TIME
+            </span>
             <span className="text-xs font-mono text-tier-2 tabular-nums">
               {formatDate(time)}
-            </span>
-          </div>
-
-          <div className="h-8 w-[1px] bg-[var(--border-muted)]" />
-
-          <div className="flex flex-col items-end gap-1">
-            <span className="text-[0.55rem] text-tier-3 font-mono tracking-widest">UPLINK_STATUS</span>
-            <span className="text-[0.65rem] text-tier-2 font-mono flex items-center gap-2">
-              <span className="w-1 h-1 rounded-full animate-pulse bg-[var(--theme-accent)]" />
-              ENCRYPTED
             </span>
           </div>
         </div>

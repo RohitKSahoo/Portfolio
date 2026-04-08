@@ -7,7 +7,7 @@ import { StatusIndicator } from './StatusIndicator';
 import { Code, ExternalLink, Github, Terminal, Zap, Hash, Mail } from 'lucide-react';
 import { SystemAvatar } from '../SystemAvatar';
 
-export const ProfilePage = () => {
+export const ProfilePage = ({ onExploreProjects }: { onExploreProjects?: () => void }) => {
   const [displayName, setDisplayName] = React.useState("ROHIT KUMAR SAHOO");
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%#!@$*";
 
@@ -30,7 +30,7 @@ export const ProfilePage = () => {
 
   return (
     <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700 h-full">
-      <div className="relative min-h-[600px] lg:min-h-[calc(100vh-164px)] dashboard-card border-none bg-transparent overflow-hidden flex flex-col justify-between p-0">
+      <div className="relative min-h-[600px] lg:min-h-[calc(100vh-164px)] border-none bg-transparent overflow-hidden flex flex-col justify-between p-0">
         {/* Background/Avatar Center */}
         <div className="absolute inset-0 flex justify-center items-center z-0">
            <div className="relative w-full h-full max-w-xl pointer-events-none flex items-center justify-center">
@@ -61,10 +61,15 @@ export const ProfilePage = () => {
               <p className="text-[0.75rem] lg:text-[0.95rem] text-tier-2 font-medium leading-[1.6] max-w-[280px] lg:max-w-sm uppercase tracking-wide opacity-80">
                 EXPLORING REAL-TIME SYSTEMS, BACKEND ARCHITECTURES, AND UNCONVENTIONAL IDEAS — [REDACTED]
               </p>
-              <button className="group relative px-6 py-2.5 lg:px-8 lg:py-3 bg-[var(--theme-accent)] text-black font-black text-[0.6rem] lg:text-xs uppercase tracking-[0.3em] hover:bg-white transition-all overflow-hidden flex items-center gap-4 lg:self-end w-fit">
-                <span>EXPLORE_REGISTRY</span>
+            <div className="flex flex-col sm:flex-row lg:self-end">
+              <button 
+                onClick={onExploreProjects}
+                className="group relative px-6 py-2.5 lg:px-8 lg:py-3 bg-[var(--theme-accent)] text-black font-black text-[0.6rem] lg:text-xs uppercase tracking-[0.3em] hover:bg-white transition-all overflow-hidden flex items-center gap-4 w-fit shadow-[0_0_20px_rgba(var(--theme-accent-rgb),0.3)]"
+              >
+                <span>EXPLORE_PROJECTS</span>
                 <Zap size={14} fill="currentColor" />
               </button>
+            </div>
             </div>
           </div>
 

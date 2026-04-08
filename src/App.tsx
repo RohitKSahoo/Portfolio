@@ -41,7 +41,7 @@ function App() {
         >
           {(() => {
             switch (activeTab) {
-              case 'profile': return <ProfilePage />;
+              case 'profile': return <ProfilePage onExploreProjects={() => setActiveTab('projects')} />;
               case 'projects': return <RegistryPage />;
               case 'experience': return <HistoryPage />;
               case 'metrics': return <MetricsPage />;
@@ -72,7 +72,7 @@ function App() {
       <AsciiBackground />
 
       {/* MAIN SYSTEM VIEWPORT */}
-      <main className={`lg:pl-[104px] flex flex-col h-screen overflow-hidden relative transition-all duration-500 ${isSidebarOpen ? 'blur-sm lg:blur-none pointer-events-none lg:pointer-events-auto' : ''}`}>
+      <main className={`lg:pl-[88px] flex flex-col h-screen overflow-hidden relative transition-all duration-500 ${isSidebarOpen ? 'blur-sm lg:blur-none pointer-events-none lg:pointer-events-auto' : ''}`}>
         {/* TOP TELEMETRY HEADER */}
         <Header 
           activeTab={activeTab}

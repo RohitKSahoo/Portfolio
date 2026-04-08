@@ -6,22 +6,22 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
   const [isGlitching, setIsGlitching] = useState(false);
   const [isFullView, setIsFullView] = useState(false);
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
-  
+
   const lastMousePos = useRef({ x: 0, y: 0 });
   const velocity = useRef(0);
 
   // PARALLAX SPRING CONFIGS
   const eyeSpring = { damping: 15, stiffness: 200, mass: 0.3 };
   const headSpring = { damping: 20, stiffness: 150, mass: 0.6 };
-  
+
   const mouseX = useSpring(0, headSpring);
   const mouseY = useSpring(0, headSpring);
-  
+
   // Derived parallax values
-  const eyeX = useTransform(mouseX, [ -40, 40 ], [ -15, 15 ]);
-  const eyeY = useTransform(mouseY, [ -40, 40 ], [ -12, 12 ]);
-  const torsoX = useTransform(mouseX, [ -40, 40 ], [ -5, 5 ]);
-  const neckRotate = useTransform(mouseX, [ -40, 40 ], [ -5, 5 ]);
+  const eyeX = useTransform(mouseX, [-40, 40], [-15, 15]);
+  const eyeY = useTransform(mouseY, [-40, 40], [-12, 12]);
+  const torsoX = useTransform(mouseX, [-40, 40], [-5, 5]);
+  const neckRotate = useTransform(mouseX, [-40, 40], [-5, 5]);
 
   const handleMouseEnter = () => {
     hoverTimer.current = setTimeout(() => {
@@ -40,7 +40,7 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
       const rect = containerRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      
+
       const dx = (e.clientX - centerX) / (window.innerWidth / 2);
       const dy = (e.clientY - centerY) / (window.innerHeight / 2);
 
@@ -62,14 +62,14 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
   }, [isGlitching]);
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className={`relative flex items-center justify-center transition-all duration-700 ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* HUD Rings */}
-      <motion.div 
+      <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
         className="absolute w-[500px] h-[500px] border border-[var(--theme-accent)]/5 rounded-full"
@@ -90,42 +90,42 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
             stroke="var(--tier-2)"
             strokeWidth="1"
           />
-          
+
           <rect x="118" y="200" width="4" height="80" fill="var(--theme-accent)" opacity="0.2" />
 
           {/* Articulated Shoulders & Arms */}
           <g>
-             {/* Left Arm Assembly (Standard) */}
-             <circle cx="70" cy="205" r="4" fill="var(--bg-black)" stroke="var(--tier-3)" strokeWidth="1" />
-             <path d="M70,205 L40,240 L55,265" fill="none" stroke="var(--tier-1)" strokeWidth="2" strokeLinecap="round" />
-             <motion.circle cx="55" cy="265" r="2.5" fill="var(--theme-accent)" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 0.15, repeat: Infinity }} />
+            {/* Left Arm Assembly (Standard) */}
+            <circle cx="70" cy="205" r="4" fill="var(--bg-black)" stroke="var(--tier-3)" strokeWidth="1" />
+            <path d="M70,205 L40,240 L55,265" fill="none" stroke="var(--tier-1)" strokeWidth="2" strokeLinecap="round" />
+            <motion.circle cx="55" cy="265" r="2.5" fill="var(--theme-accent)" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 0.15, repeat: Infinity }} />
 
-             {/* Right Arm Assembly (Standard or Waving) */}
-             <circle cx="170" cy="205" r="4" fill="var(--bg-black)" stroke="var(--tier-3)" strokeWidth="1" />
-             
-             {isFullView ? (
-               <motion.path 
-                 d="M170,205 L210,180 L230,150" 
-                 fill="none" 
-                 stroke="var(--tier-1)" 
-                 strokeWidth="2.5" 
-                 strokeLinecap="round"
-                 animate={{ rotate: [0, -20, 0] }}
-                 transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
-                 style={{ originX: "170px", originY: "205px" }}
-               />
-             ) : (
-               <path d="M170,205 L200,240 L185,265" fill="none" stroke="var(--tier-1)" strokeWidth="2" strokeLinecap="round" />
-             )}
+            {/* Right Arm Assembly (Standard or Waving) */}
+            <circle cx="170" cy="205" r="4" fill="var(--bg-black)" stroke="var(--tier-3)" strokeWidth="1" />
 
-             <motion.circle 
-                cx={isFullView ? 230 : 185} 
-                cy={isFullView ? 150 : 265} 
-                r="3" 
-                fill="var(--theme-accent)" 
-                animate={isFullView ? { x: [0, -3, 0], y: [0, -2, 0] } : { opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 0.6, repeat: Infinity }}
-             />
+            {isFullView ? (
+              <motion.path
+                d="M170,205 L210,180 L230,150"
+                fill="none"
+                stroke="var(--tier-1)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                animate={{ rotate: [0, -20, 0] }}
+                transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
+                style={{ originX: "170px", originY: "205px" }}
+              />
+            ) : (
+              <path d="M170,205 L200,240 L185,265" fill="none" stroke="var(--tier-1)" strokeWidth="2" strokeLinecap="round" />
+            )}
+
+            <motion.circle
+              cx={isFullView ? 230 : 185}
+              cy={isFullView ? 150 : 265}
+              r="3"
+              fill="var(--theme-accent)"
+              animate={isFullView ? { x: [0, -3, 0], y: [0, -2, 0] } : { opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 0.6, repeat: Infinity }}
+            />
           </g>
         </motion.g>
 
@@ -137,16 +137,16 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
         {/* HEAD SEGMENT */}
         <motion.g style={{ x: mouseX, y: mouseY, rotate: neckRotate }} transform-origin="120 120">
           <circle cx="120" cy="120" r="70" fill="var(--bg-black)" stroke="var(--tier-1)" strokeWidth="2" />
-          
-          <motion.circle 
-            cx="120" cy="120" r="62" fill="none" stroke="var(--tier-3)" strokeWidth="0.5" strokeDasharray="10 20" 
+
+          <motion.circle
+            cx="120" cy="120" r="62" fill="none" stroke="var(--tier-3)" strokeWidth="0.5" strokeDasharray="10 20"
             animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
           />
 
           {/* OPTIC VISOR */}
           <motion.g style={{ x: eyeX, y: eyeY }}>
             <rect x="80" y="105" width="80" height="30" rx="15" fill="rgba(255,255,255,0.03)" stroke="var(--tier-3)" strokeWidth="1" />
-            
+
             {/* Split Sensor Eyes (Change to "Happy" in Full View) */}
             <motion.g>
               {isFullView ? (
@@ -181,18 +181,18 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
       {/* REACTIVE HUD TELEMETRY */}
       <AnimatePresence>
         {!isFullView && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="absolute inset-0 pointer-events-none font-mono text-[0.4rem] tracking-[0.2em] text-tier-3/40 uppercase"
           >
             <motion.div style={{ x: torsoX, y: torsoX }} className="absolute top-[10%] left-[5%]">Kernel_Hash: 0x88F2...</motion.div>
-            <motion.div style={{ x: useTransform(mouseX, [ -40, 40 ], [ 5, -5 ]) }} className="absolute bottom-[10%] right-[10%] text-right">Sync_Rate: 99.8%</motion.div>
+            <motion.div style={{ x: useTransform(mouseX, [-40, 40], [5, -5]) }} className="absolute bottom-[10%] right-[10%] text-right">Sync_Rate: 99.8%</motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {isFullView && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="absolute bottom-1/4 bg-[var(--theme-accent)]/10 border border-[var(--theme-accent)]/30 px-3 py-1 rounded text-[0.6rem] font-mono text-[var(--theme-accent)] uppercase tracking-widest"
