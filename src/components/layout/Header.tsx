@@ -11,8 +11,7 @@ const TAB_TITLES: Record<string, { title: string; num: string }> = {
   profile: { title: 'DASHBOARD', num: '/01' },
   projects: { title: 'PROJECTS', num: '/02' },
   experience: { title: 'EXPERIENCE', num: '/03' },
-  metrics: { title: 'METRICS', num: '/04' },
-  contact: { title: 'CONTACT', num: '/05' }
+  contact: { title: 'CONTACT', num: '/04' }
 };
 
 export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuToggle }) => {

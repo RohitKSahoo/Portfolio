@@ -6,7 +6,6 @@ import {
   ProfilePage, 
   RegistryPage, 
   HistoryPage, 
-  MetricsPage, 
   ContactPage 
 } from './components/dashboard/DashboardPages';
 import { AsciiBackground } from './components/AsciiBackground';
@@ -44,7 +43,6 @@ function App() {
               case 'profile': return <ProfilePage onExploreProjects={() => setActiveTab('projects')} />;
               case 'projects': return <RegistryPage />;
               case 'experience': return <HistoryPage />;
-              case 'metrics': return <MetricsPage />;
               case 'contact': return <ContactPage />;
               default: return <ProfilePage />;
             }

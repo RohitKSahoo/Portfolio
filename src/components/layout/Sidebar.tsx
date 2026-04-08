@@ -13,7 +13,6 @@ const navItems = [
   { id: 'profile', icon: User, label: 'DASHBOARD' },
   { id: 'projects', icon: Database, label: 'PROJECTS' },
   { id: 'experience', icon: Briefcase, label: 'EXPERIENCE' },
-  { id: 'metrics', icon: BarChart3, label: 'METRICS' },
   { id: 'contact', icon: Mail, label: 'CONTACT' },
 ];
 
@@ -39,56 +38,47 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
+          const isHovered = hoveredItem === item.id;
           
           return (
-            <motion.div 
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              onMouseEnter={() => setHoveredItem(item.id)}
-              onMouseLeave={() => setHoveredItem(null)}
-              initial={false}
-              animate={{
-                scale: isActive ? 1.05 : 1,
-                borderColor: isActive ? 'var(--theme-accent)' : 'var(--glass-border)',
-              }}
-              style={{
-                width: 64,
-                height: 64,
-                backgroundColor: 'var(--glass-bg)',
-                backdropFilter: 'blur(var(--glass-blur)) saturate(150%)',
-                border: '1px solid var(--glass-border)',
-                boxShadow: isActive ? '0 0 25px rgba(239, 68, 68, 0.25)' : '0 4px 12px rgba(0,0,0,0.1)',
-                borderRadius: '1.25rem',
-              }}
-              className="relative flex items-center justify-center cursor-pointer group/item overflow-hidden"
-            >
-              {/* Active Glow Indicator */}
-              {isActive && (
-                <motion.div 
-                   layoutId="active-bg"
-                   className="absolute inset-0 bg-[var(--theme-accent)]/5 pointer-events-none"
-                />
-              )}
-
-              <div className={`transition-all duration-300 flex items-center justify-center relative z-10 ${isActive ? 'text-[var(--theme-accent)] drop-shadow-[0_0_12px_var(--theme-glow)]' : 'text-tier-3 group-hover/item:text-tier-1'}`}>
-                <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-              </div>
-
-              {/* Tooltip */}
-              <AnimatePresence>
-                {hoveredItem === item.id && (
+            <React.Fragment key={item.id}>
+              <motion.div 
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                onMouseEnter={() => setHoveredItem(item.id)}
+                onMouseLeave={() => setHoveredItem(null)}
+                initial={false}
+                animate={{
+                  scale: isActive || isHovered ? 1.05 : 1,
+                  borderColor: isActive ? 'var(--theme-accent)' : (isHovered ? 'var(--tier-2)' : 'var(--glass-border)'),
+                  backgroundColor: isActive ? 'rgba(var(--theme-accent-rgb), 0.05)' : 'var(--glass-bg)',
+                }}
+                style={{
+                  width: 64,
+                  height: 64,
+                  backdropFilter: 'blur(var(--glass-blur)) saturate(150%)',
+                  border: '1px solid var(--glass-border)',
+                  boxShadow: isActive ? '0 0 25px rgba(239, 68, 68, 0.25)' : '0 4px 12px rgba(0,0,0,0.1)',
+                  borderRadius: '1.25rem',
+                }}
+                className="relative flex items-center justify-center cursor-pointer group/item overflow-hidden z-20"
+              >
+                {/* Active/Hover Pulse */}
+                {(isActive || isHovered) && (
                   <motion.div 
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    className="absolute left-full ml-4 px-3 py-1.5 bg-black/80 backdrop-blur-md border border-white/10 text-[0.6rem] font-mono text-tier-1 whitespace-nowrap z-50 pointer-events-none tracking-[0.2em] shadow-2xl rounded-sm"
-                  >
-                    <span className="text-[var(--theme-accent)] opacity-50 mr-2">//</span>
-                    {item.label}
-                  </motion.div>
+                     layoutId={`pulse-${item.id}`}
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     className="absolute inset-0 bg-gradient-to-tr from-[var(--theme-accent)]/10 to-transparent pointer-events-none"
+                  />
                 )}
-              </AnimatePresence>
-            </motion.div>
+
+                <div className={`transition-all duration-300 flex items-center justify-center relative z-10 ${isActive ? 'text-[var(--theme-accent)] drop-shadow-[0_0_12px_var(--theme-glow)]' : 'text-tier-3 group-hover/item:text-tier-1'}`}>
+                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                </div>
+              </motion.div>
+
+            </React.Fragment>
           );
         })}
       </div>

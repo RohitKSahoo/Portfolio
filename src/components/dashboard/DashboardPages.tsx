@@ -269,46 +269,7 @@ export const HistoryPage = () => (
   </div>
 );
 
-export const MetricsPage = () => (
-  <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-    <span className="section-label">LIVE_METRICS // STATUS</span>
-    <div className="section-grid">
-      <div className="flex flex-col gap-10">
-        <DashboardCard title="CORE_ENGINE_HEALTH" subtitle="STABILITY_V3" metadata="0x88F">
-          <div className="flex flex-col gap-10 mt-4">
-            <MetricBar label="BACKEND_CAPACITY" value="95%" percentage={95} />
-            <MetricBar label="AI_ML_PRECISION" value="98.4%" percentage={98} />
-            <MetricBar label="DEVOPS_STABILITY" value="78.2%" percentage={78} />
-          </div>
-        </DashboardCard>
-      </div>
-      
-      <div className="flex flex-col gap-6">
-        <div className="dashboard-card py-16 text-center flex flex-col gap-8 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4">
-             <StatusIndicator status="active" label="LIVE" />
-          </div>
-          <span className="text-[0.6rem] text-tier-3 uppercase tracking-[0.4em] font-mono">TOTAL_RELIABILITY_SCORE</span>
-          <div className="flex flex-col gap-2">
-            <div className="text-7xl font-bold font-mono tracking-tighter text-tier-1 tabular-nums group-hover:text-[var(--theme-accent)] transition-colors">99.99<span className="text-xl ml-2 opacity-20">%</span></div>
-            <span className="text-[0.5rem] text-tier-3 font-mono opacity-40">CALCULATED_ACROSS_ALL_NODES</span>
-          </div>
-          <div className="flex justify-center gap-1.5 mt-2">
-             {[...Array(24)].map((_, i) => (
-               <motion.div 
-                 key={i} 
-                 initial={{ height: 4 }}
-                 animate={{ height: i < 22 ? [4, 16, 4] : 4 }}
-                 transition={{ repeat: Infinity, duration: 2, delay: i * 0.1 }}
-                 className={`w-[2px] ${i < 22 ? 'bg-[var(--theme-accent)]' : 'bg-[var(--border-muted)]'} shadow-[0_0_8px_var(--theme-glow)]`}
-               ></motion.div>
-             ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+
 
 export const ContactPage = () => (
   <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
