@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StatusIndicator } from '../dashboard/StatusIndicator';
-import { Sun, Moon, Menu, Mail } from 'lucide-react';
+import { Menu, Mail } from 'lucide-react';
 
 interface HeaderProps {
   activeTab?: string;
@@ -16,22 +16,11 @@ const TAB_TITLES: Record<string, { title: string; num: string }> = {
 
 export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuToggle }) => {
   const [time, setTime] = useState(new Date());
-  const [theme, setTheme] = useState('dark');
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
-    const savedTheme = localStorage.getItem('theme-mode') || 'dark';
-    setTheme(savedTheme);
-    document.documentElement.setAttribute('data-theme', savedTheme);
     return () => clearInterval(timer);
   }, []);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    document.documentElement.setAttribute('data-theme', nextTheme);
-    localStorage.setItem('theme-mode', nextTheme);
-  };
 
   const formatDate = (date: Date) => {
     const y = date.getFullYear();
@@ -94,13 +83,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
           </div>
         </div>
 
-        <button 
-          onClick={toggleTheme}
-          className="p-2 lg:p-2.5 border border-[var(--border-muted)] hover:border-[var(--border-active)] bg-white/[0.01] hover:bg-[var(--theme-glow)] transition-all text-tier-3 hover:text-[var(--theme-accent)] rounded-lg"
-          title="TOGGLE_DARK_LIGHT_MODE"
-        >
-          {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
-        </button>
+
       </div>
     </header>
   );
