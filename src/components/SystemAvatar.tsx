@@ -1,17 +1,38 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useSpring, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 
 export const SystemAvatar = ({ className }: { className?: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isBlinking, setIsBlinking] = useState(false);
+  const [isGlitching, setIsGlitching] = useState(false);
+  const [isFullView, setIsFullView] = useState(false);
+  const hoverTimer = useRef<NodeJS.Timeout | null>(null);
   
-  // High-Resolution Interaction Values
-  const headX = useSpring(0, { damping: 30, stiffness: 80, mass: 1 });
-  const headY = useSpring(0, { damping: 30, stiffness: 80, mass: 1 });
-  const eyeX = useSpring(0, { damping: 15, stiffness: 120 });
-  const eyeY = useSpring(0, { damping: 15, stiffness: 120 });
-  const bodyX = useSpring(0, { damping: 40, stiffness: 60 });
-  const hudRotate = useSpring(0, { damping: 40, stiffness: 40 });
+  const lastMousePos = useRef({ x: 0, y: 0 });
+  const velocity = useRef(0);
+
+  // PARALLAX SPRING CONFIGS
+  const eyeSpring = { damping: 15, stiffness: 200, mass: 0.3 };
+  const headSpring = { damping: 20, stiffness: 150, mass: 0.6 };
+  
+  const mouseX = useSpring(0, headSpring);
+  const mouseY = useSpring(0, headSpring);
+  
+  // Derived parallax values
+  const eyeX = useTransform(mouseX, [ -40, 40 ], [ -15, 15 ]);
+  const eyeY = useTransform(mouseY, [ -40, 40 ], [ -12, 12 ]);
+  const torsoX = useTransform(mouseX, [ -40, 40 ], [ -5, 5 ]);
+  const neckRotate = useTransform(mouseX, [ -40, 40 ], [ -5, 5 ]);
+
+  const handleMouseEnter = () => {
+    hoverTimer.current = setTimeout(() => {
+      setIsFullView(true);
+    }, 2000);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    setIsFullView(false);
+  };
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -23,135 +44,162 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
       const dx = (e.clientX - centerX) / (window.innerWidth / 2);
       const dy = (e.clientY - centerY) / (window.innerHeight / 2);
 
-      headX.set(dx * 25);
-      headY.set(dy * 20);
-      eyeX.set(dx * 22);
-      eyeY.set(dy * 15);
-      bodyX.set(dx * 8);
-      hudRotate.set(dx * 45);
+      mouseX.set(dx * 40);
+      mouseY.set(dy * 30);
+
+      const currentV = Math.sqrt(Math.pow(e.clientX - lastMousePos.current.x, 2) + Math.pow(e.clientY - lastMousePos.current.y, 2));
+      velocity.current = currentV;
+      lastMousePos.current = { x: e.clientX, y: e.clientY };
+
+      if (currentV > 150 && !isGlitching) {
+        setIsGlitching(true);
+        setTimeout(() => setIsGlitching(false), 200);
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  const triggerBlink = () => {
-    if (isBlinking) return;
-    setIsBlinking(true);
-    setTimeout(() => setIsBlinking(false), 120);
-  };
-
-  // Visual Transforms
-  const headTiltX = useTransform(headY, [-20, 20], [8, -8]);
-  const headTiltY = useTransform(headX, [-25, 25], [-8, 8]);
+  }, [isGlitching]);
 
   return (
     <div 
-      ref={containerRef}
-      className={`relative flex items-center justify-center group ${className} cursor-pointer active:scale-95 transition-transform`}
-      onClick={triggerBlink}
-      style={{ perspective: '1500px' }}
+      ref={containerRef} 
+      className={`relative flex items-center justify-center transition-all duration-700 ${className}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {/* ATMOSPHERIC BACKGROUND BLOOM */}
-      <div className="absolute w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(255,184,0,0.02)_0%,transparent_70%)] blur-[80px]" />
+      {/* HUD Rings */}
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+        className="absolute w-[500px] h-[500px] border border-[var(--theme-accent)]/5 rounded-full"
+      />
 
-      {/* ATMOSPHERIC BACKGROUND HUD */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-20 flex items-center justify-center">
-         <motion.div style={{ rotate: hudRotate }} className="relative flex items-center justify-center">
-            <svg width="600" height="600" viewBox="0 0 500 500" fill="none">
-               <circle cx="250" cy="250" r="180" stroke="white" strokeWidth="0.5" strokeDasharray="2 12" />
-               <circle cx="250" cy="250" r="230" stroke="#FFCC00" strokeWidth="0.5" opacity="0.3" />
-            </svg>
-         </motion.div>
-      </div>
+      <motion.svg
+        viewBox="0 0 240 280"
+        className="w-full h-full max-w-xl transition-all duration-1000 ease-in-out cursor-pointer"
+        style={{ scale: isFullView ? 0.75 : 1, y: isFullView ? -20 : 0 }}
+        animate={isGlitching ? { x: [-2, 2, -1, 3, 0], filter: ['hue-rotate(0deg)', 'hue-rotate(90deg)', 'hue-rotate(0deg)'] } : {}}
+      >
+        {/* PARALLAX TORSO */}
+        <motion.g style={{ x: torsoX }}>
+          {/* Mechanical Torso Frame */}
+          <path
+            d="M70,200 L170,200 L190,280 L50,280 Z"
+            fill="rgba(var(--bg-black-rgb), 0.4)"
+            stroke="var(--tier-2)"
+            strokeWidth="1"
+          />
+          
+          <rect x="118" y="200" width="4" height="80" fill="var(--theme-accent)" opacity="0.2" />
 
-      {/* COMPOSITE MECHA ASSEMBLY */}
-      <div className="relative w-[500px] h-[600px] flex flex-col items-center justify-center">
-        
-        {/* REINFORCED MECHA TORSO & CONNECTED ARMS */}
+          {/* Articulated Shoulders & Arms */}
+          <g>
+             {/* Left Arm Assembly (Standard) */}
+             <circle cx="70" cy="205" r="4" fill="var(--bg-black)" stroke="var(--tier-3)" strokeWidth="1" />
+             <path d="M70,205 L40,240 L55,265" fill="none" stroke="var(--tier-1)" strokeWidth="2" strokeLinecap="round" />
+             <motion.circle cx="55" cy="265" r="2.5" fill="var(--theme-accent)" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 0.15, repeat: Infinity }} />
+
+             {/* Right Arm Assembly (Standard or Waving) */}
+             <circle cx="170" cy="205" r="4" fill="var(--bg-black)" stroke="var(--tier-3)" strokeWidth="1" />
+             
+             {isFullView ? (
+               <motion.path 
+                 d="M170,205 L210,180 L230,150" 
+                 fill="none" 
+                 stroke="var(--tier-1)" 
+                 strokeWidth="2.5" 
+                 strokeLinecap="round"
+                 animate={{ rotate: [0, -20, 0] }}
+                 transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
+                 style={{ originX: "170px", originY: "205px" }}
+               />
+             ) : (
+               <path d="M170,205 L200,240 L185,265" fill="none" stroke="var(--tier-1)" strokeWidth="2" strokeLinecap="round" />
+             )}
+
+             <motion.circle 
+                cx={isFullView ? 230 : 185} 
+                cy={isFullView ? 150 : 265} 
+                r="3" 
+                fill="var(--theme-accent)" 
+                animate={isFullView ? { x: [0, -3, 0], y: [0, -2, 0] } : { opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 0.6, repeat: Infinity }}
+             />
+          </g>
+        </motion.g>
+
+        {/* DYNAMIC NECK / PISTONS */}
+        <motion.g style={{ rotate: neckRotate, x: torsoX }}>
+          <rect x="115" y="160" width="10" height="40" fill="var(--tier-3)" opacity="0.3" />
+        </motion.g>
+
+        {/* HEAD SEGMENT */}
+        <motion.g style={{ x: mouseX, y: mouseY, rotate: neckRotate }} transform-origin="120 120">
+          <circle cx="120" cy="120" r="70" fill="var(--bg-black)" stroke="var(--tier-1)" strokeWidth="2" />
+          
+          <motion.circle 
+            cx="120" cy="120" r="62" fill="none" stroke="var(--tier-3)" strokeWidth="0.5" strokeDasharray="10 20" 
+            animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+          />
+
+          {/* OPTIC VISOR */}
+          <motion.g style={{ x: eyeX, y: eyeY }}>
+            <rect x="80" y="105" width="80" height="30" rx="15" fill="rgba(255,255,255,0.03)" stroke="var(--tier-3)" strokeWidth="1" />
+            
+            {/* Split Sensor Eyes (Change to "Happy" in Full View) */}
+            <motion.g>
+              {isFullView ? (
+                <>
+                  <path d="M92,115 Q100,108 108,115" fill="none" stroke="var(--theme-accent)" strokeWidth="3" strokeLinecap="round" />
+                  <path d="M132,115 Q140,108 148,115" fill="none" stroke="var(--theme-accent)" strokeWidth="3" strokeLinecap="round" />
+                </>
+              ) : (
+                <>
+                  <circle cx="100" cy="120" r="4" fill="var(--theme-accent)" />
+                  <circle cx="140" cy="120" r="4" fill="var(--theme-accent)" />
+                </>
+              )}
+            </motion.g>
+          </motion.g>
+
+          <path d="M120,50 L120,30 L135,15" fill="none" stroke="var(--tier-1)" strokeWidth="2" strokeLinecap="round" />
+          <motion.circle cx="135" cy="15" r="3" fill="var(--theme-accent)" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1, repeat: Infinity }} />
+        </motion.g>
+
+        {/* HOLOGRAPHIC H.I.D INTERFACE */}
+        {!isFullView && (
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transform="translate(45, 245)">
+            <path d="M0,0 L150,0 M10,10 L140,10 M20,20 L130,20" stroke="var(--theme-accent)" strokeWidth="0.5" opacity="0.3" />
+            {[...Array(5)].map((_, i) => (
+              <motion.circle key={i} cx={30 + i * 25} r="1" fill="var(--theme-accent)" animate={{ y: [0, -40], opacity: [0, 0.8, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }} />
+            ))}
+          </motion.g>
+        )}
+      </motion.svg>
+
+      {/* REACTIVE HUD TELEMETRY */}
+      <AnimatePresence>
+        {!isFullView && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="absolute inset-0 pointer-events-none font-mono text-[0.4rem] tracking-[0.2em] text-tier-3/40 uppercase"
+          >
+            <motion.div style={{ x: torsoX, y: torsoX }} className="absolute top-[10%] left-[5%]">Kernel_Hash: 0x88F2...</motion.div>
+            <motion.div style={{ x: useTransform(mouseX, [ -40, 40 ], [ 5, -5 ]) }} className="absolute bottom-[10%] right-[10%] text-right">Sync_Rate: 99.8%</motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {isFullView && (
         <motion.div 
-           style={{ x: bodyX, translateZ: '80px' }}
-           className="absolute bottom-0 w-full h-[400px] z-20 pointer-events-none"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute bottom-1/4 bg-[var(--theme-accent)]/10 border border-[var(--theme-accent)]/30 px-3 py-1 rounded text-[0.6rem] font-mono text-[var(--theme-accent)] uppercase tracking-widest"
         >
-           <svg width="100%" height="100%" viewBox="0 0 500 400" fill="none">
-              {/* ARM HYDRAULICS (Connected to hands) */}
-              <g opacity="0.4">
-                 <path d="M120,200 L60,320 L100,380" stroke="#222" strokeWidth="15" strokeLinecap="round" />
-                 <path d="M380,200 L440,320 L400,380" stroke="#222" strokeWidth="15" strokeLinecap="round" />
-                 <path d="M120,200 L60,320 L100,380" stroke="#FFCC00" strokeWidth="1" opacity="0.3" />
-                 <path d="M380,200 L440,320 L400,380" stroke="#FFCC00" strokeWidth="1" opacity="0.3" />
-              </g>
-
-              {/* HANDS (Integrated into Arm Layer) */}
-              <g transform="translate(80, 360)">
-                 <rect x="0" y="0" width="40" height="30" rx="4" fill="#0A0A0A" stroke="#333" />
-                 <rect x="5" y="30" width="6" height="20" rx="2" fill="#111" />
-                 <rect x="15" y="32" width="6" height="25" rx="2" fill="#111" />
-                 <rect x="25" y="30" width="6" height="22" rx="2" fill="#111" />
-              </g>
-              <g transform="translate(380, 360)">
-                 <rect x="0" y="0" width="40" height="30" rx="4" fill="#0A0A0A" stroke="#333" />
-                 <rect x="5" y="30" width="6" height="20" rx="2" fill="#111" />
-                 <rect x="15" y="32" width="6" height="25" rx="2" fill="#111" />
-                 <rect x="25" y="30" width="6" height="22" rx="2" fill="#111" />
-              </g>
-
-              {/* Main Chest Plate */}
-              <path 
-                d="M140,150 C140,180 180,200 250,200 C320,200 360,180 360,150 L380,350 L120,350 Z" 
-                fill="#0A0A0A" stroke="#1A1A1A" strokeWidth="2" 
-              />
-              {/* Energy Core */}
-              <motion.g animate={{ opacity: [0.3, 0.7, 0.3] }} transition={{ duration: 4, repeat: Infinity }}>
-                 <circle cx="250" cy="220" r="12" stroke="#FFCC00" strokeWidth="1" strokeDasharray="3 6" />
-                 <circle cx="250" cy="220" r="4" fill="#FFCC00" />
-              </motion.g>
-           </svg>
+          GREETING_PROTOCOL_ALPHA
         </motion.div>
-
-        {/* THE SPHERICAL HEAD ASSEMBLY */}
-        <motion.div 
-          style={{ 
-            x: headX, y: headY, 
-            rotateX: headTiltX, rotateY: headTiltY,
-            transformStyle: 'preserve-3d', translateZ: '150px'
-          }}
-          className="relative w-80 h-80 z-40 mb-32"
-        >
-           <div className="absolute inset-0 bg-[#0A0A0A] rounded-full shadow-[inset_0_2px_15px_rgba(255,255,255,0.15),0_50px_100px_rgba(0,0,0,0.8),0_0_20px_rgba(255,204,0,0.05)] border border-white/10 overflow-hidden">
-              <div className="absolute inset-x-0 top-0 h-2 bg-white/10 blur-[2px]" />
-           </div>
-
-           <div className="absolute inset-10 rounded-full bg-[#111111] overflow-hidden border border-white/20 shadow-[inset_0_4px_25px_rgba(0,0,0,1)]">
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/15 opacity-80" />
-              
-              {/* PRECISION OPTIC SENSORS */}
-              <motion.div style={{ x: eyeX, y: eyeY }} className="absolute inset-0 flex items-center justify-center gap-16">
-                 {[0, 1].map(i => (
-                   <motion.div 
-                     key={i}
-                     initial={false}
-                     animate={{ scaleY: isBlinking ? 0.05 : 1 }}
-                     className="w-6 h-6 bg-[#FFCC00] rounded-full shadow-[0_0_30px_#FFCC00]"
-                   >
-                     <div className="w-2.5 h-2.5 bg-white rounded-full mt-1 ml-1 opacity-70 blur-[0.5px]" />
-                   </motion.div>
-                 ))}
-              </motion.div>
-           </div>
-           
-           {/* Antenna */}
-           <div className="absolute -right-8 top-6 z-10">
-              <div className="w-[2px] h-24 bg-white/20" />
-              <motion.div 
-                animate={{ backgroundColor: ['#FFCC00', '#FFEB3B', '#FFCC00'], boxShadow: '0 0 20px #FFCC00' }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute -top-5 -left-2 w-5 h-5 rounded-full"
-              />
-           </div>
-        </motion.div>
-
-      </div>
+      )}
     </div>
   );
 };
