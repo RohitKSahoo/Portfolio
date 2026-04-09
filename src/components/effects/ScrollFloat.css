@@ -1,0 +1,16 @@
+.scroll-float {
+  overflow: hidden;
+}
+
+.scroll-float-text {
+  display: inline-block;
+  font-size: clamp(1.6rem, 8vw, 10rem);
+  font-weight: 900;
+  text-align: left; /* Changed from center to left for portfolio alignment */
+  line-height: 1.2; /* Adjusted for better title spacing */
+}
+
+.char {
+  display: inline-block;
+  will-change: transform, opacity;
+}

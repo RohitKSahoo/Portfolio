@@ -6,7 +6,7 @@ import { SystemOverview } from './SystemOverview';
 import { StatusIndicator } from './StatusIndicator';
 import { Code, ExternalLink, Github, Terminal, Zap, Hash, Mail } from 'lucide-react';
 import { SystemAvatar } from '../SystemAvatar';
-import { CardSwap, Card } from '../CardSwap';
+import { CardSwap } from '../CardSwap';
 
 export const ProfilePage = ({ onExploreProjects }: { onExploreProjects?: () => void }) => {
   const [displayName, setDisplayName] = React.useState("ROHIT KUMAR SAHOO");
@@ -137,92 +137,84 @@ const PROJECTS = [
   }
 ];
 
-// Triple the array for seamless infinite-feeling scroll
-const INFINITE_PROJECTS = [...PROJECTS, ...PROJECTS, ...PROJECTS];
+
+import { ImageRibbon } from '../ImageRibbon';
 
 export const RegistryPage = () => {
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const activeProject = PROJECTS[activeIndex];
+  const projectImages = PROJECTS.map(p => p.image);
+
   return (
-    <div className="flex flex-col h-[calc(100vh-164px)] animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden">
-      <div className="flex-1 w-full h-full relative">
-        <CardSwap 
-          width={window.innerWidth > 1024 ? 750 : 340} 
-          height={window.innerWidth > 1024 ? 950 : 450}
-          cardDistance={window.innerWidth > 1024 ? 60 : 30}
-          verticalDistance={window.innerWidth > 1024 ? 70 : 40}
-          delay={4000}
-          easing="elastic"
-        >
-          {PROJECTS.map((project) => (
-            <Card key={project.id} className="p-0 overflow-hidden flex flex-col pointer-events-auto">
-              {/* Card Header */}
-              <div className="p-6 pb-4 border-b border-[var(--glass-border)] bg-white/5">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex flex-col">
-                    <span className="text-[0.6rem] text-tier-3 opacity-40 font-mono tracking-widest">{project.id}</span>
-                    <h3 className="text-2xl font-black text-tier-1 tracking-tightest uppercase">{project.name}</h3>
-                  </div>
-                  <div className="px-2 py-1 border border-[var(--theme-accent)]/30 bg-[var(--theme-accent)]/5 rounded text-[0.55rem] font-mono text-[var(--theme-accent)]">
-                    VER_{project.ver}
-                  </div>
+    <div className="projects-layout animate-in fade-in duration-700">
+      {/* Left Content Panel */}
+      <div className="projects-left">
+        <div key={activeProject.id} className="flex flex-col gap-8 animate-in fade-in slide-in-from-left-8 duration-700 pointer-events-auto">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-4">
+               <span className="text-[0.7rem] font-mono text-[var(--theme-accent)] px-2 py-1 border border-[var(--theme-accent)]/20 bg-[var(--theme-accent)]/5 rounded">
+                 PROJECT_{activeProject.id}
+               </span>
+               <div className="h-px flex-1 bg-white/10" />
+            </div>
+            <h2 className="text-6xl font-black text-tier-1 tracking-tightest uppercase leading-none">
+              {activeProject.name}
+            </h2>
+            <p className="text-xl font-mono text-tier-3 opacity-40 uppercase tracking-widest mt-2 font-bold">
+               VER_{activeProject.ver} // {activeProject.access}_SYSTEM
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-4 max-w-lg">
+            <span className="text-[0.5rem] font-mono text-tier-3 opacity-30 uppercase tracking-[0.4em]">SYSTEM_ARCHITECTURE</span>
+            <p className="text-lg text-tier-2 leading-relaxed italic uppercase font-medium">
+              {activeProject.architecture}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-8 border-t border-white/5 pt-8">
+             <div className="flex flex-col gap-4">
+                <span className="text-[0.5rem] font-mono text-tier-3 opacity-30 uppercase tracking-[0.3em]">OPERATIONAL_METRICS</span>
+                <div className="flex flex-col gap-4">
+                   {Object.entries(activeProject.metrics).map(([k, v]) => (
+                     <div key={k} className="flex flex-col">
+                        <span className="text-[0.5rem] font-mono text-tier-3 opacity-40 uppercase">{k}</span>
+                        <span className="text-2xl font-bold text-[var(--theme-accent)]">{v}</span>
+                     </div>
+                   ))}
+                </div>
+             </div>
+             
+             <div className="flex flex-col gap-6">
+                <span className="text-[0.5rem] font-mono text-tier-3 opacity-30 uppercase tracking-[0.3em]">TECHNOLOGY_STACK</span>
+                <div className="flex flex-wrap gap-2">
+                   {activeProject.stack.map(s => (
+                     <span key={s} className="px-3 py-1 text-[0.6rem] font-mono text-tier-3 border border-white/10 bg-white/5 rounded">
+                        {s}
+                     </span>
+                   ))}
                 </div>
                 
-                <div className="flex gap-2 mb-1">
-                  {project.stack.map(s => (
-                    <span key={s} className="text-[0.5rem] font-mono text-tier-3 border border-white/10 px-1.5 py-0.5 uppercase">
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Card Content */}
-              <div className="flex-1 p-6 flex flex-col gap-6 overflow-y-auto custom-scrollbar">
-                <div className="relative aspect-video w-full rounded-lg border border-white/5 overflow-hidden">
-                   <img src={project.image} alt={project.name} className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-all duration-700" />
-                   <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-black)] via-transparent to-transparent" />
-                </div>
-
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-2">
-                    <span className="text-[0.45rem] font-mono text-tier-3 opacity-30 uppercase tracking-[0.3em]">ARCHITECTURE // LOGS</span>
-                    <p className="text-[0.65rem] text-tier-2 font-medium leading-relaxed uppercase scroll-smooth italic">
-                      {project.architecture}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
-                    {Object.entries(project.metrics).map(([k, v]) => (
-                      <div key={k} className="flex flex-col gap-1">
-                        <span className="text-[0.45rem] font-mono text-tier-3 opacity-30 uppercase">{k}</span>
-                        <span className="text-[0.7rem] font-bold text-[var(--theme-accent)]">{v}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Card Footer */}
-              <div className="p-6 pt-4 border-t border-white/5 bg-black/20 mt-auto">
-                <div className="flex justify-between items-center">
-                  <div className="flex flex-col">
-                    <span className="text-[0.45rem] font-mono text-tier-3 opacity-30 uppercase">UPLINK_STATUS_OK</span>
-                    <span className="text-[0.6rem] font-bold text-tier-3 uppercase tracking-widest">{project.access}_REPO</span>
-                  </div>
-                  <a 
-                    href={project.github} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-[var(--theme-accent)] text-black text-[0.6rem] font-black uppercase tracking-widest hover:bg-white transition-all rounded"
-                  >
-                    <span>SOURCE</span>
-                    <Github size={12} />
-                  </a>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </CardSwap>
+                <a 
+                  href={activeProject.github} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="mt-4 flex items-center justify-center gap-3 px-6 py-4 bg-[var(--theme-accent)] text-black text-[0.7rem] font-black uppercase tracking-widest hover:bg-white transition-all rounded-xl shadow-xl shadow-[var(--theme-accent)]/10 group"
+                >
+                  <span>INITIALIZE SOURCE</span>
+                  <Github size={16} className="group-hover:rotate-12 transition-transform" />
+                </a>
+             </div>
+          </div>
+        </div>
       </div>
+
+      {/* Right Image Ribbon */}
+      <ImageRibbon 
+        images={projectImages}
+        activeIndex={activeIndex}
+        onIndexChange={setActiveIndex}
+      />
     </div>
   );
 };
