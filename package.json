@@ -16,12 +16,15 @@
     "@splinetool/runtime": "^1.12.78",
     "clsx": "^2.1.1",
     "framer-motion": "^11.2.10",
+    "gl-matrix": "^3.4.4",
+    "gsap": "^3.14.2",
     "lucide-react": "^0.395.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
+    "@types/gl-matrix": "^2.4.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",

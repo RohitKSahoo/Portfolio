@@ -1,0 +1,85 @@
+.card-deck-wrapper {
+  position: absolute;
+  top: 50%;
+  right: 25%; /* Significant right margin buffer (40% of viewport) */
+  z-index: 50;
+  
+  /* Vertical center + adaptive scale (handled in TSX) */
+  transform-origin: center center;
+  
+  /* Entrance Animation */
+  animation: dossierSettle 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+@keyframes dossierSettle {
+  0% {
+    transform: translateY(-50%) translateX(40px) scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    /* Note: React will override this with the dynamic scale, 
+       but we keep it for the base animation logic */
+    opacity: 1;
+  }
+}
+
+.card-swap-container {
+  position: relative;
+  perspective: 2500px;
+  overflow: visible;
+  /* Size is defined by props in TSX */
+}
+
+.card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  border-radius: 1.25rem;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
+  
+  transform-style: preserve-3d;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    border-color: var(--theme-accent);
+    box-shadow: 0 0 30px rgba(var(--theme-accent-rgb), 0.2);
+}
+
+/* Custom Scrollbar for Card Info */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--theme-accent);
+  border-radius: 10px;
+}
+
+@media (max-width: 1024px) {
+  .card-deck-wrapper {
+    right: 5%;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-deck-wrapper {
+    right: 50%;
+    transform-origin: center center;
+  }
+}
