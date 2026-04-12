@@ -13,9 +13,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import './styles/index.css';
 
+import { SystemDock } from './components/layout/SystemDock';
+
 function App() {
   const [activeTab, setActiveTab] = useState('profile');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDockVisible, setIsDockVisible] = useState(false);
 
   // Load persistence logic
   useEffect(() => {
@@ -40,7 +42,12 @@ function App() {
         >
           {(() => {
             switch (activeTab) {
-              case 'profile': return <ProfilePage onExploreProjects={() => setActiveTab('projects')} />;
+              case 'profile': return (
+                <ProfilePage 
+                  onExploreProjects={() => setActiveTab('projects')} 
+                  isDockVisible={isDockVisible}
+                />
+              );
               case 'projects': return <RegistryPage />;
               case 'experience': return <HistoryPage />;
               case 'contact': return <ContactPage />;
@@ -55,35 +62,26 @@ function App() {
   return (
     <div className="min-h-screen selection:bg-[var(--theme-accent)] selection:text-white antialiased relative transition-colors overflow-x-hidden">
       
-      {/* PERSISTENT SIDEBAR */}
-      <Sidebar 
+      {/* MAGNETIC DOCK NAVIGATION */}
+      <SystemDock 
         activeTab={activeTab} 
-        setActiveTab={(tab) => {
-          setActiveTab(tab);
-          setIsSidebarOpen(false);
-        }} 
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
+        setActiveTab={setActiveTab} 
+        isDockVisible={isDockVisible}
+        setIsDockVisible={setIsDockVisible}
       />
 
       {/* INTERACTIVE KINETIC GRID (Primary Background) */}
-      <DotGrid 
-        dotSize={2} 
-        gap={32} 
-        baseColor="#1a1a1a" 
-        activeColor="#f43f5e" 
-      />
+      <DotGrid className="fixed inset-0 -z-10" />
 
       {/* MAIN SYSTEM VIEWPORT */}
-      <main className={`lg:pl-[88px] flex flex-col h-screen overflow-hidden relative transition-all duration-500 ${isSidebarOpen ? 'blur-sm lg:blur-none pointer-events-none lg:pointer-events-auto' : ''}`}>
+      <main className="flex flex-col h-screen overflow-hidden relative transition-all duration-500">
         {/* TOP TELEMETRY HEADER */}
         <Header 
           activeTab={activeTab}
-          onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)} 
         />
 
         {/* ACTIVE MODULE VIEWPORT */}
-        <div className="flex-1 overflow-y-auto px-6 lg:px-[30px] pt-[120px] lg:pt-[134px] pb-12 lg:pb-[30px] custom-scrollbar scroll-smooth">
+        <div className="flex-1 overflow-y-auto px-5 pt-[110px] lg:pt-[124px] pb-24 lg:pb-24 custom-scrollbar scroll-smooth">
           <div className="max-w-[1600px] w-full mx-auto">
              {renderContent()}
           </div>

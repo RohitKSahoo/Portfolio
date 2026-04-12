@@ -7,8 +7,16 @@ import { StatusIndicator } from './StatusIndicator';
 import { Code, ExternalLink, Github, Terminal, Zap, Hash, Mail } from 'lucide-react';
 import { SystemAvatar } from '../SystemAvatar';
 import { CardSwap } from '../CardSwap';
+import { ImageRibbon } from '../ImageRibbon';
+import Folder from '../effects/Folder';
 
-export const ProfilePage = ({ onExploreProjects }: { onExploreProjects?: () => void }) => {
+export const ProfilePage = ({ 
+  onExploreProjects, 
+  isDockVisible = false 
+}: { 
+  onExploreProjects?: () => void,
+  isDockVisible?: boolean 
+}) => {
   const [displayName, setDisplayName] = React.useState("ROHIT KUMAR SAHOO");
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%#!@$*";
 
@@ -30,8 +38,8 @@ export const ProfilePage = ({ onExploreProjects }: { onExploreProjects?: () => v
   }, []);
 
   return (
-    <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700 h-full">
-      <div className="relative min-h-[600px] lg:min-h-[calc(100vh-164px)] border-none bg-transparent overflow-hidden flex flex-col justify-between p-0">
+    <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="relative min-h-[calc(100vh-180px)] border-none bg-transparent overflow-hidden flex flex-col justify-between p-0">
         {/* Background/Avatar Center */}
         <div className="absolute inset-0 flex justify-center items-center z-0">
            <div className="relative w-full h-full max-w-xl pointer-events-none flex items-center justify-center">
@@ -43,11 +51,11 @@ export const ProfilePage = ({ onExploreProjects }: { onExploreProjects?: () => v
         </div>
 
         {/* Content Layer */}
-        <div className="relative z-10 flex flex-col min-h-[inherit] justify-between p-4 lg:p-6 lg:px-8">
+        <div className="relative z-10 flex flex-col min-h-[inherit] justify-between p-0">
           {/* Top Section */}
-          <div className="flex flex-col lg:flex-row justify-between gap-8 items-start w-full">
+          <div className="flex flex-col lg:flex-row justify-between gap-8 items-start w-full px-0">
             {/* Left Column */}
-            <div className="flex flex-col gap-4 lg:gap-6 max-w-lg">
+            <div className="flex flex-col gap-4 lg:gap-6 max-w-lg text-left">
               <div className="flex items-center gap-3">
                  <div className="w-2 h-2 rounded-full bg-[var(--theme-accent)] animate-pulse shadow-[0_0_8px_var(--theme-accent)]" />
                  <span className="text-[0.6rem] lg:text-[0.7rem] text-tier-3 font-mono font-bold tracking-[0.4em] uppercase">UPLINK_ACTIVE</span>
@@ -75,11 +83,18 @@ export const ProfilePage = ({ onExploreProjects }: { onExploreProjects?: () => v
           </div>
 
           {/* Bottom Section: Name Overlay */}
-          <div className="mt-auto w-full pt-10 pb-0 pointer-events-none">
-             <h1 className="text-[10vw] lg:text-[6.8vw] font-black tracking-tighter leading-none text-tier-1 drop-shadow-[0_0_50px_rgba(var(--theme-accent-rgb),0.2)] uppercase whitespace-nowrap text-center lg:text-left translate-y-3 lg:translate-y-4">
+          <motion.div 
+            animate={{ 
+              y: isDockVisible ? -85 : 0,
+              opacity: 1
+            }}
+            transition={{ type: "spring", stiffness: 200, damping: 30 }}
+            className="mt-auto w-full pt-10 pb-0 pointer-events-none"
+          >
+             <h1 className="text-[10vw] lg:text-[6.8vw] font-black tracking-tighter leading-none text-tier-1 drop-shadow-[0_0_50px_rgba(var(--theme-accent-rgb),0.2)] uppercase whitespace-nowrap text-center">
                {displayName}<span className="inline-block w-[1.2vw] h-[1.2vw] bg-[var(--theme-accent)] ml-2 align-baseline translate-y-[-0.3vw]" />
              </h1>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
@@ -138,84 +153,175 @@ const PROJECTS = [
 ];
 
 
-import { ImageRibbon } from '../ImageRibbon';
+
+
+import MagicBento from '../effects/MagicBento';
 
 export const RegistryPage = () => {
-  const [activeIndex, setActiveIndex] = React.useState(0);
-  const activeProject = PROJECTS[activeIndex];
-  const projectImages = PROJECTS.map(p => p.image);
+  const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const activeProject = PROJECTS.find(p => p.id === selectedId) || PROJECTS[0];
+
+  const getFolderItems = (project: typeof PROJECTS[0]) => [
+    <div key="1" className="w-full h-full flex flex-col items-center justify-center p-2 bg-white text-black">
+      <span className="text-[0.4rem] font-bold opacity-30 mb-1">DATA_01</span>
+      <div className="w-full h-px bg-black/10 mb-2" />
+      <span className="text-[0.6rem] font-black uppercase tracking-tighter text-center">{project.name}</span>
+    </div>,
+    <div key="2" className="w-full h-full flex items-center justify-center bg-gray-100">
+       <img src={project.image} className="w-full h-full object-cover opacity-80" alt="Preview" />
+    </div>,
+    <div key="3" className="w-full h-full flex flex-col items-center justify-center p-2 bg-white text-red-600">
+       <Terminal size={12} strokeWidth={3} />
+       <span className="text-[0.5rem] font-black mt-1">UPLINK</span>
+    </div>
+  ];
+
 
   return (
-    <div className="projects-layout animate-in fade-in duration-700">
-      {/* Left Content Panel */}
-      <div className="projects-left">
-        <div key={activeProject.id} className="flex flex-col gap-8 animate-in fade-in slide-in-from-left-8 duration-700 pointer-events-auto">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-4">
-               <span className="text-[0.7rem] font-mono text-[var(--theme-accent)] px-2 py-1 border border-[var(--theme-accent)]/20 bg-[var(--theme-accent)]/5 rounded">
-                 PROJECT_{activeProject.id}
-               </span>
-               <div className="h-px flex-1 bg-white/10" />
-            </div>
-            <h2 className="text-6xl font-black text-tier-1 tracking-tightest uppercase leading-none">
-              {activeProject.name}
+    <AnimatePresence mode="wait">
+      {!selectedId ? (
+        <motion.div 
+          key="grid"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          className="flex flex-col gap-12 pb-20 pt-10"
+        >
+          <div className="flex flex-col gap-6 pt-6">
+            <h2 className="text-3xl font-black text-tier-1 tracking-widest uppercase leading-none">
+              Explore Projects
             </h2>
-            <p className="text-xl font-mono text-tier-3 opacity-40 uppercase tracking-widest mt-2 font-bold">
-               VER_{activeProject.ver} // {activeProject.access}_SYSTEM
-            </p>
+            <div className="w-full h-px bg-white/10" />
           </div>
-
-          <div className="flex flex-col gap-4 max-w-lg">
-            <span className="text-[0.5rem] font-mono text-tier-3 opacity-30 uppercase tracking-[0.4em]">SYSTEM_ARCHITECTURE</span>
-            <p className="text-lg text-tier-2 leading-relaxed italic uppercase font-medium">
-              {activeProject.architecture}
-            </p>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16 pt-10">
+            {PROJECTS.map((project) => (
+              <motion.div 
+                key={project.id}
+                layoutId={`project-${project.id}`}
+                className="flex flex-col items-center gap-8 group cursor-pointer"
+                onClick={() => setSelectedId(project.id)}
+              >
+                <div className="relative transform transition-transform duration-500 group-hover:scale-110">
+                   <Folder color="var(--theme-accent)" size={1.1} items={getFolderItems(project)} />
+                   <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[var(--theme-accent)]/10 border border-[var(--theme-accent)]/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <Zap size={12} className="text-[var(--theme-accent)]" />
+                   </div>
+                </div>
+                <div className="flex flex-col items-center text-center mt-2">
+                  <span className="text-[0.6rem] font-mono text-tier-3 tracking-[0.4em] font-bold opacity-40 uppercase mb-2">PRJ_IDX_0{project.id.slice(-1)}</span>
+                  <span className="text-xl font-black text-tier-2 group-hover:text-[var(--theme-accent)] transition-colors uppercase tracking-widest">{project.name}</span>
+                </div>
+              </motion.div>
+            ))}
           </div>
+        </motion.div>
+      ) : (
+        <motion.div 
+          key="detail"
+          initial={{ opacity: 0, scale: 1.02 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
+          className="flex flex-col gap-8"
+        >
+           <div className="flex justify-between items-center">
+             <button 
+              onClick={() => setSelectedId(null)}
+              className="flex items-center gap-2 text-tier-3 hover:text-[var(--theme-accent)] transition-all group w-fit"
+             >
+               <Terminal size={12} className="rotate-180 opacity-40 group-hover:opacity-100" />
+               <span className="text-[0.6rem] font-mono font-bold tracking-[0.3em] uppercase">ESC_GRID</span>
+             </button>
 
-          <div className="grid grid-cols-2 gap-8 border-t border-white/5 pt-8">
-             <div className="flex flex-col gap-4">
-                <span className="text-[0.5rem] font-mono text-tier-3 opacity-30 uppercase tracking-[0.3em]">OPERATIONAL_METRICS</span>
-                <div className="flex flex-col gap-4">
-                   {Object.entries(activeProject.metrics).map(([k, v]) => (
-                     <div key={k} className="flex flex-col">
-                        <span className="text-[0.5rem] font-mono text-tier-3 opacity-40 uppercase">{k}</span>
-                        <span className="text-2xl font-bold text-[var(--theme-accent)]">{v}</span>
-                     </div>
-                   ))}
+             <a 
+                href={activeProject.github} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group flex items-center gap-6 px-6 py-3 border border-[var(--theme-accent)]/20 hover:border-[var(--theme-accent)] text-[var(--theme-accent)] text-[0.6rem] font-black uppercase tracking-[0.3em] transition-all rounded-lg"
+              >
+                <Github size={14} />
+                <span>LINK_REPO</span>
+                <ExternalLink size={12} className="opacity-40 group-hover:opacity-100" />
+              </a>
+           </div>
+
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              <div className="flex flex-col gap-10">
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[0.6rem] font-black text-[var(--theme-accent)] tracking-widest">
+                      {activeProject.id}
+                    </span>
+                    <div className="h-px flex-1 bg-white/10" />
+                  </div>
+                  <h2 className="text-5xl font-black text-tier-1 tracking-tightest uppercase">
+                    {activeProject.name}
+                  </h2>
                 </div>
-             </div>
-             
-             <div className="flex flex-col gap-6">
-                <span className="text-[0.5rem] font-mono text-tier-3 opacity-30 uppercase tracking-[0.3em]">TECHNOLOGY_STACK</span>
-                <div className="flex flex-wrap gap-2">
-                   {activeProject.stack.map(s => (
-                     <span key={s} className="px-3 py-1 text-[0.6rem] font-mono text-tier-3 border border-white/10 bg-white/5 rounded">
-                        {s}
-                     </span>
-                   ))}
+
+                <div className="p-8 border border-white/5 bg-white/[0.02] rounded-2xl">
+                   <span className="text-[0.55rem] font-mono text-tier-3 opacity-30 uppercase tracking-[0.4em] font-bold block mb-4">ENGINEERING_SPEC</span>
+                   <p className="text-xl text-tier-2 leading-relaxed uppercase font-medium">
+                     {activeProject.architecture}
+                   </p>
                 </div>
-                
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                   <div className="flex flex-col gap-4">
+                      <span className="text-[0.55rem] font-mono text-tier-3 opacity-30 uppercase tracking-[0.4em] font-bold">TECH_STACK</span>
+                      <div className="flex flex-wrap gap-2">
+                        {activeProject.stack.map(s => (
+                          <span key={s} className="px-3 py-1 text-[0.65rem] font-mono text-tier-2 border border-white/10 rounded-md">
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                   </div>
+
+                   <div className="flex flex-col gap-4">
+                      <span className="text-[0.55rem] font-mono text-tier-3 opacity-30 uppercase tracking-[0.4em] font-bold">TELEMETRY</span>
+                      <div className="flex gap-8">
+                         {Object.entries(activeProject.metrics).map(([k, v]) => (
+                           <div key={k} className="flex flex-col">
+                              <span className="text-[0.5rem] font-mono text-tier-3 opacity-40 uppercase tracking-widest">{k}</span>
+                              <span className="text-xl font-black text-[var(--theme-accent)] tabular-nums">{v}</span>
+                           </div>
+                         ))}
+                      </div>
+                   </div>
+                </div>
+
                 <a 
                   href={activeProject.github} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="mt-4 flex items-center justify-center gap-3 px-6 py-4 bg-[var(--theme-accent)] text-black text-[0.7rem] font-black uppercase tracking-widest hover:bg-white transition-all rounded-xl shadow-xl shadow-[var(--theme-accent)]/10 group"
+                  className="group flex items-center justify-between px-8 py-5 border border-[var(--theme-accent)]/20 hover:border-[var(--theme-accent)] text-[var(--theme-accent)] text-[0.7rem] font-black uppercase tracking-[0.3em] transition-all rounded-xl w-fit gap-8"
                 >
-                  <span>INITIALIZE SOURCE</span>
-                  <Github size={16} className="group-hover:rotate-12 transition-transform" />
+                  <div className="flex items-center gap-4">
+                    <Github size={18} />
+                    <span>FETCH_REPO</span>
+                  </div>
+                  <ExternalLink size={14} className="opacity-40 group-hover:opacity-100" />
                 </a>
-             </div>
-          </div>
-        </div>
-      </div>
+              </div>
 
-      {/* Right Image Ribbon */}
-      <ImageRibbon 
-        images={projectImages}
-        activeIndex={activeIndex}
-        onIndexChange={setActiveIndex}
-      />
-    </div>
+              <div className="aspect-video lg:aspect-square relative rounded-2xl overflow-hidden border border-white/10">
+                 <img src={activeProject.image} className="w-full h-full object-cover grayscale opacity-40" alt="Preview" />
+                 <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent" />
+                 <div className="absolute bottom-8 left-8 p-6 bg-black/60 backdrop-blur-md border border-white/10 rounded-xl">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[var(--theme-accent)] animate-pulse" />
+                      <span className="text-[0.6rem] font-mono font-bold tracking-[0.2em] text-tier-3 uppercase">LIVE_UPLINK</span>
+                    </div>
+                    <span className="text-[0.55rem] font-mono text-tier-3 opacity-40 uppercase tracking-widest leading-relaxed">
+                      {activeProject.details[0]}
+                    </span>
+                 </div>
+              </div>
+           </div>
+        </motion.div>
+    )}
+    </AnimatePresence>
   );
 };
 
@@ -258,33 +364,50 @@ export const HistoryPage = () => (
 
 
 
-export const ContactPage = () => (
-  <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-    <span className="section-label">UPLINK_PROTOCOL // CONTACT</span>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {[
-        { label: 'EMAIL_ENDPOINT', val: 'ROHIT@SYSTEM.ORG', icon: Mail, type: 'SECURE' },
-        { label: 'GITHUB_SIGNAL', val: 'GITHUB.COM/ROHITKSAHOO', icon: Github, type: 'PUBLIC' },
-        { label: 'LINKEDIN_UPLINK', val: 'LL/IN/ROHITKSAHOO', icon: ExternalLink, type: 'SECURE' },
-        { label: 'PHYSICAL_LOC', val: 'DELHI_NCR_NODE_01', icon: Terminal, type: 'ENCRYPTED' }
-      ].map((item, i) => (
-        <a key={i} href="#" className="dashboard-card group flex flex-col gap-8 transition-all hover:-translate-y-1">
-          <div className="flex justify-between items-start">
-            <div className="p-2 border border-[var(--border-muted)] text-tier-3 group-hover:text-[var(--theme-accent)] group-hover:border-[var(--theme-glow)] transition-all">
-              <item.icon size={20} />
-            </div>
-            <span className="text-[0.5rem] text-tier-3 opacity-40 uppercase tracking-[0.2em] font-mono">{item.type}_CONN_0{i+1}</span>
-          </div>
-          <div className="flex flex-col gap-2">
-            <span className="text-[0.55rem] text-tier-3 uppercase tracking-widest font-mono font-bold">{item.label}</span>
-            <span className="text-sm font-semibold tracking-wider text-tier-2 group-hover:text-tier-1 transition-colors">{item.val}</span>
-          </div>
-          <div className="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-x-[-10px] group-hover:translate-x-0 transition-transform duration-300">
-             <span className="text-[0.5rem] font-mono text-[var(--theme-accent)]">INITIALIZE_UPLINK</span>
-             <Zap size={10} className="text-[var(--theme-accent)]" fill="currentColor" />
-          </div>
-        </a>
-      ))}
+export const ContactPage = () => {
+  const contactCards = [
+    {
+      title: 'EMAIL_ENDPOINT',
+      description: 'rohitksahoot@gmail.com',
+      label: 'SECURE_MAIL',
+    },
+    {
+      title: 'GITHUB_SIGNAL',
+      description: 'github.com/RohitKSahoo',
+      label: 'SOURCE_CODE',
+    },
+    {
+      title: 'LINKEDIN_UPLINK',
+      description: 'linkedin.com/in/rohitksahoo',
+      label: 'PROFESSIONAL_NET',
+    },
+    {
+      title: 'PHYSICAL_LOC',
+      description: 'BHUBANESWAR // INDIA',
+      label: 'LOCATION_NODE',
+    },
+    {
+      title: 'AVAILABILITY',
+      description: 'OPEN_FOR_COLLABORATIONS // FULL_STACK',
+      label: 'STATUS',
+    },
+    {
+      title: 'SYSTEM_HEARTBEAT',
+      description: '99.9%_UPTIME // READY_TO_BUILD',
+      label: 'HEARTBEAT',
+    }
+  ];
+
+  return (
+    <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex flex-col gap-6 pt-6">
+        <h2 className="text-3xl font-black text-tier-1 tracking-widest uppercase leading-none">
+          Contact Protocol
+        </h2>
+        <div className="w-full h-px bg-white/10" />
+      </div>
+      
+      <MagicBento cards={contactCards} />
     </div>
-  </div>
-);
+  );
+};

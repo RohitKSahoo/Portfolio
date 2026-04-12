@@ -1,13 +1,39 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
 
-# AutoCommitBot Secret Shield - Self Healing
+# Testing
+coverage/
 
+# Production
+dist/
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Secrets
 secrets.json
 credentials.json
 *.key
-*.pem
 *.db
 *.sqlite
-config.json
+/config.json
 history.json
 backups/
+
+# Vite
+.vite/

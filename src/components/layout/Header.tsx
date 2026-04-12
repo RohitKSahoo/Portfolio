@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { StatusIndicator } from '../dashboard/StatusIndicator';
 import { Menu, Mail } from 'lucide-react';
 
 interface HeaderProps {
@@ -34,14 +33,10 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
   const currentTab = TAB_TITLES[activeTab] || TAB_TITLES.profile;
 
   return (
-    <header 
-      className="fixed top-4 left-4 right-4 lg:top-6 lg:left-6 lg:right-6 h-16 lg:h-20 px-4 lg:px-8 flex justify-between items-center z-[130] transition-all duration-500 rounded-[1.25rem] border border-[var(--glass-border)]"
-      style={{ 
-        backgroundColor: 'var(--glass-bg)',
-        backdropFilter: 'blur(var(--glass-blur)) saturate(150%)',
-        boxShadow: '0 8px 32px 0 var(--glass-shadow)',
-      }}
-    >
+    <header className="fixed top-5 left-5 right-5 h-16 lg:h-20 px-4 lg:px-8 flex justify-between items-center z-[130] transition-all duration-500 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md overflow-hidden">
+      {/* Subtle accent line on top */}
+      <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/20 to-transparent" />
+
       <div className="flex items-center gap-4">
         {/* Mobile Menu Trigger */}
         <button 
@@ -82,8 +77,6 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
             </span>
           </div>
         </div>
-
-
       </div>
     </header>
   );

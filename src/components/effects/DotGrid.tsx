@@ -5,16 +5,9 @@ import { InertiaPlugin } from 'gsap/InertiaPlugin';
 
 import './DotGrid.css';
 
-// Try-catch registration for InertiaPlugin (Club GSAP)
+// Register InertiaPlugin
 if (typeof window !== 'undefined') {
-  try {
-    // @ts-ignore
-    if (InertiaPlugin) {
-      gsap.registerPlugin(InertiaPlugin);
-    }
-  } catch (e) {
-    console.warn("InertiaPlugin not detected. Falling back to standard GSAP transitions.");
-  }
+  gsap.registerPlugin(InertiaPlugin);
 }
 
 const throttle = (func: (...args: any[]) => void, limit: number) => {
@@ -52,25 +45,26 @@ export interface DotGridProps {
   style?: React.CSSProperties;
 }
 
-function hexToRgb(hex: string) {
-  const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
-  if (!m) return { r: 0, g: 0, b: 0 };
+function hexToRgba(hex: string) {
+  const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})?$/i);
+  if (!m) return { r: 0, g: 0, b: 0, a: 1 };
   return {
     r: parseInt(m[1], 16),
     g: parseInt(m[2], 16),
-    b: parseInt(m[3], 16)
+    b: parseInt(m[3], 16),
+    a: m[4] ? parseInt(m[4], 16) / 255 : 1
   };
 }
 
 const DotGrid: React.FC<DotGridProps> = ({
-  dotSize = 2,
-  gap = 32,
-  baseColor = '#1a1a1a',
-  activeColor = '#f43f5e',
+  dotSize = 3,
+  gap = 25,
+  baseColor = '#cdccd214',
+  activeColor = '#ef4444ff',
   proximity = 150,
   speedTrigger = 100,
   shockRadius = 250,
-  shockStrength = 20,
+  shockStrength = 5,
   maxSpeed = 5000,
   resistance = 750,
   returnDuration = 1.5,
@@ -91,8 +85,8 @@ const DotGrid: React.FC<DotGridProps> = ({
     lastY: 0
   });
 
-  const baseRgb = useMemo(() => hexToRgb(baseColor), [baseColor]);
-  const activeRgb = useMemo(() => hexToRgb(activeColor), [activeColor]);
+  const baseRgba = useMemo(() => hexToRgba(baseColor), [baseColor]);
+  const activeRgba = useMemo(() => hexToRgba(activeColor), [activeColor]);
 
   const circlePath = useMemo(() => {
     if (typeof window === 'undefined' || !window.Path2D) return null;
@@ -163,20 +157,20 @@ const DotGrid: React.FC<DotGridProps> = ({
         const dy = dot.cy - py;
         const dsq = dx * dx + dy * dy;
 
-        let style = baseColor;
+        let fillColor = baseColor;
         if (dsq <= proxSq) {
           const dist = Math.sqrt(dsq);
-          const t = Math.pow(1 - dist / proximity, 4); // Sharper exponential falloff
-          const r = Math.round(baseRgb.r + (activeRgb.r - baseRgb.r) * t);
-          const g = Math.round(baseRgb.g + (activeRgb.g - baseRgb.g) * t);
-          const b = Math.round(baseRgb.b + (activeRgb.b - baseRgb.b) * t);
-          
-          style = `rgba(${r},${g},${b}, ${0.2 + (1 - 0.2) * t})`;
+          const t = 1 - dist / proximity;
+          const r = Math.round(baseRgba.r + (activeRgba.r - baseRgba.r) * t);
+          const g = Math.round(baseRgba.g + (activeRgba.g - baseRgba.g) * t);
+          const b = Math.round(baseRgba.b + (activeRgba.b - baseRgba.b) * t);
+          const a = baseRgba.a + (activeRgba.a - baseRgba.a) * t;
+          fillColor = `rgba(${r},${g},${b},${a})`;
         }
 
         ctx.save();
         ctx.translate(ox, oy);
-        ctx.fillStyle = style;
+        ctx.fillStyle = fillColor;
         ctx.fill(circlePath);
         ctx.restore();
       }
@@ -186,7 +180,7 @@ const DotGrid: React.FC<DotGridProps> = ({
 
     draw();
     return () => cancelAnimationFrame(rafId);
-  }, [proximity, baseColor, activeRgb, baseRgb, circlePath]);
+  }, [proximity, baseColor, activeRgba, baseRgba, circlePath]);
 
   useEffect(() => {
     buildGrid();
@@ -237,39 +231,18 @@ const DotGrid: React.FC<DotGridProps> = ({
           gsap.killTweensOf(dot);
           const pushX = dot.cx - pr.x + vx * 0.005;
           const pushY = dot.cy - pr.y + vy * 0.005;
-          
-          // Check if InertiaPlugin is active, otherwise fallback to standard pull
-          if ((gsap as any).plugins?.inertia) {
-            gsap.to(dot, {
-              inertia: { xOffset: pushX, yOffset: pushY, resistance },
-              onComplete: () => {
-                gsap.to(dot, {
-                  xOffset: 0,
-                  yOffset: 0,
-                  duration: returnDuration,
-                  ease: 'elastic.out(1,0.75)'
-                });
-                dot._inertiaApplied = false;
-              }
-            });
-          } else {
-            // Standard Fallback Performance
-            gsap.to(dot, {
-              xOffset: pushX,
-              yOffset: pushY,
-              duration: 0.4,
-              ease: 'power2.out',
-              onComplete: () => {
-                gsap.to(dot, {
-                  xOffset: 0,
-                  yOffset: 0,
-                  duration: returnDuration,
-                  ease: 'elastic.out(1,0.75)'
-                });
-                dot._inertiaApplied = false;
-              }
-            });
-          }
+          gsap.to(dot, {
+            inertia: { xOffset: pushX, yOffset: pushY, resistance },
+            onComplete: () => {
+              gsap.to(dot, {
+                xOffset: 0,
+                yOffset: 0,
+                duration: returnDuration,
+                ease: 'elastic.out(1,0.75)'
+              });
+              dot._inertiaApplied = false;
+            }
+          });
         }
       }
     };
@@ -286,37 +259,18 @@ const DotGrid: React.FC<DotGridProps> = ({
           const falloff = Math.max(0, 1 - dist / shockRadius);
           const pushX = (dot.cx - cx) * shockStrength * falloff;
           const pushY = (dot.cy - cy) * shockStrength * falloff;
-
-          if ((gsap as any).plugins?.inertia) {
-            gsap.to(dot, {
-              inertia: { xOffset: pushX, yOffset: pushY, resistance },
-              onComplete: () => {
-                gsap.to(dot, {
-                  xOffset: 0,
-                  yOffset: 0,
-                  duration: returnDuration,
-                  ease: 'elastic.out(1,0.75)'
-                });
-                dot._inertiaApplied = false;
-              }
-            });
-          } else {
-            gsap.to(dot, {
-              xOffset: pushX,
-              yOffset: pushY,
-              duration: 0.4,
-              ease: 'power2.out',
-              onComplete: () => {
-                gsap.to(dot, {
-                  xOffset: 0,
-                  yOffset: 0,
-                  duration: returnDuration,
-                  ease: 'elastic.out(1,0.75)'
-                });
-                dot._inertiaApplied = false;
-              }
-            });
-          }
+          gsap.to(dot, {
+            inertia: { xOffset: pushX, yOffset: pushY, resistance },
+            onComplete: () => {
+              gsap.to(dot, {
+                xOffset: 0,
+                yOffset: 0,
+                duration: returnDuration,
+                ease: 'elastic.out(1,0.75)'
+              });
+              dot._inertiaApplied = false;
+            }
+          });
         }
       }
     };

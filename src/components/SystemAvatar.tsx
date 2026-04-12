@@ -5,7 +5,7 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isGlitching, setIsGlitching] = useState(false);
   const [isFullView, setIsFullView] = useState(false);
-  const hoverTimer = useRef<NodeJS.Timeout | null>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const lastMousePos = useRef({ x: 0, y: 0 });
   const velocity = useRef(0);
