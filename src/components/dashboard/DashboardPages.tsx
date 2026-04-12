@@ -85,7 +85,7 @@ export const ProfilePage = ({
           {/* Bottom Section: Name Overlay */}
           <motion.div 
             animate={{ 
-              y: isDockVisible ? -85 : 0,
+              y: isDockVisible ? -95 : 12,
               opacity: 1
             }}
             transition={{ type: "spring", stiffness: 200, damping: 30 }}

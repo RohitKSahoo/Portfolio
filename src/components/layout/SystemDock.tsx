@@ -46,17 +46,19 @@ const DockItem = ({
       className="aspect-square relative flex items-center justify-center cursor-pointer group"
     >
       <motion.div 
+        ref={ref}
+        onClick={() => setActiveTab(item.id)}
         style={{ 
           width, 
           height: width,
           y: useTransform(width, [60, 100], [0, -20]) 
         }}
-        className="absolute bottom-0 rounded-xl border transition-colors duration-300 flex items-center justify-center shadow-lg"
+        className="absolute bottom-0 rounded-xl transition-colors duration-300 flex items-center justify-center shadow-lg z-10"
       >
         <div className={`absolute inset-0 rounded-xl transition-colors duration-300 bg-[#0a0a0a] ${
           isActive 
-            ? 'border-[var(--theme-accent)] shadow-[0_0_20px_rgba(var(--theme-accent-rgb),0.25)]' 
-            : 'border-white/10 group-hover:border-white/20'
+            ? 'border border-[var(--theme-accent)] shadow-[0_0_20px_rgba(var(--theme-accent-rgb),0.25)]' 
+            : 'border border-white/10 group-hover:border-white/20'
         }`} />
         
         {isActive && (
@@ -103,8 +105,8 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Show dock when cursor is near the bottom (within 30px)
-      if (window.innerHeight - e.clientY < 30) {
+      // Show dock when cursor is near the bottom (within 35px)
+      if (window.innerHeight - e.clientY < 35) {
         setIsDockVisible(true);
       } else if (!isHovered) {
         setIsDockVisible(false);
@@ -129,7 +131,7 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
         onMouseLeave={() => mouseX.set(Infinity)}
         initial={{ y: 100, opacity: 0 }}
         animate={{ 
-          y: isDockVisible || isHovered ? 0 : 90, 
+          y: isDockVisible || isHovered ? 0 : 75, 
           opacity: 1,
         }}
         transition={{ type: "spring", stiffness: 260, damping: 25 }}
