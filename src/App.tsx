@@ -8,7 +8,7 @@ import {
   HistoryPage, 
   ContactPage 
 } from './components/dashboard/DashboardPages';
-import { AsciiBackground } from './components/AsciiBackground';
+import DotGrid from './components/effects/DotGrid';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import './styles/index.css';
@@ -66,8 +66,13 @@ function App() {
         onClose={() => setIsSidebarOpen(false)}
       />
 
-      {/* DYNAMIC ASCII BACKGROUND */}
-      <AsciiBackground />
+      {/* INTERACTIVE KINETIC GRID (Primary Background) */}
+      <DotGrid 
+        dotSize={2} 
+        gap={32} 
+        baseColor="#1a1a1a" 
+        activeColor="#f43f5e" 
+      />
 
       {/* MAIN SYSTEM VIEWPORT */}
       <main className={`lg:pl-[88px] flex flex-col h-screen overflow-hidden relative transition-all duration-500 ${isSidebarOpen ? 'blur-sm lg:blur-none pointer-events-none lg:pointer-events-auto' : ''}`}>
