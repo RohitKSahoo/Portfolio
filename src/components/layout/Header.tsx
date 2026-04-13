@@ -48,10 +48,10 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
 
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-6">
-             <span className="text-[var(--theme-accent)] font-mono text-lg font-black tracking-tighter">
+             <span className="text-[var(--theme-accent)] font-mono text-lg font-bold tracking-tighter">
                {currentTab.num}
              </span>
-             <h1 className="text-sm md:text-xl lg:text-2xl font-bold tracking-[0.1em] text-tier-1 uppercase truncate max-w-[200px] md:max-w-none">
+             <h1 className="text-2xl md:text-3xl font-semibold tracking-widest text-tier-1 uppercase truncate max-w-[200px] md:max-w-none mt-1">
                {currentTab.title}
              </h1>
           </div>

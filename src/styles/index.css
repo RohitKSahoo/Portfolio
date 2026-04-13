@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -29,8 +29,9 @@
   --tier-2: #a3a3a3;
   --tier-3: #6b7280;
   
+  --font-heading: 'Bebas Neue', sans-serif;
+  --font-body: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --font-sans: 'Inter', sans-serif;
 
   /* Spacing System */
   --card-padding: 12px;
@@ -54,13 +55,19 @@
       radial-gradient(at 50% 0%, var(--bg-mesh-2) 0, transparent 50%), 
       radial-gradient(at 100% 0%, var(--bg-mesh-3) 0, transparent 50%);
     color: var(--tier-1);
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: normal;
     transition: none;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-mono);
-    @apply uppercase tracking-[0.1em] font-medium transition-colors;
+    font-family: var(--font-heading);
+    @apply transition-colors uppercase;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    line-height: 1.1;
     color: var(--tier-1);
   }
 }
@@ -90,8 +97,8 @@
 
 @layer utilities {
   .section-label {
-    @apply text-tier-2 text-[0.8rem] tracking-[0.3em] font-bold mb-3 uppercase;
-    font-family: var(--font-mono);
+    @apply text-tier-2 text-[0.8rem] font-normal mb-3 uppercase tracking-widest;
+    font-family: var(--font-heading);
     opacity: 0.9;
   }
 }

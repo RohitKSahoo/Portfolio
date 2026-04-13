@@ -13,8 +13,9 @@ export default {
         grey: '#888888',
       },
       fontFamily: {
-        heading: ['Bebas Neue', 'Impact', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Space Mono', 'monospace'],
+        heading: ['var(--font-heading)'],
+        sans: ['var(--font-body)'],
+        mono: ['var(--font-mono)'],
       },
     },
   },

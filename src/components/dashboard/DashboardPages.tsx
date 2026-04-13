@@ -58,9 +58,9 @@ export const ProfilePage = ({
             <div className="flex flex-col gap-4 lg:gap-6 max-w-lg text-left">
               <div className="flex items-center gap-3">
                  <div className="w-2 h-2 rounded-full bg-[var(--theme-accent)] animate-pulse shadow-[0_0_8px_var(--theme-accent)]" />
-                 <span className="text-[0.6rem] lg:text-[0.7rem] text-tier-3 font-mono font-bold tracking-[0.4em] uppercase">UPLINK_ACTIVE</span>
+                 <span className="text-[0.8rem] lg:text-[0.9rem] text-tier-3 font-heading tracking-[0.2em] uppercase pt-0.5">UPLINK_ACTIVE</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl lg:text-5xl font-black tracking-tightest leading-[1.1] text-tier-1 uppercase">
+              <h2 className="text-3xl lg:text-5xl tracking-[0.1em] text-tier-1 uppercase leading-none">
                 CS_STUDENT & <br /> Systems_Builder <br /> Based in India
               </h2>
             </div>
@@ -73,7 +73,7 @@ export const ProfilePage = ({
             <div className="flex flex-col sm:flex-row lg:self-end">
               <button 
                 onClick={onExploreProjects}
-                className="group relative px-6 py-2.5 lg:px-8 lg:py-3 bg-[var(--theme-accent)] text-black font-black text-[0.6rem] lg:text-xs uppercase tracking-[0.3em] hover:bg-white transition-all overflow-hidden flex items-center gap-4 w-fit shadow-[0_0_20px_rgba(var(--theme-accent-rgb),0.3)]"
+                className="group relative px-6 py-2.5 lg:px-8 lg:py-3 bg-[var(--theme-accent)] text-black font-bold text-[0.6rem] lg:text-xs uppercase tracking-[0.3em] hover:bg-white transition-all overflow-hidden flex items-center gap-4 w-fit shadow-[0_0_20px_rgba(var(--theme-accent-rgb),0.3)]"
               >
                 <span>EXPLORE_PROJECTS</span>
                 <Zap size={14} fill="currentColor" />
@@ -91,8 +91,8 @@ export const ProfilePage = ({
             transition={{ type: "spring", stiffness: 200, damping: 30 }}
             className="mt-auto w-full pt-10 pb-0 pointer-events-none"
           >
-             <h1 className="text-[10vw] lg:text-[6.8vw] font-black tracking-tighter leading-none text-tier-1 drop-shadow-[0_0_50px_rgba(var(--theme-accent-rgb),0.2)] uppercase whitespace-nowrap text-center">
-               {displayName}<span className="inline-block w-[1.2vw] h-[1.2vw] bg-[var(--theme-accent)] ml-2 align-baseline translate-y-[-0.3vw]" />
+             <h1 className="text-[13vw] lg:text-[7vw] tracking-wider leading-none text-tier-1 drop-shadow-[0_0_50px_rgba(var(--theme-accent-rgb),0.2)] uppercase whitespace-nowrap text-center">
+               {displayName}<span className="inline-block w-[1.5vw] h-[1.5vw] bg-[var(--theme-accent)] ml-3 align-baseline translate-y-[-0.2vw]" />
              </h1>
           </motion.div>
         </div>
@@ -198,11 +198,11 @@ export const RegistryPage = () => {
     <div key="2" className="w-full h-full flex items-center justify-center bg-black relative">
        <img src={project.image} className="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all duration-500" alt="Preview" />
        <div className="absolute inset-0 bg-black/40" />
-       <div className="absolute top-1 left-1 px-1 bg-[var(--theme-accent)] text-black text-[0.4rem] font-black uppercase">LIVE</div>
+       <div className="absolute top-1 left-1 px-1 bg-[var(--theme-accent)] text-black text-[0.4rem] font-bold uppercase">LIVE</div>
     </div>,
     <div key="3" className="w-full h-full flex flex-col items-center justify-center p-2 bg-[#0c0c0c] border border-[var(--theme-accent)]/30">
        <Terminal size={14} strokeWidth={2.5} className="text-[var(--theme-accent)] mb-1" />
-       <span className="text-[0.4rem] font-black text-white/40 tracking-widest">EXECUTABLE</span>
+       <span className="text-[0.4rem] font-bold text-white/40 tracking-widest">EXECUTABLE</span>
     </div>
   ];
 
@@ -227,8 +227,8 @@ export const RegistryPage = () => {
           <div className="flex flex-col gap-4 pt-2 relative">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
               <div className="flex flex-col gap-2 max-w-none">
-                <span className="text-[0.55rem] font-mono font-bold text-[var(--theme-accent)] tracking-[0.4em] uppercase opacity-60">REGISTRY_MOD_01</span>
-                <h2 className="text-xl lg:text-2xl font-black text-tier-1 tracking-tightest uppercase leading-tight relative group">
+                <span className="text-[0.8rem] pt-0.5 font-heading text-[var(--theme-accent)] tracking-[0.2em] uppercase opacity-60 leading-none">REGISTRY_MOD_01</span>
+                <h2 className="text-2xl lg:text-3xl tracking-[0.1em] text-tier-1 uppercase leading-none relative group mt-1">
                   <TextType 
                     text="ENGINEERING SYSTEMS THAT AUTOMATE, OPTIMIZE, AND SCALE EVERYDAY WORKFLOWS."
                     typingSpeed={40}
@@ -277,7 +277,7 @@ export const RegistryPage = () => {
                   <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
                     project.status === 'STABLE' ? 'bg-green-500' : 'bg-red-500'
                   }`} />
-                  <span className="text-[0.45rem] font-mono font-black text-tier-3 tracking-[0.2em]">[{project.status}]</span>
+                  <span className="text-[0.45rem] font-mono font-bold text-tier-3 tracking-[0.2em]">[{project.status}]</span>
                 </div>
 
                 <div className="flex flex-col lg:flex-row items-center gap-6 group-hover:translate-y-[-4px] transition-transform duration-500">
@@ -286,10 +286,10 @@ export const RegistryPage = () => {
                    </div>
 
                    <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-                      <span className="text-[0.6rem] font-mono text-[var(--theme-accent)] tracking-[0.4em] font-bold uppercase mb-1">
+                      <span className="text-[0.8rem] pt-0.5 font-heading text-[var(--theme-accent)] tracking-widest uppercase mb-1 leading-none">
                         PRJ_MOD_0{project.id.slice(-1)}
                       </span>
-                      <h3 className="text-xl lg:text-2xl font-black text-tier-1 tracking-tightest group-hover:text-[var(--theme-accent)] transition-colors uppercase leading-tight">
+                      <h3 className="text-xl lg:text-2xl tracking-[0.1em] text-tier-1 group-hover:text-[var(--theme-accent)] transition-colors uppercase leading-none">
                         {project.name}
                       </h3>
                       
@@ -334,7 +334,7 @@ export const RegistryPage = () => {
                 className="flex items-center gap-3 text-tier-3 hover:text-[var(--theme-accent)] transition-all group px-4 py-2 bg-white/5 rounded-full border border-white/5 hover:border-[var(--theme-accent)]/30"
               >
                 <Terminal size={14} className="rotate-180" />
-                <span className="text-[0.65rem] font-mono font-black tracking-[0.2em] uppercase">SYSTEM_BACK</span>
+                <span className="text-[0.85rem] font-heading tracking-widest uppercase pt-0.5 leading-none">SYSTEM_BACK</span>
               </button>
 
               <div className="flex items-center gap-4">
@@ -342,7 +342,7 @@ export const RegistryPage = () => {
                   href={activeProject.github} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-3 px-5 py-2.5 bg-[var(--theme-accent)] text-black text-[0.65rem] font-black uppercase tracking-widest transition-all rounded-md hover:scale-[1.02] active:scale-95"
+                  className="group flex items-center gap-3 px-5 py-2.5 bg-[var(--theme-accent)] text-black text-[0.65rem] font-bold uppercase tracking-widest transition-all rounded-md hover:scale-[1.02] active:scale-95"
                 >
                   <Github size={14} />
                   <span>VIEW SOURCE</span>
@@ -356,10 +356,10 @@ export const RegistryPage = () => {
                   <div className="flex flex-col gap-4 lg:gap-5">
                     {/* 1. Project Title */}
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[0.5rem] font-mono font-bold text-[var(--theme-accent)] tracking-[0.4em] uppercase opacity-50">
+                      <span className="text-[0.75rem] font-heading text-[var(--theme-accent)] tracking-[0.2em] uppercase opacity-50">
                         ACCESS_NODE::{activeProject.id}
                       </span>
-                      <h2 className="text-4xl lg:text-6xl font-black text-tier-1 tracking-tighter uppercase leading-none">
+                      <h2 className="text-4xl lg:text-5xl tracking-[0.1em] text-tier-1 uppercase leading-none">
                         {activeProject.name}
                       </h2>
                     </div>
@@ -374,14 +374,14 @@ export const RegistryPage = () => {
                        {Object.entries(activeProject.metrics).map(([k, v]) => (
                          <div key={k} className="flex flex-col pl-3 border-l-2 border-[var(--theme-accent)]/30">
                             <span className="text-[0.45rem] font-mono text-tier-3 opacity-60 uppercase tracking-widest mb-0.5">{k}</span>
-                            <span className="text-sm lg:text-base font-black text-[var(--theme-accent)] tabular-nums">{v}</span>
+                            <span className="text-sm lg:text-base font-bold text-[var(--theme-accent)] tabular-nums">{v}</span>
                          </div>
                        ))}
                     </div>
 
                     {/* 4. Tech Stack (inline format) */}
                     <div className="flex items-center gap-2">
-                      <span className="text-[0.5rem] font-mono text-tier-3 opacity-50 uppercase tracking-[0.3em] font-bold">STACK //</span>
+                      <span className="text-[0.7rem] font-heading text-tier-3 opacity-50 uppercase tracking-[0.2em]">STACK //</span>
                       <span className="text-[0.65rem] font-mono text-tier-2 uppercase tracking-widest font-bold bg-white/5 px-2 py-1 rounded">
                         {activeProject.stack.join(' · ')}
                       </span>
@@ -411,15 +411,15 @@ export const RegistryPage = () => {
                   <div className="pt-4 border-t border-white/5 flex items-center justify-between mt-auto">
                      <div className="flex items-center gap-6">
                         <div className="flex flex-col">
-                           <span className="text-[0.45rem] font-mono text-tier-3 opacity-40 uppercase tracking-widest">COMMIT_HASH</span>
+                           <span className="text-[0.7rem] pt-0.5 font-heading text-tier-3 opacity-50 uppercase tracking-[0.2em] leading-none mb-0.5">COMMIT_HASH</span>
                            <span className="text-[0.6rem] font-mono text-tier-2">0x{activeProject.id.slice(0, 8)}...</span>
                         </div>
                         <div className="flex flex-col">
-                           <span className="text-[0.45rem] font-mono text-tier-3 opacity-40 uppercase tracking-widest">UPTIME</span>
+                           <span className="text-[0.7rem] pt-0.5 font-heading text-tier-3 opacity-50 uppercase tracking-[0.2em] leading-none mb-0.5">UPTIME</span>
                            <span className="text-[0.6rem] font-mono text-green-500/80">99.98%</span>
                         </div>
                      </div>
-                     <span className="text-[0.5rem] font-mono text-white/20 tracking-[0.4em]">SYSTEM://READY</span>
+                     <span className="text-[0.8rem] font-heading text-white/30 tracking-[0.2em] pt-1">SYSTEM://READY</span>
                   </div>
                </div>
 
@@ -440,9 +440,9 @@ export const RegistryPage = () => {
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-[var(--theme-accent)] animate-pulse" />
-                            <span className="text-[0.55rem] font-mono font-bold tracking-[0.2em] text-white uppercase">LIVE_UPLINK</span>
+                            <span className="text-[0.8rem] pt-0.5 font-heading tracking-widest text-white uppercase leading-none">LIVE_UPLINK</span>
                           </div>
-                          <span className="text-[0.5rem] font-mono text-white/30 uppercase tracking-tighter">SECURE://V.2.0.4</span>
+                          <span className="text-[0.7rem] pt-0.5 font-heading text-white/40 uppercase tracking-widest leading-none">SECURE://V.2.0.4</span>
                         </div>
                         <p className="text-[0.65rem] font-mono text-tier-3 opacity-60 uppercase tracking-wider leading-relaxed italic">
                           {activeProject.details[0]}
@@ -462,42 +462,146 @@ export const RegistryPage = () => {
   );
 };
 
-export const HistoryPage = () => (
-  <div className="max-w-4xl flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-    <span className="section-label">HISTORY // EXPERIENCE</span>
-    <div className="flex flex-col gap-0">
-      {[
-        { role: 'BACKEND_ENGINEER_INTERNAL', period: '2023.08 - PRESENT', company: 'SILICON_V_LABS', logs: ['Engineered high-concurrency API pipelines handling 100k+ RPM', 'Reduced Postgres query latency by 42% via complex index optimization', 'Architected automated deployment system for 50+ microservices'], active: true },
-        { role: 'OPEN_SOURCE_CONTRIBUTOR', period: '2022.01 - 2023.07', company: 'DISTRIBUTED_CORE', logs: ['Merged 200+ PRs focusing on vector search engine core algorithms', 'Authored the widely used Python-GRPC bridge module (+50k downloads)', 'Optimized matrix multiplication routines for CUDA acceleration'] },
-        { role: 'SYSTEM_ARCH_ASSISTANT', period: '2021.10 - 2021.12', company: 'CORP_INFRA_GLOBAL', logs: ['Implemented real-time thermal telemetry monitoring for cluster R-04', 'Maintained 99.99% uptime protocols across production regions', 'Deployment and scaling of containerized AI models using Kubernetes'] }
-      ].map((log, i) => (
-        <div key={i} className="flex gap-8 group">
-          <div className="flex flex-col items-center">
-            <div className={`w-3 h-3 border ${log.active ? 'border-[var(--theme-accent)] bg-[var(--theme-accent)]' : 'border-[var(--border-muted)]'} group-hover:border-[var(--theme-accent)] transition-all`}></div>
-            <div className="w-[1px] h-full bg-[var(--border-muted)] mt-2 border-dashed group-hover:bg-[var(--theme-glow)] transition-all"></div>
+export const HistoryPage = () => {
+  const experiences = [
+    {
+      role: 'Backend Systems Developer',
+      period: '2023 - PRESENT',
+      company: 'PROJECT-BASED',
+      tags: ['BACKEND', 'SYSTEMS'],
+      logs: [
+        'Built voice-triggered audio control system with sub-50ms response time.',
+        'Implemented real-time monitoring with efficient background thread handling.',
+        'Optimized system lifecycle to auto-suspend idle services.'
+      ],
+      active: true
+    },
+    {
+      role: 'App Developer (Personal)',
+      period: '2022 - 2023',
+      company: 'COMMUNICATION PROJECTS',
+      tags: ['ANDROID', 'WEBRTC'],
+      logs: [
+        'Developed continuous P2P voice network with dynamic cloud fallback routing.',
+        'Synchronized live geolocation tracking across highly constrained network states.'
+      ]
+    },
+    {
+      role: 'Open Source Contributor',
+      period: '2021 - 2022',
+      company: 'AUTOMATION PROJECTS',
+      tags: ['PYTHON', 'AI'],
+      logs: [
+        'Authored autonomous CLI agent validating and generating git commits via AI context analysis.',
+        'Formulated secure CI/CD deployment routines using robust git-hook automation.'
+      ]
+    }
+  ];
+
+  return (
+    <div className="w-full flex flex-col xl:flex-row gap-8 xl:gap-16 lg:pt-2 h-full min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Left Timeline */}
+      <div className="flex-1 flex flex-col gap-5 lg:max-w-2xl min-h-0 shrink-0">
+        <span className="section-label">HISTORY // EXPERIENCE</span>
+        <div className="flex flex-col mt-2">
+          {experiences.map((log, i) => (
+            <div key={i} className="flex gap-4 lg:gap-6 group">
+              {/* Timeline Line */}
+              <div className="flex flex-col items-center mt-2.5 shrink-0">
+                <div className={`w-2 h-2 rounded-sm border ${log.active ? 'border-[var(--theme-accent)] bg-[var(--theme-accent)] shadow-[0_0_10px_rgba(var(--theme-accent-rgb),0.5)]' : 'border-white/20 bg-[#0a0a0a]'} group-hover:border-[var(--theme-accent)] transition-all`} />
+                {i !== experiences.length - 1 && (
+                  <div className="w-[1px] h-full bg-white/10 my-2 group-hover:bg-[var(--theme-accent)]/30 transition-all" />
+                )}
+              </div>
+              
+              {/* Content Box */}
+              <div className={`flex-1 pb-6 ${i === experiences.length - 1 ? 'pb-2' : ''}`}>
+                {/* Title & Dates */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 lg:gap-4 mb-1">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <h3 className={`text-xl tracking-[0.1em] uppercase ${log.active ? 'text-[var(--theme-accent)]' : 'text-tier-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.05)]'}`}>
+                      {log.role}
+                    </h3>
+                    <div className="flex gap-2">
+                      {log.tags.map(tag => (
+                        <span key={tag} className="text-[0.7rem] leading-none pt-0.5 font-heading tracking-widest border border-white/10 px-2 rounded uppercase text-tier-3 group-hover:text-tier-2 group-hover:border-white/30 transition-all mt-0.5 sm:mt-0">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <span className="text-[0.6rem] text-tier-3 font-mono font-bold tracking-widest uppercase shrink-0">{log.period}</span>
+                </div>
+                
+                {/* Company/Context */}
+                <div className="flex items-center gap-2 text-[0.6rem] text-tier-2 mb-3.5 font-mono font-bold tracking-widest uppercase">
+                   <Hash size={12} strokeWidth={2.5} className="text-[var(--theme-accent)]/70" /> {log.company}
+                </div>
+                
+                {/* Bullets */}
+                <div className="flex flex-col gap-2">
+                   {log.logs.map((item, j) => (
+                     <div key={j} className="text-[0.8rem] text-tier-2 leading-[1.5] flex items-start gap-3">
+                       <div className="mt-2 w-1 h-1 rounded-sm bg-white/30 group-hover:bg-[var(--theme-accent)] transition-all shrink-0" />
+                       <span className="tracking-normal font-medium">{item}</span>
+                     </div>
+                   ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right Proof Layer */}
+      <div className="w-full xl:w-[280px] shrink-0 mt-2 xl:mt-10 mb-8 xl:mb-0">
+        <div className="p-5 border border-white/10 bg-black/40 backdrop-blur-md rounded-xl relative overflow-hidden group hover:border-white/20 transition-all shadow-xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent)]/5 to-transparent opacity-50" />
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/80 to-transparent" />
+          
+          <div className="relative flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Github size={16} className="text-[var(--theme-accent)]" />
+              <span className="text-[0.85rem] tracking-widest font-heading text-tier-1 uppercase pt-0.5 leading-none">GITHUB_IMPACT</span>
+            </div>
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
           </div>
-          <div className="flex-1 pb-16">
-            <div className="flex justify-between items-baseline mb-4">
-              <h3 className={`text-md font-bold tracking-[0.15em] ${log.active ? 'text-[var(--theme-accent)]' : 'text-tier-1'}`}>{log.role}</h3>
-              <span className="text-[0.6rem] text-tier-3 font-mono tabular-nums">{log.period}</span>
+
+          <div className="relative grid grid-cols-2 gap-y-5 gap-x-4">
+            <div className="flex flex-col gap-1">
+               <span className="text-[0.75rem] font-heading pt-0.5 text-tier-3 tracking-widest uppercase leading-none">REPOSITORIES</span>
+               <span className="text-xl font-bold font-mono text-tier-1 tabular-nums">14</span>
             </div>
-            <div className="flex items-center gap-2 text-[0.55rem] text-tier-3 mb-6 font-mono tracking-widest uppercase">
-               <Hash size={10} strokeWidth={3} className="text-[var(--theme-accent)]" /> {log.company}
+            <div className="flex flex-col gap-1">
+               <span className="text-[0.75rem] font-heading pt-0.5 text-tier-3 tracking-widest uppercase leading-none">COMMITS</span>
+               <span className="text-xl font-bold font-mono text-tier-1 tabular-nums">520+</span>
             </div>
-            <div className="flex flex-col gap-4">
-               {log.logs.map((item, j) => (
-                 <div key={j} className="text-[0.7rem] text-tier-3 leading-relaxed flex items-start gap-4 font-light">
-                   <div className="mt-1.5 w-1 h-1 rounded-full bg-tier-3 opacity-30 group-hover:bg-[var(--theme-accent)] transition-all" />
-                   <span className="uppercase tracking-wide group-hover:text-tier-2 transition-colors">{item}</span>
-                 </div>
+            <div className="flex flex-col gap-1">
+               <span className="text-[0.75rem] font-heading pt-0.5 text-tier-3 tracking-widest uppercase leading-none">SINCE</span>
+               <span className="text-xl font-bold font-mono text-tier-1 tabular-nums">2021</span>
+            </div>
+            <div className="flex flex-col gap-1">
+               <span className="text-[0.75rem] font-heading pt-0.5 text-tier-3 tracking-widest uppercase leading-none">UPLINK</span>
+               <div className="flex items-center mt-1">
+                 <span className="text-[0.7rem] font-bold font-mono text-green-500 tracking-widest uppercase shadow-[0_0_8px_rgba(34,197,94,0)]">STABLE</span>
+               </div>
+            </div>
+          </div>
+          
+          {/* Activity Graph */}
+          <div className="relative mt-8 border-t border-white/5 pt-4">
+             <span className="text-[0.7rem] font-heading text-tier-3 tracking-widest uppercase mb-1 block">CONTRIBUTION_VELOCITY</span>
+             <div className="flex items-end gap-[1px] h-8 opacity-60 group-hover:opacity-100 transition-opacity">
+               {[40, 70, 45, 90, 65, 80, 50, 100, 75, 40, 85, 60, 95, 30, 60, 80].map((h, i) => (
+                 <div key={i} className="flex-1 bg-white/20 group-hover:bg-[var(--theme-accent)]/80 transition-colors rounded-t-[1px]" style={{ height: `${h}%` }} />
                ))}
-            </div>
+             </div>
           </div>
         </div>
-      ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 
 
@@ -538,7 +642,7 @@ export const ContactPage = () => {
   return (
     <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col gap-6 pt-6">
-        <h2 className="text-3xl font-black text-tier-1 tracking-widest uppercase leading-none">
+        <h2 className="text-3xl lg:text-4xl text-tier-1 uppercase tracking-[0.1em] leading-none mb-1">
           Contact Protocol
         </h2>
         <div className="w-full h-px bg-white/10" />

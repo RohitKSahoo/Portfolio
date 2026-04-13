@@ -74,7 +74,7 @@ const DockItem = ({
         {/* Tooltip */}
         <div className="absolute -top-14 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
           <div className="bg-[#0a0a0a] border border-white/10 px-2.5 py-1 rounded-lg whitespace-nowrap">
-             <span className="text-[9px] font-black tracking-[.2em] text-white uppercase">{item.label}</span>
+             <span className="text-[9px] font-bold tracking-[.2em] text-white uppercase">{item.label}</span>
           </div>
         </div>
 

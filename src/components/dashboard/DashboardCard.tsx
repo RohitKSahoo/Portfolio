@@ -26,7 +26,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({ title, subtitle, m
             )}
           </div>
           {title && (
-            <h3 className="text-[1.1rem] text-tier-2 font-bold tracking-wide uppercase">
+            <h3 className="text-xl pt-0.5 text-tier-2 font-semibold tracking-widest uppercase leading-none">
               {title}
             </h3>
           )}
