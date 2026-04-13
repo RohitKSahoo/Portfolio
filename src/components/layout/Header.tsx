@@ -38,13 +38,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
       <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/20 to-transparent" />
 
       <div className="flex items-center gap-4">
-        {/* Mobile Menu Trigger */}
-        <button 
-          onClick={onMenuToggle}
-          className="lg:hidden p-2 text-tier-3 hover:text-[var(--theme-accent)] transition-colors"
-        >
-          <Menu size={20} />
-        </button>
+
 
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-6">

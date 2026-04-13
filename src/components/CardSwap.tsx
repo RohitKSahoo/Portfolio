@@ -161,7 +161,7 @@ export const CardSwap: React.FC<CardSwapProps> = ({
       // Return to back
       const backSlot = makeSlot(totalCards - 1, cardDistance, verticalDistance, totalCards);
       tl.addLabel('return', `promote+=${config.durMove * config.returnDelay}`);
-      tl.call(() => gsap.set(elFront, { zIndex: backSlot.zIndex }), undefined, 'return');
+      tl.call(() => { gsap.set(elFront, { zIndex: backSlot.zIndex }) }, undefined, 'return');
       
       tl.to(elFront, {
         x: backSlot.x,

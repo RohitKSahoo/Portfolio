@@ -473,7 +473,7 @@ const MagicBento: React.FC<BentoProps & { children: React.ReactNode }> = ({
         <MagicBentoSpotlight
           gridRef={gridRef}
           disableAnimations={disableAnimations}
-          enabled={enabled}
+          enabled={enableSpotlight}
           spotlightRadius={spotlightRadius}
           glowColor={glowColor}
         />

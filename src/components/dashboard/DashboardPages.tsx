@@ -1,14 +1,38 @@
-import React from 'react';
+import React, { Suspense, Component, ErrorInfo, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DashboardCard } from './DashboardCard';
 import { MetricBar } from './MetricBar';
 import { SystemOverview } from './SystemOverview';
 import { StatusIndicator } from './StatusIndicator';
-import { Code, ExternalLink, Github, Terminal, Zap, Hash, Mail } from 'lucide-react';
+import { Code, ExternalLink, Github, Terminal, Zap, Hash, Linkedin, Mail } from 'lucide-react';
 import { SystemAvatar } from '../SystemAvatar';
 import { CardSwap } from '../CardSwap';
 import { ImageRibbon } from '../ImageRibbon';
 import Folder from '../effects/Folder';
+import MagicBento, { MagicBentoCard, MagicBentoSpotlight } from '../effects/MagicBento';
+import TextType from '../effects/TextType';
+import Lanyard from '../effects/Lanyard';
+
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) { console.error("3D_RENDER_ERROR:", error, errorInfo); }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-black/20 rounded-2xl border border-white/5 p-8 text-center">
+          <Terminal size={32} className="text-red-500 mb-4 opacity-50" />
+          <h3 className="text-xl font-heading text-tier-1 uppercase mb-2">3D_HARDWARE_FAILURE</h3>
+          <p className="text-sm text-tier-3 font-mono uppercase tracking-widest max-w-xs">Uplink bypassed due to WebGL context exhaustion. Direct access nodes remaining stable.</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export const ProfilePage = ({ 
   onExploreProjects, 
@@ -18,7 +42,15 @@ export const ProfilePage = ({
   isDockVisible?: boolean 
 }) => {
   const [displayName, setDisplayName] = React.useState("ROHIT KUMAR SAHOO");
+  const [isMobile, setIsMobile] = React.useState(false);
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%#!@$*";
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   React.useEffect(() => {
     let iterations = 0;
@@ -40,32 +72,27 @@ export const ProfilePage = ({
   return (
     <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="relative min-h-[calc(100vh-180px)] border-none bg-transparent overflow-hidden flex flex-col justify-between p-0">
-        {/* Background/Avatar Center */}
         <div className="absolute inset-0 flex justify-center items-center z-0">
            <div className="relative w-full h-full max-w-xl pointer-events-none flex items-center justify-center">
               <SystemAvatar 
-                className="w-[120%] h-[120%] lg:w-full lg:h-full opacity-40 lg:opacity-90"
+                className="w-[110%] h-[110%] lg:w-full lg:h-full opacity-25 lg:opacity-90 scale-95 lg:scale-100 translate-y-8 lg:translate-y-0 transition-transform"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-black)] via-transparent to-[var(--bg-black)]/40 pointer-events-none" />
            </div>
         </div>
 
-        {/* Content Layer */}
         <div className="relative z-10 flex flex-col min-h-[inherit] justify-between p-0">
-          {/* Top Section */}
-          <div className="flex flex-col lg:flex-row justify-between gap-8 items-start w-full px-0">
-            {/* Left Column */}
+          <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-8 items-start w-full px-0">
             <div className="flex flex-col gap-4 lg:gap-6 max-w-lg text-left">
               <div className="flex items-center gap-3">
                  <div className="w-2 h-2 rounded-full bg-[var(--theme-accent)] animate-pulse shadow-[0_0_8px_var(--theme-accent)]" />
                  <span className="text-[0.8rem] lg:text-[0.9rem] text-tier-3 font-heading tracking-[0.2em] uppercase pt-0.5">UPLINK_ACTIVE</span>
               </div>
-              <h2 className="text-3xl lg:text-5xl tracking-[0.1em] text-tier-1 uppercase leading-none">
-                CS_STUDENT & <br /> Systems_Builder <br /> Based in India
+              <h2 className="text-[1.70rem] sm:text-3xl lg:text-5xl tracking-[0.1em] text-tier-1 uppercase leading-none">
+                CS_STUDENT & <br className="hidden sm:block lg:hidden" /> Systems_Builder <br /> Based in India
               </h2>
             </div>
 
-            {/* Right Column */}
             <div className="flex flex-col gap-6 lg:gap-8 lg:text-right lg:items-end">
               <p className="text-[0.75rem] lg:text-[0.95rem] text-tier-2 font-medium leading-[1.6] max-w-[280px] lg:max-w-sm uppercase tracking-wide opacity-80">
                 EXPLORING REAL-TIME SYSTEMS, BACKEND ARCHITECTURES, AND UNCONVENTIONAL IDEAS — [REDACTED]
@@ -82,16 +109,15 @@ export const ProfilePage = ({
             </div>
           </div>
 
-          {/* Bottom Section: Name Overlay */}
           <motion.div 
             animate={{ 
-              y: isDockVisible ? -95 : 12,
+              y: isMobile ? -65 : (isDockVisible ? -95 : 12),
               opacity: 1
             }}
             transition={{ type: "spring", stiffness: 200, damping: 30 }}
             className="mt-auto w-full pt-10 pb-0 pointer-events-none"
           >
-             <h1 className="text-[13vw] lg:text-[7vw] tracking-wider leading-none text-tier-1 drop-shadow-[0_0_50px_rgba(var(--theme-accent-rgb),0.2)] uppercase whitespace-nowrap text-center">
+             <h1 className="text-[11vw] sm:text-[13vw] lg:text-[7vw] tracking-wider leading-none text-tier-1 drop-shadow-[0_0_50px_rgba(var(--theme-accent-rgb),0.2)] uppercase whitespace-nowrap text-center">
                {displayName}<span className="inline-block w-[1.5vw] h-[1.5vw] bg-[var(--theme-accent)] ml-3 align-baseline translate-y-[-0.2vw]" />
              </h1>
           </motion.div>
@@ -170,13 +196,6 @@ const PROJECTS = [
   }
 ];
 
-
-
-
-import MagicBento, { MagicBentoCard, MagicBentoSpotlight } from '../effects/MagicBento';
-
-import TextType from '../effects/TextType';
-
 export const RegistryPage = () => {
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const activeProject = PROJECTS.find(p => p.id === selectedId) || PROJECTS[0];
@@ -206,13 +225,6 @@ export const RegistryPage = () => {
     </div>
   ];
 
-
-  const [filter, setFilter] = React.useState('ALL');
-
-  const categories = ['ALL', ...Array.from(new Set(PROJECTS.map(p => p.category)))];
-  
-  const filteredProjects = PROJECTS.filter(p => filter === 'ALL' || p.category === filter);
-
   return (
     <AnimatePresence mode="wait">
       {!selectedId ? (
@@ -223,7 +235,6 @@ export const RegistryPage = () => {
           exit={{ opacity: 0, scale: 0.95 }}
           className="flex flex-col gap-4 pb-8 pt-4 bento-section"
         >
-          {/* Header Section */}
           <div className="flex flex-col gap-4 pt-2 relative">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
               <div className="flex flex-col gap-2 max-w-none">
@@ -237,7 +248,6 @@ export const RegistryPage = () => {
                     cursorCharacter={<span className="inline-block w-1.5 h-[0.9em] bg-[var(--theme-accent)] ml-1 align-baseline" />}
                     className="relative z-10 block transition-all duration-700 group-hover:text-[var(--theme-accent)] group-hover:translate-x-1"
                   />
-                  {/* Technical Scanning Effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--theme-accent)]/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] pointer-events-none" />
                 </h2>
               </div>
@@ -248,9 +258,7 @@ export const RegistryPage = () => {
             </div>
           </div>
           
-          {/* Uniform Grid Implementation */}
           <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 pt-6 relative">
-            {/* Background Blueprint Decorative Elements */}
             <div className="absolute inset-0 -z-10 opacity-5 pointer-events-none overflow-hidden">
                <div className="absolute top-0 left-2/4 w-px h-full bg-white/20" />
                <div className="absolute top-2/4 left-0 w-full h-px bg-white/20" />
@@ -272,7 +280,6 @@ export const RegistryPage = () => {
                 className="magic-bento-card magic-bento-card--border-glow flex flex-col gap-3 group cursor-pointer relative p-4 bg-white/[0.01] border border-white/5 transition-all duration-500 rounded-xl"
                 onClick={() => setSelectedId(project.id)}
               >
-                {/* Status Indicator */}
                 <div className="absolute top-4 right-4 flex items-center gap-2">
                   <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
                     project.status === 'STABLE' ? 'bg-green-500' : 'bg-red-500'
@@ -292,8 +299,6 @@ export const RegistryPage = () => {
                       <h3 className="text-xl lg:text-2xl tracking-[0.1em] text-tier-1 group-hover:text-[var(--theme-accent)] transition-colors uppercase leading-none">
                         {project.name}
                       </h3>
-                      
-                      {/* Tech Stack Metadata Tags */}
                       <div className="flex flex-wrap gap-2 mt-3 justify-center lg:justify-start">
                         {project.stack.slice(0, 3).map(tech => (
                           <span key={tech} className="text-[0.5rem] font-mono text-tier-3 border border-white/10 px-1.5 py-0.5 rounded uppercase">
@@ -308,10 +313,6 @@ export const RegistryPage = () => {
                     <p className="text-[0.65rem] font-medium leading-relaxed uppercase tracking-wider line-clamp-2">
                       {project.architecture}
                     </p>
-                    <div className="flex gap-4">
-                       <MetricBar label="FAULTS" value="0" percentage={0} />
-                       <MetricBar label="LOAD" value={`${idx * 15 + 20}`} percentage={idx * 15 + 20} />
-                    </div>
                 </div>
               </MagicBentoCard>
             ))}
@@ -323,11 +324,9 @@ export const RegistryPage = () => {
           initial={{ opacity: 0, scale: 1.02 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.98 }}
-          className="flex flex-col gap-8"
+          className="flex flex-col gap-10 lg:gap-12"
         >
-          {/* Advanced Detail View: High-Density Workstation Layout */}
-          <div className="flex flex-col h-full max-h-[75vh] gap-6 overflow-hidden">
-            {/* Header: Navigation & Global Actions */}
+          <div className="flex flex-col h-full max-h-[82vh] lg:max-h-[75vh] gap-6 lg:gap-10 pb-24 lg:pb-0 overflow-hidden">
             <div className="flex justify-between items-center border-b border-white/5 pb-4">
               <button 
                 onClick={() => setSelectedId(null)}
@@ -351,80 +350,49 @@ export const RegistryPage = () => {
             </div>
 
             <div className="flex-1 flex flex-col lg:flex-row gap-8 lg:gap-10 min-h-0">
-               {/* Left: Intelligence & Analytics */}
                <div className="flex-[1.2] flex flex-col justify-between py-1 min-h-0">
-                  <div className="flex flex-col gap-4 lg:gap-5">
-                    {/* 1. Project Title */}
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[0.75rem] font-heading text-[var(--theme-accent)] tracking-[0.2em] uppercase opacity-50">
-                        ACCESS_NODE::{activeProject.id}
-                      </span>
+                  <div className="flex flex-col gap-3 lg:gap-5">
+                    <div className="flex flex-col">
                       <h2 className="text-4xl lg:text-5xl tracking-[0.1em] text-tier-1 uppercase leading-none">
                         {activeProject.name}
                       </h2>
                     </div>
 
-                    {/* 2. Primary Description */}
-                    <p className="text-base lg:text-lg text-tier-1 font-medium leading-snug tracking-wide">
+                    <p className="text-[0.9rem] sm:text-base lg:text-lg text-tier-1 font-medium leading-relaxed tracking-wide">
                       {activeProject.primaryDescription}
                     </p>
 
-                    {/* 3. Key Metrics */}
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap gap-8 lg:gap-12">
                        {Object.entries(activeProject.metrics).map(([k, v]) => (
-                         <div key={k} className="flex flex-col pl-3 border-l-2 border-[var(--theme-accent)]/30">
-                            <span className="text-[0.45rem] font-mono text-tier-3 opacity-60 uppercase tracking-widest mb-0.5">{k}</span>
-                            <span className="text-sm lg:text-base font-bold text-[var(--theme-accent)] tabular-nums">{v}</span>
+                         <div key={k} className="flex flex-col pl-4 border-l-2 border-[var(--theme-accent)]/30">
+                            <span className="text-[0.7rem] lg:text-[0.5rem] font-mono text-tier-3 opacity-60 uppercase tracking-widest mb-1.5">{k}</span>
+                            <span className="text-xl lg:text-base font-bold text-[var(--theme-accent)] tabular-nums">{v}</span>
                          </div>
                        ))}
                     </div>
 
-                    {/* 4. Tech Stack (inline format) */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-[0.7rem] font-heading text-tier-3 opacity-50 uppercase tracking-[0.2em]">STACK //</span>
-                      <span className="text-[0.65rem] font-mono text-tier-2 uppercase tracking-widest font-bold bg-white/5 px-2 py-1 rounded">
-                        {activeProject.stack.join(' · ')}
-                      </span>
+                    <div className="flex flex-wrap gap-2">
+                      {activeProject.stack.map(tech => (
+                        <span key={tech} className="text-[0.65rem] font-mono text-[var(--theme-accent)] border border-[var(--theme-accent)]/20 bg-[var(--theme-accent)]/5 px-2 py-0.5 rounded uppercase tracking-widest">
+                          {tech}
+                        </span>
+                      ))}
                     </div>
 
-                    {/* 5. Secondary Technical Description & 6. Bullets */}
-                    <div className="flex flex-col gap-2 p-4 lg:p-5 bg-white/[0.02] border border-white/5 rounded-xl">
-                       <p className="text-[0.7rem] lg:text-[0.8rem] text-tier-2 leading-relaxed font-mono uppercase opacity-80">
-                         {activeProject.architecture}
-                       </p>
-                       <ul className="flex flex-col gap-1.5 mt-2">
+                    <div className="flex flex-col gap-4 mt-2">
+                       <ul className="flex flex-col gap-4">
                          {activeProject.details.map((bullet, i) => (
-                           <li key={i} className="text-[0.65rem] font-mono text-tier-3 flex items-center gap-2">
-                             <span className="w-1.5 h-1.5 bg-[var(--theme-accent)]/80 rounded-sm" />
-                             {bullet}
+                           <li key={i} className="text-[1rem] lg:text-[0.8rem] text-tier-2 flex items-start lg:items-center gap-3 leading-relaxed">
+                             <div className="w-1.5 h-1.5 mt-2 lg:mt-0 bg-[var(--theme-accent)]/80 rounded-sm shrink-0" />
+                             <span className="opacity-90">{bullet}</span>
                            </li>
                          ))}
                        </ul>
                     </div>
-
-                    {/* 7. Why it matters */}
-                    <p className="text-[0.65rem] italic text-tier-3 opacity-50 leading-tight">
-                      {activeProject.whyItMatters}
-                    </p>
                   </div>
+                </div>
 
-                  <div className="pt-4 border-t border-white/5 flex items-center justify-between mt-auto">
-                     <div className="flex items-center gap-6">
-                        <div className="flex flex-col">
-                           <span className="text-[0.7rem] pt-0.5 font-heading text-tier-3 opacity-50 uppercase tracking-[0.2em] leading-none mb-0.5">COMMIT_HASH</span>
-                           <span className="text-[0.6rem] font-mono text-tier-2">0x{activeProject.id.slice(0, 8)}...</span>
-                        </div>
-                        <div className="flex flex-col">
-                           <span className="text-[0.7rem] pt-0.5 font-heading text-tier-3 opacity-50 uppercase tracking-[0.2em] leading-none mb-0.5">UPTIME</span>
-                           <span className="text-[0.6rem] font-mono text-green-500/80">99.98%</span>
-                        </div>
-                     </div>
-                     <span className="text-[0.8rem] font-heading text-white/30 tracking-[0.2em] pt-1">SYSTEM://READY</span>
-                  </div>
-               </div>
-
-               {/* Right: Visual Projection */}
-               <div className="flex-1 min-h-0 relative">
+               <div className="hidden sm:flex flex-1 min-h-0 relative">
                   <MagicBentoCard 
                     glowColor="239, 68, 68"
                     enableTilt={false}
@@ -442,14 +410,12 @@ export const RegistryPage = () => {
                             <div className="w-1.5 h-1.5 rounded-full bg-[var(--theme-accent)] animate-pulse" />
                             <span className="text-[0.8rem] pt-0.5 font-heading tracking-widest text-white uppercase leading-none">LIVE_UPLINK</span>
                           </div>
-                          <span className="text-[0.7rem] pt-0.5 font-heading text-white/40 uppercase tracking-widest leading-none">SECURE://V.2.0.4</span>
                         </div>
                         <p className="text-[0.65rem] font-mono text-tier-3 opacity-60 uppercase tracking-wider leading-relaxed italic">
                           {activeProject.details[0]}
                         </p>
                      </div>
 
-                     {/* Blueprint Deco */}
                      <div className="absolute top-6 right-6 w-12 h-12 border-t border-r border-white/20" />
                      <div className="absolute bottom-6 left-6 w-12 h-12 border-b border-l border-white/20 pointer-events-none" />
                   </MagicBentoCard>
@@ -499,51 +465,45 @@ export const HistoryPage = () => {
   ];
 
   return (
-    <div className="w-full flex flex-col xl:flex-row gap-8 xl:gap-16 lg:pt-2 h-full min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Left Timeline */}
-      <div className="flex-1 flex flex-col gap-5 lg:max-w-2xl min-h-0 shrink-0">
-        <span className="section-label">HISTORY // EXPERIENCE</span>
-        <div className="flex flex-col mt-2">
+    <div className="w-full flex flex-col xl:flex-row gap-12 xl:gap-24 lg:pt-4 h-full min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex-[1.5] flex flex-col gap-6 lg:max-w-4xl min-h-0 shrink-0">
+        <span className="section-label text-[var(--theme-accent)]">HISTORY // EXPERIENCE</span>
+        <div className="flex flex-col mt-4">
           {experiences.map((log, i) => (
-            <div key={i} className="flex gap-4 lg:gap-6 group">
-              {/* Timeline Line */}
-              <div className="flex flex-col items-center mt-2.5 shrink-0">
-                <div className={`w-2 h-2 rounded-sm border ${log.active ? 'border-[var(--theme-accent)] bg-[var(--theme-accent)] shadow-[0_0_10px_rgba(var(--theme-accent-rgb),0.5)]' : 'border-white/20 bg-[#0a0a0a]'} group-hover:border-[var(--theme-accent)] transition-all`} />
+            <div key={i} className="flex gap-6 lg:gap-10 group">
+              <div className="flex flex-col items-center mt-3 shrink-0">
+                <div className={`w-2.5 h-2.5 rounded-sm border ${log.active ? 'border-[var(--theme-accent)] bg-[var(--theme-accent)] shadow-[0_0_12px_rgba(var(--theme-accent-rgb),0.6)]' : 'border-white/20 bg-[#0a0a0a]'} group-hover:border-[var(--theme-accent)] transition-all`} />
                 {i !== experiences.length - 1 && (
-                  <div className="w-[1px] h-full bg-white/10 my-2 group-hover:bg-[var(--theme-accent)]/30 transition-all" />
+                  <div className="w-[1px] h-full bg-white/10 my-3 group-hover:bg-[var(--theme-accent)]/30 transition-all" />
                 )}
               </div>
               
-              {/* Content Box */}
-              <div className={`flex-1 pb-6 ${i === experiences.length - 1 ? 'pb-2' : ''}`}>
-                {/* Title & Dates */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 lg:gap-4 mb-1">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <h3 className={`text-xl tracking-[0.1em] uppercase ${log.active ? 'text-[var(--theme-accent)]' : 'text-tier-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.05)]'}`}>
+              <div className={`flex-1 pb-10 ${i === experiences.length - 1 ? 'pb-4' : ''}`}>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 lg:gap-4 mb-2">
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <h3 className={`text-2xl lg:text-3xl tracking-[0.1em] uppercase ${log.active ? 'text-[var(--theme-accent)]' : 'text-tier-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.05)]'}`}>
                       {log.role}
                     </h3>
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                       {log.tags.map(tag => (
-                        <span key={tag} className="text-[0.7rem] leading-none pt-0.5 font-heading tracking-widest border border-white/10 px-2 rounded uppercase text-tier-3 group-hover:text-tier-2 group-hover:border-white/30 transition-all mt-0.5 sm:mt-0">
+                        <span key={tag} className="text-[0.75rem] leading-none pt-1 font-heading tracking-widest border border-white/10 px-2.5 py-0.5 rounded uppercase text-tier-3 group-hover:text-tier-2 group-hover:border-white/30 transition-all mt-0.5 sm:mt-0">
                           {tag}
                         </span>
                       ))}
                     </div>
                   </div>
-                  <span className="text-[0.6rem] text-tier-3 font-mono font-bold tracking-widest uppercase shrink-0">{log.period}</span>
+                  <span className="text-[0.8rem] text-tier-3 font-mono font-bold tracking-widest uppercase shrink-0 opacity-60">{log.period}</span>
                 </div>
                 
-                {/* Company/Context */}
-                <div className="flex items-center gap-2 text-[0.6rem] text-tier-2 mb-3.5 font-mono font-bold tracking-widest uppercase">
-                   <Hash size={12} strokeWidth={2.5} className="text-[var(--theme-accent)]/70" /> {log.company}
+                <div className="flex items-center gap-2 text-[0.85rem] text-tier-2 mb-5 font-mono font-bold tracking-widest uppercase opacity-80">
+                   <Hash size={14} strokeWidth={2.5} className="text-[var(--theme-accent)]" /> {log.company}
                 </div>
                 
-                {/* Bullets */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3.5">
                    {log.logs.map((item, j) => (
-                     <div key={j} className="text-[0.8rem] text-tier-2 leading-[1.5] flex items-start gap-3">
-                       <div className="mt-2 w-1 h-1 rounded-sm bg-white/30 group-hover:bg-[var(--theme-accent)] transition-all shrink-0" />
-                       <span className="tracking-normal font-medium">{item}</span>
+                     <div key={j} className="text-[1rem] lg:text-[1.1rem] text-tier-2 leading-relaxed flex items-start gap-4">
+                       <div className="mt-2.5 w-1.5 h-1.5 rounded-sm bg-white/20 group-hover:bg-[var(--theme-accent)] transition-all shrink-0" />
+                       <span className="tracking-normal font-medium opacity-90">{item}</span>
                      </div>
                    ))}
                 </div>
@@ -553,47 +513,45 @@ export const HistoryPage = () => {
         </div>
       </div>
 
-      {/* Right Proof Layer */}
-      <div className="w-full xl:w-[280px] shrink-0 mt-2 xl:mt-10 mb-8 xl:mb-0">
-        <div className="p-5 border border-white/10 bg-black/40 backdrop-blur-md rounded-xl relative overflow-hidden group hover:border-white/20 transition-all shadow-xl">
+      <div className="w-full xl:w-[350px] shrink-0 mt-2 xl:mt-16 mb-8 xl:mb-0">
+        <div className="p-7 border border-white/10 bg-black/40 backdrop-blur-md rounded-2xl relative overflow-hidden group hover:border-[var(--theme-accent)]/20 transition-all shadow-2xl">
           <div className="absolute inset-0 bg-gradient-to-br from-[var(--theme-accent)]/5 to-transparent opacity-50" />
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/80 to-transparent" />
           
-          <div className="relative flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <Github size={16} className="text-[var(--theme-accent)]" />
-              <span className="text-[0.85rem] tracking-widest font-heading text-tier-1 uppercase pt-0.5 leading-none">GITHUB_IMPACT</span>
+          <div className="relative flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <Github size={18} className="text-[var(--theme-accent)]" />
+              <span className="text-[0.95rem] tracking-[0.2em] font-heading text-tier-1 uppercase pt-0.5 leading-none">GITHUB_IMPACT</span>
             </div>
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]" />
           </div>
 
-          <div className="relative grid grid-cols-2 gap-y-5 gap-x-4">
-            <div className="flex flex-col gap-1">
-               <span className="text-[0.75rem] font-heading pt-0.5 text-tier-3 tracking-widest uppercase leading-none">REPOSITORIES</span>
-               <span className="text-xl font-bold font-mono text-tier-1 tabular-nums">14</span>
+          <div className="relative grid grid-cols-2 gap-y-7 gap-x-6">
+            <div className="flex flex-col gap-1.5">
+               <span className="text-[0.75rem] font-heading pt-0.5 text-tier-3 tracking-widest uppercase leading-none opacity-40">REPOSITORIES</span>
+               <span className="text-3xl font-bold font-mono text-tier-1 tabular-nums">14</span>
             </div>
-            <div className="flex flex-col gap-1">
-               <span className="text-[0.75rem] font-heading pt-0.5 text-tier-3 tracking-widest uppercase leading-none">COMMITS</span>
-               <span className="text-xl font-bold font-mono text-tier-1 tabular-nums">520+</span>
+            <div className="flex flex-col gap-1.5">
+               <span className="text-[0.75rem] font-heading pt-0.5 text-tier-3 tracking-widest uppercase leading-none opacity-40">COMMITS</span>
+               <span className="text-3xl font-bold font-mono text-tier-1 tabular-nums">520+</span>
             </div>
-            <div className="flex flex-col gap-1">
-               <span className="text-[0.75rem] font-heading pt-0.5 text-tier-3 tracking-widest uppercase leading-none">SINCE</span>
-               <span className="text-xl font-bold font-mono text-tier-1 tabular-nums">2021</span>
+            <div className="flex flex-col gap-1.5">
+               <span className="text-[0.75rem] font-heading pt-0.5 text-tier-3 tracking-widest uppercase leading-none opacity-40">SINCE</span>
+               <span className="text-3xl font-bold font-mono text-tier-1 tabular-nums">2021</span>
             </div>
-            <div className="flex flex-col gap-1">
-               <span className="text-[0.75rem] font-heading pt-0.5 text-tier-3 tracking-widest uppercase leading-none">UPLINK</span>
+            <div className="flex flex-col gap-1.5">
+               <span className="text-[0.75rem] font-heading pt-0.5 text-tier-3 tracking-widest uppercase leading-none opacity-40">UPLINK</span>
                <div className="flex items-center mt-1">
-                 <span className="text-[0.7rem] font-bold font-mono text-green-500 tracking-widest uppercase shadow-[0_0_8px_rgba(34,197,94,0)]">STABLE</span>
+                 <span className="text-[0.9rem] font-bold font-mono text-green-500 tracking-[0.3em] uppercase">STABLE</span>
                </div>
             </div>
           </div>
           
-          {/* Activity Graph */}
-          <div className="relative mt-8 border-t border-white/5 pt-4">
-             <span className="text-[0.7rem] font-heading text-tier-3 tracking-widest uppercase mb-1 block">CONTRIBUTION_VELOCITY</span>
-             <div className="flex items-end gap-[1px] h-8 opacity-60 group-hover:opacity-100 transition-opacity">
+          <div className="relative mt-10 border-t border-white/5 pt-6">
+             <span className="text-[0.7rem] font-heading text-tier-3 tracking-[0.2em] uppercase mb-2 block opacity-40">CONTRIBUTION_VELOCITY</span>
+             <div className="flex items-end gap-[2px] h-10 opacity-40 group-hover:opacity-100 transition-opacity">
                {[40, 70, 45, 90, 65, 80, 50, 100, 75, 40, 85, 60, 95, 30, 60, 80].map((h, i) => (
-                 <div key={i} className="flex-1 bg-white/20 group-hover:bg-[var(--theme-accent)]/80 transition-colors rounded-t-[1px]" style={{ height: `${h}%` }} />
+                 <div key={i} className="flex-1 bg-white/20 group-hover:bg-[var(--theme-accent)] transition-colors rounded-t-[1px]" style={{ height: `${h}%` }} />
                ))}
              </div>
           </div>
@@ -603,52 +561,127 @@ export const HistoryPage = () => {
   );
 };
 
-
-
 export const ContactPage = () => {
-  const contactCards = [
+  const contacts = [
     {
+      id: 'COMM_01',
       title: 'EMAIL_ENDPOINT',
-      description: 'rohitksahoot@gmail.com',
+      value: 'rohitksahoot@gmail.com',
       label: 'SECURE_MAIL',
+      icon: Mail,
+      url: 'mailto:rohitksahoot@gmail.com'
     },
     {
+      id: 'COMM_02',
       title: 'GITHUB_SIGNAL',
-      description: 'github.com/RohitKSahoo',
+      value: 'github.com/RohitKSahoo',
       label: 'SOURCE_CODE',
+      icon: Github,
+      url: 'https://github.com/RohitKSahoo'
     },
     {
+      id: 'COMM_03',
       title: 'LINKEDIN_UPLINK',
-      description: 'linkedin.com/in/rohitksahoo',
+      value: 'linkedin.com/in/rohitksahoo',
       label: 'PROFESSIONAL_NET',
-    },
-    {
-      title: 'PHYSICAL_LOC',
-      description: 'BHUBANESWAR // INDIA',
-      label: 'LOCATION_NODE',
-    },
-    {
-      title: 'AVAILABILITY',
-      description: 'OPEN_FOR_COLLABORATIONS // FULL_STACK',
-      label: 'STATUS',
-    },
-    {
-      title: 'SYSTEM_HEARTBEAT',
-      description: '99.9%_UPTIME // READY_TO_BUILD',
-      label: 'HEARTBEAT',
+      icon: Linkedin,
+      url: 'https://linkedin.com/in/rohitksahoo'
     }
   ];
 
   return (
-    <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col gap-6 pt-6">
-        <h2 className="text-3xl lg:text-4xl text-tier-1 uppercase tracking-[0.1em] leading-none mb-1">
-          Contact Protocol
-        </h2>
-        <div className="w-full h-px bg-white/10" />
+    <div className="w-full flex flex-col xl:flex-row gap-12 xl:gap-16 lg:pt-4 h-full min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* 3D Lanyard (Anchored to Screen Top) */}
+      <div className="fixed top-0 left-0 w-full lg:w-[500px] h-screen pointer-events-none z-50">
+        <ErrorBoundary>
+          <div className="w-full h-full pointer-events-auto">
+            <Suspense fallback={null}>
+              <Lanyard transparent={true} />
+            </Suspense>
+          </div>
+        </ErrorBoundary>
       </div>
-      
-      <MagicBento cards={contactCards} />
+
+      {/* Center Column: Direct Uplinks */}
+      <div className="flex-1 flex flex-col gap-10 min-h-0">
+        <div className="flex flex-col gap-2">
+          <span className="section-label text-[var(--theme-accent)]">COMMUNICATION // PROTOCOL</span>
+          <h2 className="text-3xl lg:text-4xl tracking-widest text-tier-1 uppercase leading-tight mt-2">
+            AVAILABLE_FOR <br /> COLLABORATIONS
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {contacts.map((contact, i) => (
+            <a 
+              key={contact.id}
+              href={contact.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-7 border border-white/10 bg-black/40 backdrop-blur-md rounded-2xl group hover:border-[var(--theme-accent)]/30 transition-all shadow-xl relative overflow-hidden"
+            >
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="flex flex-col gap-5 relative z-10">
+                <div className="flex items-center justify-between">
+                  <div className="p-2.5 bg-white/5 rounded-xl text-[var(--theme-accent)] group-hover:bg-[var(--theme-accent)] group-hover:text-black transition-all">
+                    <contact.icon size={18} />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[0.65rem] font-heading text-[var(--theme-accent)] tracking-widest uppercase mb-1">{contact.label}</span>
+                  <h3 className="text-lg lg:text-xl tracking-[0.1em] text-tier-1 uppercase leading-none group-hover:text-[var(--theme-accent)] transition-all">
+                    {contact.title}
+                  </h3>
+                  <p className="text-[0.8rem] text-tier-2 font-mono mt-2 opacity-50 group-hover:opacity-90 transition-all truncate">
+                    {contact.value}
+                  </p>
+                </div>
+              </div>
+            </a>
+          ))}
+          
+          <div className="p-7 border border-white/5 bg-white/[0.01] rounded-2xl relative overflow-hidden flex flex-col gap-5">
+              <div className="p-2.5 bg-white/5 rounded-xl text-tier-3 w-fit">
+                <Terminal size={18} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-[0.65rem] font-heading text-tier-3 tracking-widest uppercase mb-1">LOCATION</span>
+                <h3 className="text-lg lg:text-xl tracking-[0.1em] text-tier-1 uppercase leading-none">BHUBANESWAR // IND</h3>
+                <p className="text-[0.8rem] text-tier-2 font-mono mt-2 opacity-30">LOCAL_TIME_SYNCED</p>
+              </div>
+          </div>
+        </div>
+
+         <div className="p-7 border border-white/5 bg-white/[0.01] rounded-2xl flex flex-col gap-8">
+            <div className="flex flex-col gap-5">
+               <span className="text-[0.7rem] font-heading text-[var(--theme-accent)] tracking-[0.3em] uppercase opacity-50">AVAILABILITY_SYNC</span>
+               <div className="flex flex-col gap-6">
+                  <div className="flex flex-col gap-2.5">
+                     <div className="flex justify-between items-end">
+                        <span className="text-[0.7rem] text-tier-2 font-mono tracking-widest uppercase">SYD_UPLINK</span>
+                        <span className="text-[0.7rem] text-[var(--theme-accent)] font-bold font-mono">100%_OPEN</span>
+                     </div>
+                     <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                        <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 1.5 }} className="h-full bg-[var(--theme-accent)]" />
+                     </div>
+                  </div>
+                  <div className="flex flex-col gap-2.5">
+                     <div className="flex justify-between items-end">
+                        <span className="text-[0.7rem] text-tier-2 font-mono tracking-widest uppercase">LATENCY</span>
+                        <span className="text-[0.7rem] text-green-500 font-bold font-mono">{"<"}12H_EXPECTED</span>
+                     </div>
+                     <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                        <motion.div initial={{ width: 0 }} animate={{ width: '92%' }} transition={{ duration: 1.5, delay: 0.2 }} className="h-full bg-green-500" />
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div className="flex items-center gap-3 py-4 px-6 bg-green-500/5 border border-green-500/20 rounded-xl">
+               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_#22c55e]" />
+               <span className="text-[0.65rem] font-mono text-green-500 font-bold tracking-[0.2em] uppercase">READY_TO_RECEIVE</span>
+            </div>
+         </div>
+      </div>
     </div>
   );
 };

@@ -38,16 +38,21 @@ const DockItem = ({
   const widthSync = useTransform(distance, [-150, 0, 150], [60, 100, 60]);
   const width = useSpring(widthSync, { mass: 0.1, stiffness: 150, damping: 12 });
 
+  const handleTap = () => {
+    setActiveTab(item.id);
+    // Force reset the magnetic magnification immediately after tap
+    mouseX.set(Infinity);
+  };
+
   return (
     <motion.div
       ref={ref}
-      onClick={() => setActiveTab(item.id)}
+      onClick={handleTap}
       style={{ width }}
       className="aspect-square relative flex items-center justify-center cursor-pointer group"
     >
       <motion.div 
-        ref={ref}
-        onClick={() => setActiveTab(item.id)}
+        onClick={handleTap}
         style={{ 
           width, 
           height: width,
@@ -87,6 +92,14 @@ const DockItem = ({
 export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDockVisible, setIsDockVisible }) => {
   const mouseX = useMotionValue(Infinity);
   const [isHovered, setIsHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Initial landing animation: Show then Hide
   useEffect(() => {
@@ -125,7 +138,7 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
         onMouseLeave={() => mouseX.set(Infinity)}
         initial={{ y: 100, opacity: 0 }}
         animate={{ 
-          y: isDockVisible || isHovered ? 0 : 75, 
+          y: isDockVisible || isHovered || isMobile ? 0 : 75, 
           opacity: 1,
         }}
         transition={{ type: "spring", stiffness: 260, damping: 25 }}
