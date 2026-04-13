@@ -38,10 +38,10 @@ const Folder: React.FC<FolderProps> = ({ color = '#5227FF', size = 1, items = []
     Array.from({ length: maxItems }, () => ({ x: 0, y: 0 }))
   );
 
-  const folderBackColor = darkenColor(color, 0.08);
-  const paper1 = darkenColor('#ffffff', 0.1);
-  const paper2 = darkenColor('#ffffff', 0.05);
-  const paper3 = '#ffffff';
+  const folderBackColor = darkenColor(color, 0.15);
+  const paper1 = '#0f0f0f';
+  const paper2 = '#0a0a0a';
+  const paper3 = '#121212';
 
   const handleMouseEnter = () => setOpen(true);
   const handleMouseLeave = () => {
@@ -54,8 +54,8 @@ const Folder: React.FC<FolderProps> = ({ color = '#5227FF', size = 1, items = []
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    const offsetX = (e.clientX - centerX) * 0.15;
-    const offsetY = (e.clientY - centerY) * 0.15;
+    const offsetX = (e.clientX - centerX) * 0.12;
+    const offsetY = (e.clientY - centerY) * 0.12;
     setPaperOffsets(prev => {
       const newOffsets = [...prev];
       newOffsets[index] = { x: offsetX, y: offsetY };
@@ -76,7 +76,8 @@ const Folder: React.FC<FolderProps> = ({ color = '#5227FF', size = 1, items = []
     '--folder-back-color': folderBackColor,
     '--paper-1': paper1,
     '--paper-2': paper2,
-    '--paper-3': paper3
+    '--paper-3': paper3,
+    '--paper-border': 'rgba(255,255,255,0.08)'
   } as React.CSSProperties;
 
   const folderClassName = `folder ${open ? 'open' : ''}`.trim();

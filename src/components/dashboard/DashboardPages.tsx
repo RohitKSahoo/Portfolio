@@ -105,6 +105,8 @@ const PROJECTS = [
   { 
     id: 'P_01', 
     name: 'PAUSIFY', 
+    category: 'SYSTEMS',
+    status: 'STABLE',
     ver: '1.0.0',
     details: ['Real-time audio pipeline (JNI + C++)', '<50ms latency on 16khz streams', 'VAD + Speaker Recognition + Yamnet'],
     architecture: 'State-machine driven audio control engine with low-latency signal processing and noise robustness',
@@ -112,11 +114,14 @@ const PROJECTS = [
     stack: ['C++', 'JNI', 'Python'],
     access: 'PUBLIC',
     github: 'https://github.com/RohitKSahoo/Pausify',
-    image: '/pausify_module_1775283678626.png'
+    image: '/pausify_module_1775283678626.png',
+    featured: true
   },
   { 
     id: 'P_02', 
     name: 'SOSAFE', 
+    category: 'COMMUNICATION',
+    status: 'OPERATIONAL',
     ver: '1.2.0',
     details: ['WebRTC Audio streaming (P2P)', 'Live location tracking (Firestore)', 'Cloud fallback (Cloudinary)'],
     architecture: 'Hybrid real-time communication system with dynamic failover between P2P and Cloud streaming',
@@ -129,6 +134,8 @@ const PROJECTS = [
   { 
     id: 'P_03', 
     name: 'AUTOCOMMITBOT', 
+    category: 'AUTOMATION',
+    status: 'ACTIVE',
     ver: '1.1.0',
     details: ['AI-generated commits (Gemini API)', 'Diff analysis via GitPython', 'Background Execution (Task Scheduler)'],
     architecture: 'Autonomous CLI agent for context-aware version control with failsafe fallback execution',
@@ -136,11 +143,14 @@ const PROJECTS = [
     stack: ['Python', 'Gemini', 'Bash'],
     access: 'PUBLIC',
     github: 'https://github.com/RohitKSahoo/auto-commit-bot',
-    image: '/autocommit_module_1775283716495.png'
+    image: '/autocommit_module_1775283716495.png',
+    featured: true
   },
   { 
     id: 'P_04', 
     name: 'SYS_MONITOR_UI', 
+    category: 'FRONTEND',
+    status: 'INTERNAL_BETA',
     ver: '0.9.0',
     details: ['Real-time metric visualization', 'System telemetry log streaming', 'Dashboard-driven UI Architecture'],
     architecture: 'Frontend system interface simulating backend state, metrics, and operational status',
@@ -157,25 +167,42 @@ const PROJECTS = [
 
 import MagicBento from '../effects/MagicBento';
 
+import TextType from '../effects/TextType';
+
 export const RegistryPage = () => {
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const activeProject = PROJECTS.find(p => p.id === selectedId) || PROJECTS[0];
 
   const getFolderItems = (project: typeof PROJECTS[0]) => [
-    <div key="1" className="w-full h-full flex flex-col items-center justify-center p-2 bg-white text-black">
-      <span className="text-[0.4rem] font-bold opacity-30 mb-1">DATA_01</span>
-      <div className="w-full h-px bg-black/10 mb-2" />
-      <span className="text-[0.6rem] font-black uppercase tracking-tighter text-center">{project.name}</span>
+    <div key="1" className="w-full h-full flex flex-col items-center justify-center p-2 bg-[#0c0c0c] text-[var(--theme-accent)] overflow-hidden">
+      <div className="w-full flex justify-between items-center opacity-40 mb-1">
+        <span className="text-[0.35rem] font-mono">TRACE_0x{project.id.slice(-2)}</span>
+        <Zap size={6} />
+      </div>
+      <div className="w-full h-px bg-[var(--theme-accent)]/20 mb-1" />
+      <div className="flex flex-col gap-0.5 w-full opacity-60">
+        <span className="text-[0.4rem] font-mono truncate">{">>"} PINIT_CORE...</span>
+        <span className="text-[0.4rem] font-mono truncate">{">>"} SYSCALL_01_OK</span>
+        <span className="text-[0.4rem] font-mono truncate">{">>"} UPLINK_READY</span>
+      </div>
     </div>,
-    <div key="2" className="w-full h-full flex items-center justify-center bg-gray-100">
-       <img src={project.image} className="w-full h-full object-cover opacity-80" alt="Preview" />
+    <div key="2" className="w-full h-full flex items-center justify-center bg-black relative">
+       <img src={project.image} className="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all duration-500" alt="Preview" />
+       <div className="absolute inset-0 bg-black/40" />
+       <div className="absolute top-1 left-1 px-1 bg-[var(--theme-accent)] text-black text-[0.4rem] font-black uppercase">LIVE</div>
     </div>,
-    <div key="3" className="w-full h-full flex flex-col items-center justify-center p-2 bg-white text-red-600">
-       <Terminal size={12} strokeWidth={3} />
-       <span className="text-[0.5rem] font-black mt-1">UPLINK</span>
+    <div key="3" className="w-full h-full flex flex-col items-center justify-center p-2 bg-[#0c0c0c] border border-[var(--theme-accent)]/30">
+       <Terminal size={14} strokeWidth={2.5} className="text-[var(--theme-accent)] mb-1" />
+       <span className="text-[0.4rem] font-black text-white/40 tracking-widest">EXECUTABLE</span>
     </div>
   ];
 
+
+  const [filter, setFilter] = React.useState('ALL');
+
+  const categories = ['ALL', ...Array.from(new Set(PROJECTS.map(p => p.category)))];
+  
+  const filteredProjects = PROJECTS.filter(p => filter === 'ALL' || p.category === filter);
 
   return (
     <AnimatePresence mode="wait">
@@ -185,32 +212,96 @@ export const RegistryPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="flex flex-col gap-12 pb-20 pt-10"
+          className="flex flex-col gap-4 pb-8 pt-4"
         >
-          <div className="flex flex-col gap-6 pt-6">
-            <h2 className="text-3xl font-black text-tier-1 tracking-widest uppercase leading-none">
-              Explore Projects
-            </h2>
-            <div className="w-full h-px bg-white/10" />
+          {/* Header Section */}
+          <div className="flex flex-col gap-4 pt-2 relative">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
+              <div className="flex flex-col gap-2 max-w-2xl">
+                <span className="text-[0.55rem] font-mono font-bold text-[var(--theme-accent)] tracking-[0.4em] uppercase opacity-60">REGISTRY_MOD_01</span>
+                <h2 className="text-xl lg:text-2xl font-black text-tier-1 tracking-tightest uppercase leading-tight relative group">
+                  <TextType 
+                    text="ENGINEERING SYSTEMS THAT AUTOMATE, OPTIMIZE, AND SCALE EVERYDAY WORKFLOWS."
+                    typingSpeed={40}
+                    initialDelay={500}
+                    loop={false}
+                    cursorCharacter={<span className="inline-block w-1.5 h-[0.9em] bg-[var(--theme-accent)] ml-1 align-baseline" />}
+                    className="relative z-10 block transition-all duration-700 group-hover:text-[var(--theme-accent)] group-hover:translate-x-1"
+                  />
+                  {/* Technical Scanning Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--theme-accent)]/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] pointer-events-none" />
+                </h2>
+              </div>
+            </div>
+            <div className="w-full h-px bg-white/10 relative">
+               <div className="absolute -top-1 -right-1 w-2 h-2 border border-white/20" />
+               <div className="absolute -bottom-1 -left-1 w-2 h-2 border border-white/20" />
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16 pt-10">
-            {PROJECTS.map((project) => (
+          {/* Uniform Grid Implementation */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 pt-6 relative">
+            {/* Background Blueprint Decorative Elements */}
+            <div className="absolute inset-0 -z-10 opacity-5 pointer-events-none overflow-hidden">
+               <div className="absolute top-0 left-2/4 w-px h-full bg-white/20" />
+               <div className="absolute top-2/4 left-0 w-full h-px bg-white/20" />
+               <div className="absolute bottom-10 right-10 flex flex-col font-mono text-[10px] text-white/40 items-end">
+                  <span>COORD_X: 77.218</span>
+                  <span>COORD_Y: 28.613</span>
+                  <span>SYSTEM_STABLE: 99.8%</span>
+               </div>
+            </div>
+
+            {PROJECTS.map((project, idx) => (
               <motion.div 
                 key={project.id}
                 layoutId={`project-${project.id}`}
-                className="flex flex-col items-center gap-8 group cursor-pointer"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: idx * 0.1 }}
+                className="flex flex-col gap-4 group cursor-pointer relative p-5 bg-white/[0.01] border border-white/5 hover:bg-white/[0.03] transition-all duration-500 hover:border-[var(--theme-accent)]/30 rounded-xl"
                 onClick={() => setSelectedId(project.id)}
               >
-                <div className="relative transform transition-transform duration-500 group-hover:scale-110">
-                   <Folder color="var(--theme-accent)" size={1.1} items={getFolderItems(project)} />
-                   <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[var(--theme-accent)]/10 border border-[var(--theme-accent)]/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <Zap size={12} className="text-[var(--theme-accent)]" />
+                {/* Status Indicator */}
+                <div className="absolute top-4 right-4 flex items-center gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                    project.status === 'STABLE' ? 'bg-green-500' : 'bg-red-500'
+                  }`} />
+                  <span className="text-[0.45rem] font-mono font-black text-tier-3 tracking-[0.2em]">[{project.status}]</span>
+                </div>
+
+                <div className="flex flex-col lg:flex-row items-center gap-6 group-hover:translate-y-[-4px] transition-transform duration-500">
+                   <div className="relative">
+                      <Folder color="var(--theme-accent)" size={0.9} items={getFolderItems(project)} />
+                   </div>
+
+                   <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+                      <span className="text-[0.6rem] font-mono text-[var(--theme-accent)] tracking-[0.4em] font-bold uppercase mb-1">
+                        PRJ_MOD_0{project.id.slice(-1)}
+                      </span>
+                      <h3 className="text-xl lg:text-2xl font-black text-tier-1 tracking-tightest group-hover:text-[var(--theme-accent)] transition-colors uppercase leading-tight">
+                        {project.name}
+                      </h3>
+                      
+                      {/* Tech Stack Metadata Tags */}
+                      <div className="flex flex-wrap gap-2 mt-3 justify-center lg:justify-start">
+                        {project.stack.slice(0, 3).map(tech => (
+                          <span key={tech} className="text-[0.5rem] font-mono text-tier-3 border border-white/10 px-1.5 py-0.5 rounded uppercase">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
                    </div>
                 </div>
-                <div className="flex flex-col items-center text-center mt-2">
-                  <span className="text-[0.6rem] font-mono text-tier-3 tracking-[0.4em] font-bold opacity-40 uppercase mb-2">PRJ_IDX_0{project.id.slice(-1)}</span>
-                  <span className="text-xl font-black text-tier-2 group-hover:text-[var(--theme-accent)] transition-colors uppercase tracking-widest">{project.name}</span>
+
+                <div className="hidden lg:flex flex-col gap-2 mt-2 pt-4 border-t border-white/5 opacity-40 group-hover:opacity-100 transition-opacity">
+                    <p className="text-[0.65rem] font-medium leading-relaxed uppercase tracking-wider line-clamp-2">
+                      {project.architecture}
+                    </p>
+                    <div className="flex gap-4">
+                       <MetricBar label="FAULTS" value="0" percentage={0} />
+                       <MetricBar label="LOAD" value={`${idx * 15 + 20}`} percentage={idx * 15 + 20} />
+                    </div>
                 </div>
               </motion.div>
             ))}
@@ -224,7 +315,8 @@ export const RegistryPage = () => {
           exit={{ opacity: 0, scale: 0.98 }}
           className="flex flex-col gap-8"
         >
-           <div className="flex justify-between items-center">
+          {/* Detail View Remains mostly the same, but ensuring consistency */}
+          <div className="flex justify-between items-center">
              <button 
               onClick={() => setSelectedId(null)}
               className="flex items-center gap-2 text-tier-3 hover:text-[var(--theme-accent)] transition-all group w-fit"

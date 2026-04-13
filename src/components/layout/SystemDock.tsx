@@ -78,13 +78,7 @@ const DockItem = ({
           </div>
         </div>
 
-        {/* Active Indicator */}
-        {isActive && (
-          <motion.div 
-            layoutId="dock-indicator"
-            className="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full bg-[var(--theme-accent)] shadow-[0_0_8px_var(--theme-accent)]"
-          />
-        )}
+        {/* Active Indicator Removed */}
       </motion.div>
     </motion.div>
   );
