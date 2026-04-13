@@ -28,18 +28,14 @@
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  aspect-ratio: 16/10;
-  min-height: 130px;
   width: 100%;
   max-width: 100%;
-  padding: 1.25em;
-  border-radius: 16px;
+  padding: 1rem;
+  border-radius: 12px;
   border: 1px solid var(--border-color);
   background: var(--background-dark);
   font-weight: 300;
-  overflow: hidden;
   transition: all 0.3s ease;
-  backdrop-blur: 10px;
 
   --glow-x: 50%;
   --glow-y: 50%;
