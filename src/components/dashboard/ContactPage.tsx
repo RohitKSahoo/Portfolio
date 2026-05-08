@@ -76,10 +76,10 @@ export const ContactPage = () => {
               <div>
                 <span className="text-[0.65rem] font-satoshi font-medium text-red-500 uppercase tracking-wider">EMAIL</span>
                 <h3 className="text-base font-bold font-satoshi text-white">Email Me</h3>
-                <p className="text-sm text-white/40 font-inter">rohitsahoo.dev@gmail.com</p>
+                <p className="text-sm text-white/40 font-inter">rohitkumarsahoo37@gmail.com</p>
               </div>
             </div>
-            <a href="mailto:rohitsahoo.dev@gmail.com" className="px-5 py-2.5 border border-white/5 rounded-lg text-xs font-medium font-satoshi text-white flex items-center gap-2 hover:bg-white/5 transition-all opacity-40 group-hover:opacity-100">
+            <a href="mailto:rohitkumarsahoo37@gmail.com" className="px-5 py-2.5 border border-white/5 rounded-lg text-xs font-medium font-satoshi text-white flex items-center gap-2 hover:bg-white/5 transition-all opacity-40 group-hover:opacity-100">
               Send Email
               <ArrowRight size={14} />
             </a>
@@ -94,10 +94,10 @@ export const ContactPage = () => {
               <div>
                 <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">GITHUB</span>
                 <h3 className="text-base font-bold font-satoshi text-white">GitHub Profile</h3>
-                <p className="text-sm text-white/40 font-inter">github.com/rohitXsahoo</p>
+                <p className="text-sm text-white/40 font-inter">github.com/RohitKSahoo</p>
               </div>
             </div>
-            <a href="https://github.com/rohitXsahoo" target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 border border-white/5 rounded-lg text-xs font-medium font-satoshi text-white flex items-center gap-2 hover:bg-white/5 transition-all opacity-40 group-hover:opacity-100">
+            <a href="https://github.com/RohitKSahoo" target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 border border-white/5 rounded-lg text-xs font-medium font-satoshi text-white flex items-center gap-2 hover:bg-white/5 transition-all opacity-40 group-hover:opacity-100">
               View Profile
               <ArrowRight size={14} />
             </a>
@@ -112,10 +112,10 @@ export const ContactPage = () => {
               <div>
                 <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">LINKEDIN</span>
                 <h3 className="text-base font-bold font-satoshi text-white">LinkedIn Profile</h3>
-                <p className="text-sm text-white/40 font-inter">linkedin.com/in/rohitxsahoo</p>
+                <p className="text-sm text-white/40 font-inter">linkedin.com/in/rohitksahoo</p>
               </div>
             </div>
-            <a href="https://linkedin.com/in/rohitxsahoo" target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 border border-white/5 rounded-lg text-xs font-medium font-satoshi text-white flex items-center gap-2 hover:bg-white/5 transition-all opacity-40 group-hover:opacity-100">
+            <a href="https://linkedin.com/in/rohitksahoo" target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 border border-white/5 rounded-lg text-xs font-medium font-satoshi text-white flex items-center gap-2 hover:bg-white/5 transition-all opacity-40 group-hover:opacity-100">
               Connect
               <ArrowRight size={14} />
             </a>
