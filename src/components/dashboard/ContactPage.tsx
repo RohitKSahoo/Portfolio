@@ -68,58 +68,52 @@ export const ContactPage = () => {
           </div>
 
           {/* Email Card */}
-          <div className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group">
+          <a href="mailto:rohitkumarsahoo37@gmail.com" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Mail size={24} />
               </div>
               <div>
-                <span className="text-[0.65rem] font-satoshi font-medium text-red-500 uppercase tracking-wider">EMAIL</span>
-                <h3 className="text-base font-bold font-satoshi text-white">Email Me</h3>
+                <h3 className="text-base font-bold font-satoshi text-white">Email</h3>
                 <p className="text-sm text-white/40 font-inter">rohitkumarsahoo37@gmail.com</p>
               </div>
             </div>
-            <a href="mailto:rohitkumarsahoo37@gmail.com" className="px-5 py-2.5 border border-white/5 rounded-lg text-xs font-medium font-satoshi text-white flex items-center gap-2 hover:bg-white/5 transition-all opacity-40 group-hover:opacity-100">
-              Send Email
-              <ArrowRight size={14} />
-            </a>
-          </div>
+            <div className="w-8 h-8 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/5 transition-all">
+              <ArrowRight size={14} className="text-white/50 group-hover:text-red-500 transition-all" />
+            </div>
+          </a>
 
           {/* GitHub Card */}
-          <div className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group">
+          <a href="https://github.com/RohitKSahoo" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-white/5 text-white/80 rounded-lg">
                 <Github size={24} />
               </div>
               <div>
-                <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">GITHUB</span>
-                <h3 className="text-base font-bold font-satoshi text-white">GitHub Profile</h3>
+                <h3 className="text-base font-bold font-satoshi text-white">GitHub</h3>
                 <p className="text-sm text-white/40 font-inter">github.com/RohitKSahoo</p>
               </div>
             </div>
-            <a href="https://github.com/RohitKSahoo" target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 border border-white/5 rounded-lg text-xs font-medium font-satoshi text-white flex items-center gap-2 hover:bg-white/5 transition-all opacity-40 group-hover:opacity-100">
-              View Profile
-              <ArrowRight size={14} />
-            </a>
-          </div>
+            <div className="w-8 h-8 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/5 transition-all">
+              <ArrowRight size={14} className="text-white/50 group-hover:text-red-500 transition-all" />
+            </div>
+          </a>
 
           {/* LinkedIn Card */}
-          <div className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group">
+          <a href="https://linkedin.com/in/rohitksahoo" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-white/5 text-white/80 rounded-lg">
                 <Linkedin size={24} />
               </div>
               <div>
-                <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">LINKEDIN</span>
-                <h3 className="text-base font-bold font-satoshi text-white">LinkedIn Profile</h3>
+                <h3 className="text-base font-bold font-satoshi text-white">LinkedIn</h3>
                 <p className="text-sm text-white/40 font-inter">linkedin.com/in/rohitksahoo</p>
               </div>
             </div>
-            <a href="https://linkedin.com/in/rohitksahoo" target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 border border-white/5 rounded-lg text-xs font-medium font-satoshi text-white flex items-center gap-2 hover:bg-white/5 transition-all opacity-40 group-hover:opacity-100">
-              Connect
-              <ArrowRight size={14} />
-            </a>
-          </div>
+            <div className="w-8 h-8 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/5 transition-all">
+              <ArrowRight size={14} className="text-white/50 group-hover:text-red-500 transition-all" />
+            </div>
+          </a>
         </div>
       </div>
 
