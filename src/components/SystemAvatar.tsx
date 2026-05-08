@@ -178,18 +178,6 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
         )}
       </motion.svg>
 
-      {/* REACTIVE HUD TELEMETRY */}
-      <AnimatePresence>
-        {!isFullView && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="absolute inset-0 pointer-events-none font-mono text-[0.4rem] tracking-[0.2em] text-tier-3/40 uppercase"
-          >
-            <motion.div style={{ x: torsoX, y: torsoX }} className="absolute top-[10%] left-[5%]">Kernel_Hash: 0x88F2...</motion.div>
-            <motion.div style={{ x: useTransform(mouseX, [ -40, 40 ], [ 5, -5 ]) }} className="absolute bottom-[10%] right-[10%] text-right">Sync_Rate: 99.8%</motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {isFullView && (
         <motion.div 

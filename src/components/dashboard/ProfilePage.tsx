@@ -54,10 +54,7 @@ export const ProfilePage = ({
         <div className="relative z-10 flex flex-col min-h-[inherit] justify-between p-0">
           <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-8 items-start w-full px-0">
             <div className="flex flex-col gap-3 lg:gap-4 max-w-lg text-left">
-              <div className="items-center gap-3 hidden sm:flex">
-                 <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_#ef4444]" />
-                 <span className="text-xs font-satoshi font-medium text-white/40 tracking-wider uppercase">Uplink Active</span>
-              </div>
+
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-satoshi text-white leading-tight tracking-tight">
                 CS Student & <br className="hidden sm:block lg:hidden" /> Systems Builder <br /> Based in India
               </h2>
