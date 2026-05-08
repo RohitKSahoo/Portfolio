@@ -41,11 +41,11 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
 
 
         <div className="flex flex-col gap-0.5">
-          <div className="flex items-center gap-6">
+          <div className="flex items-baseline gap-4">
              <span className="text-[var(--theme-accent)] font-mono text-lg font-bold tracking-tighter">
                {currentTab.num}
              </span>
-             <h1 className="text-2xl md:text-3xl font-semibold tracking-widest text-tier-1 uppercase truncate max-w-[200px] md:max-w-none mt-1">
+             <h1 className="text-2xl md:text-3xl font-semibold tracking-widest text-tier-1 uppercase truncate max-w-[200px] md:max-w-none">
                {currentTab.title}
              </h1>
           </div>
