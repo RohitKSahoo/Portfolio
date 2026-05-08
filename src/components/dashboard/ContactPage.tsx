@@ -6,25 +6,25 @@ export const ContactPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="w-full h-full flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden font-inter" style={{ backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
+    <div className="w-full h-full flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden font-inter" style={{ backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
       
 
       {/* Main Content Grid */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 min-h-0 relative z-10">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0 relative z-10">
         {/* Left Column (7/12) */}
         <div className="lg:col-span-7 flex flex-col justify-between py-4">
           <div className="relative">
 
-            <h2 className="text-[11vw] sm:text-7xl lg:text-[7rem] font-extrabold font-satoshi tracking-tight leading-none mb-6 text-white mt-3 break-words">
+            <h2 className="text-[11vw] sm:text-7xl lg:text-[7rem] font-extrabold font-satoshi tracking-tight leading-none mb-3 text-white mt-1 break-words">
               Let's build<br />something<br />
               <span className="text-red-500">extraordinary.</span>
             </h2>
-            <p className="text-base text-white/60 max-w-xl font-inter leading-relaxed mb-8">
+            <p className="text-base text-white/60 max-w-xl font-inter leading-relaxed mb-4">
               I'm always open to collaborations, exciting projects, and impactful ideas. Let's connect!
             </p>
 
             {/* Action Area: Get in Touch + Button */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-6 mt-2">
+            <div className="flex flex-row items-center gap-4 mt-2 flex-wrap">
               <span className="text-sm font-satoshi font-medium text-red-500 tracking-wider uppercase flex items-center gap-2">
                 <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
                 Get In Touch
@@ -32,7 +32,7 @@ export const ContactPage = () => {
               
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="group relative inline-flex items-center justify-between gap-4 bg-black/40 backdrop-blur-md border border-white/10 rounded-full py-3 px-6 w-auto hover:border-red-500/30 transition-all duration-300"
+                className="group relative inline-flex items-center justify-between gap-4 bg-black/40 backdrop-blur-md border border-white/10 rounded-full py-2.5 px-5 w-auto hover:border-red-500/30 transition-all duration-300"
               >
                 <span className="text-sm font-bold font-satoshi text-white">Send a Message</span>
                 <div className="w-6 h-6 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/5 transition-all">
@@ -69,7 +69,7 @@ export const ContactPage = () => {
           {/* GitHub Card */}
           <a href="https://github.com/RohitKSahoo" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
             <div className="flex items-center gap-5">
-              <div className="p-4 bg-white/5 text-white/80 rounded-lg">
+              <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Github size={24} />
               </div>
               <div>
@@ -85,7 +85,7 @@ export const ContactPage = () => {
           {/* LinkedIn Card */}
           <a href="https://linkedin.com/in/rohitksahoo" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
             <div className="flex items-center gap-5">
-              <div className="p-4 bg-white/5 text-white/80 rounded-lg">
+              <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Linkedin size={24} />
               </div>
               <div>
@@ -100,29 +100,7 @@ export const ContactPage = () => {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-white/5 pt-6 mt-auto flex flex-col lg:flex-row justify-between lg:items-center gap-6 relative z-10 font-satoshi">
-        <div className="flex flex-col sm:flex-row gap-6 lg:gap-16">
-          <div className="flex flex-col gap-1.5">
-            <span className="text-[0.7rem] font-medium text-white/30 uppercase tracking-wider">STATUS</span>
-            <div className="flex items-center gap-2.5">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-base font-bold text-white">Available for Opportunities</span>
-              <span className="text-[0.7rem] font-medium text-green-500 border border-green-500/20 px-2 py-0.5 rounded bg-green-500/5 ml-1">OPEN</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <span className="text-[0.7rem] font-medium text-white/30 uppercase tracking-wider">REPLIES WITHIN</span>
-            <div className="flex items-center gap-2.5">
-              <Clock size={16} className="text-white/50" />
-              <span className="text-base font-bold text-white">24 Hours</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Removed Prefer a quick chat section */}
-      </div>
+      {/* Bottom Bar Removed */}
 
       {/* Modal / Popup Form */}
       <AnimatePresence>
