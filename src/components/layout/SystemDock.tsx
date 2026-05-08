@@ -20,14 +20,18 @@ const DockItem = ({
   item, 
   activeTab, 
   setActiveTab, 
-  mouseX 
+  mouseX,
+  isMobile
 }: { 
   item: typeof navItems[0], 
   activeTab: string, 
   setActiveTab: (tab: string) => void,
-  mouseX: any 
+  mouseX: any,
+  isMobile: boolean
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const timeoutRef = useRef<number | null>(null);
   const isActive = activeTab === item.id;
   
   const distance = useTransform(mouseX, (val: number) => {
@@ -42,6 +46,11 @@ const DockItem = ({
     setActiveTab(item.id);
     // Force reset the magnetic magnification immediately after tap
     mouseX.set(Infinity);
+
+    // Show tooltip and hide after 1.5s
+    setShowTooltip(true);
+    if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+    timeoutRef.current = window.setTimeout(() => setShowTooltip(false), 1500);
   };
 
   return (
@@ -77,7 +86,11 @@ const DockItem = ({
         </div>
 
         {/* Tooltip */}
-        <div className="absolute -top-14 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+        <div className={`absolute -top-14 left-1/2 -translate-x-1/2 transition-all duration-300 pointer-events-none ${
+          showTooltip ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+        } ${
+          !isMobile ? 'group-hover:opacity-100 group-hover:translate-y-0' : ''
+        }`}>
           <div className="bg-[#0a0a0a] border border-white/10 px-2.5 py-1 rounded-lg whitespace-nowrap">
              <span className="text-[9px] font-bold tracking-[.2em] text-white uppercase">{item.label}</span>
           </div>
@@ -154,6 +167,7 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
             activeTab={activeTab} 
             setActiveTab={setActiveTab} 
             mouseX={mouseX} 
+            isMobile={isMobile}
           />
         ))}
       </motion.div>

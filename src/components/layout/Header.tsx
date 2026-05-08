@@ -45,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
              <span className="text-[var(--theme-accent)] font-mono text-lg font-bold tracking-tighter">
                {currentTab.num}
              </span>
-             <h1 className="text-2xl md:text-3xl font-semibold tracking-widest text-tier-1 truncate max-w-[200px] md:max-w-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:relative lg:left-auto lg:top-auto lg:translate-x-0 lg:translate-y-0">
+             <h1 className="text-2xl md:text-3xl font-semibold tracking-widest text-tier-1 uppercase truncate max-w-[200px] md:max-w-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:relative lg:left-auto lg:top-auto lg:translate-x-0 lg:translate-y-0">
                {currentTab.title}
              </h1>
           </div>
