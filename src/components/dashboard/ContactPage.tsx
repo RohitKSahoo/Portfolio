@@ -10,9 +10,9 @@ export const ContactPage = () => {
       
 
       {/* Main Content Grid */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0 relative z-10">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-9 min-h-0 relative z-10">
         {/* Left Column (7/12) */}
-        <div className="lg:col-span-7 flex flex-col justify-between py-4">
+        <div className="lg:col-span-7 flex flex-col justify-between py-0">
           <div className="relative">
 
             <h2 className="text-[11vw] sm:text-7xl lg:text-[7rem] font-extrabold font-satoshi tracking-tight leading-none mb-3 text-white mt-1 break-words">
@@ -44,7 +44,7 @@ export const ContactPage = () => {
         </div>
 
         {/* Right Column (5/12) */}
-        <div className="lg:col-span-5 flex flex-col gap-6 py-4 justify-center">
+        <div className="lg:col-span-5 flex flex-col gap-6 py-0 justify-center">
           <div className="text-xs font-satoshi font-medium text-white/40 tracking-wider mb-2">
             <span>SOCIALS</span>
             <div className="w-10 h-0.5 bg-red-500 mt-1" />
