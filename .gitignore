@@ -37,3 +37,6 @@ backups/
 
 # Vite
 .vite/
+
+# GSD
+.planning/

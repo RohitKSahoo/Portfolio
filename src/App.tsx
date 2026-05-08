@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
-import { CursorGradient } from './components/CursorGradient';
 import { 
   ProfilePage, 
   RegistryPage, 
