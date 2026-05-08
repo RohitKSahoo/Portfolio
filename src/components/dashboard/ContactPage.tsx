@@ -19,7 +19,7 @@ export const ContactPage = () => {
               Let's build<br />something<br />
               <span className="text-red-500">extraordinary.</span>
             </h2>
-            <p className="text-base text-white/60 max-w-xl font-inter leading-relaxed mb-12">
+            <p className="text-base text-white/60 max-w-xl font-inter leading-relaxed mb-[28px]">
               I'm always open to collaborations, exciting projects, and impactful ideas.
             </p>
 
@@ -46,7 +46,7 @@ export const ContactPage = () => {
         {/* Right Column (5/12) */}
         <div className="lg:col-span-5 flex flex-col gap-6 py-4 justify-center">
           <div className="text-xs font-satoshi font-medium text-white/40 tracking-wider mb-2">
-            <span>CONNECT VIA</span>
+            <span>SOCIALS</span>
             <div className="w-10 h-0.5 bg-red-500 mt-1" />
           </div>
 
