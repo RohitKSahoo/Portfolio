@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Github, Linkedin, Terminal, Send, Clock, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X } from 'lucide-react';
+import { Mail, Github, Linkedin, Terminal, Send, Clock, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
 
 export const ContactPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,8 +19,8 @@ export const ContactPage = () => {
               Let's build<br />something<br />
               <span className="text-red-500">extraordinary.</span>
             </h2>
-            <p className="text-base text-white/60 max-w-xl font-inter leading-relaxed mb-4">
-              I'm always open to collaborations, exciting projects, and impactful ideas. Let's connect!
+            <p className="text-base text-white/60 max-w-xl font-inter leading-relaxed mb-12">
+              I'm always open to collaborations, exciting projects, and impactful ideas.
             </p>
 
             {/* Action Area: Get in Touch + Button */}
@@ -91,6 +91,22 @@ export const ContactPage = () => {
               <div>
                 <h3 className="text-base font-bold font-satoshi text-white">LinkedIn</h3>
                 <p className="text-sm text-white/40 font-inter">linkedin.com/in/rohitksahoo</p>
+              </div>
+            </div>
+            <div className="w-8 h-8 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/5 transition-all">
+              <ArrowRight size={14} className="text-white/50 group-hover:text-red-500 transition-all" />
+            </div>
+          </a>
+
+          {/* Instagram Card */}
+          <a href="https://www.instagram.com/rohit.ks_?igsh=MTU4c3hhMGI1eXdqMQ==" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
+            <div className="flex items-center gap-5">
+              <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
+                <Instagram size={24} />
+              </div>
+              <div>
+                <h3 className="text-base font-bold font-satoshi text-white">Instagram</h3>
+                <p className="text-sm text-white/40 font-inter">@rohit.ks_</p>
               </div>
             </div>
             <div className="w-8 h-8 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/5 transition-all">
