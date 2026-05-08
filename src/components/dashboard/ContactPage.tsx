@@ -8,38 +8,6 @@ export const ContactPage = () => {
   return (
     <div className="w-full h-full flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden font-inter" style={{ backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
       
-      {/* Radar Background Graphic */}
-      <motion.div 
-        className="absolute left-[35%] top-[40%] -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0"
-        animate={{
-          scale: [1, 1.05, 1],
-          opacity: [0.5, 0.3, 0.5],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      >
-        <svg width="600" height="600" viewBox="0 0 400 400">
-          <defs>
-            <radialGradient id="radarGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#EF4444" stopOpacity="1" />
-              <stop offset="15%" stopColor="#EF4444" stopOpacity="0.4" />
-              <stop offset="60%" stopColor="#EF4444" stopOpacity="0.05" />
-              <stop offset="100%" stopColor="#EF4444" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          <circle cx="200" cy="200" r="150" fill="url(#radarGlow)" />
-          <circle cx="200" cy="200" r="40" stroke="#EF4444" strokeWidth="0.5" fill="none" opacity="0.3" />
-          <circle cx="200" cy="200" r="80" stroke="#EF4444" strokeWidth="0.5" fill="none" opacity="0.2" />
-          <circle cx="200" cy="200" r="120" stroke="#EF4444" strokeWidth="0.5" fill="none" strokeDasharray="4 4" opacity="0.15" />
-          <circle cx="200" cy="200" r="160" stroke="#EF4444" strokeWidth="0.5" fill="none" opacity="0.1" />
-          <line x1="200" y1="0" x2="200" y2="400" stroke="#EF4444" strokeWidth="0.5" opacity="0.15" />
-          <line x1="0" y1="200" x2="400" y2="200" stroke="#EF4444" strokeWidth="0.5" opacity="0.15" />
-          <circle cx="200" cy="200" r="4" fill="#EF4444" />
-        </svg>
-      </motion.div>
 
       {/* Main Content Grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 min-h-0 relative z-10">
