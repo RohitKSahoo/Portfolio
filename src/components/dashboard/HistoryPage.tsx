@@ -10,29 +10,29 @@ export const HistoryPage = () => {
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10">
         
         {/* Left Column (8/12) - Timeline */}
-        <div className="lg:col-span-8 flex flex-col gap-6 py-2 overflow-y-auto pr-2">
+        <div className="lg:col-span-8 flex flex-col gap-10 py-2 overflow-y-auto pr-2">
 
 
           {/* Timeline Item 1 */}
           <div className="flex gap-6 group">
             <div className="flex flex-col items-center mt-1 shrink-0">
-              <div className="w-4 h-4 rounded-sm border border-red-500 bg-[#0d0d0d] flex items-center justify-center">
-                <div className="w-1.5 h-1.5 bg-red-500 rounded-sm" />
+              <div className="w-5 h-5 rounded-sm border border-red-500 bg-[#0d0d0d] flex items-center justify-center">
+                <div className="w-2 h-2 bg-red-500 rounded-sm" />
               </div>
               <div className="w-[1px] h-full bg-white/10 my-2" />
             </div>
             
-            <div className="flex-1 pb-8">
-              <span className="text-xs font-satoshi text-red-500 font-bold tracking-wider">2025 — PRESENT</span>
-              <div className="flex items-center gap-3 mt-1 mb-2">
-                <h3 className="text-2xl font-bold font-satoshi text-white tracking-tight">Computer Science Student</h3>
+            <div className="flex-1 pb-10">
+              <span className="text-sm font-satoshi text-red-500 font-bold tracking-wider">2025 — PRESENT</span>
+              <div className="flex items-center gap-4 mt-1 mb-3">
+                <h3 className="text-3xl font-bold font-satoshi text-white tracking-tight">Computer Science Student</h3>
                 <div className="flex gap-1.5">
-                  <span className="text-[0.65rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">CSE</span>
-                  <span className="text-[0.65rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Learning</span>
+                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">CSE</span>
+                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Learning</span>
                 </div>
               </div>
-              <span className="text-xs font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># ACADEMIC JOURNEY</span>
-              <ul className="text-sm text-white/60 space-y-2 list-disc list-inside font-inter">
+              <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># ACADEMIC JOURNEY</span>
+              <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
                 <li>Started my Computer Science degree in 2025.</li>
                 <li>Focused on learning fundamentals and building a strong foundation.</li>
                 <li>Working on small projects to apply what I learn in class.</li>
@@ -43,23 +43,23 @@ export const HistoryPage = () => {
           {/* Timeline Item 2 */}
           <div className="flex gap-6 group">
             <div className="flex flex-col items-center mt-1 shrink-0">
-              <div className="w-4 h-4 rounded-sm border border-white/20 bg-[#0d0d0d] flex items-center justify-center">
-                <div className="w-1.5 h-1.5 bg-white/20 rounded-sm" />
+              <div className="w-5 h-5 rounded-sm border border-white/20 bg-[#0d0d0d] flex items-center justify-center">
+                <div className="w-2 h-2 bg-white/20 rounded-sm" />
               </div>
               <div className="w-[1px] h-full bg-white/10 my-2 opacity-0" />
             </div>
             
             <div className="flex-1">
-              <span className="text-xs font-satoshi text-white/40 font-bold tracking-wider">2025 — PRESENT</span>
-              <div className="flex items-center gap-3 mt-1 mb-2">
-                <h3 className="text-2xl font-bold font-satoshi text-white/80 tracking-tight">Exploring Development</h3>
+              <span className="text-sm font-satoshi text-white/40 font-bold tracking-wider">2025 — PRESENT</span>
+              <div className="flex items-center gap-4 mt-1 mb-3">
+                <h3 className="text-3xl font-bold font-satoshi text-white/80 tracking-tight">Exploring Development</h3>
                 <div className="flex gap-1.5">
-                  <span className="text-[0.65rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Web</span>
-                  <span className="text-[0.65rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Projects</span>
+                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Web</span>
+                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Projects</span>
                 </div>
               </div>
-              <span className="text-xs font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># HOBBY PROJECTS</span>
-              <ul className="text-sm text-white/60 space-y-2 list-disc list-inside font-inter">
+              <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># HOBBY PROJECTS</span>
+              <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
                 <li>Started building websites and small projects in 2025.</li>
                 <li>Learning new technologies by working on ideas that interest me.</li>
                 <li>Enjoying the process of creating things from scratch and learning as I go.</li>
