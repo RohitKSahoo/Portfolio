@@ -7,10 +7,10 @@ interface HeaderProps {
 }
 
 const TAB_TITLES: Record<string, { title: string; num: string }> = {
-  profile: { title: 'DASHBOARD', num: '/01' },
-  projects: { title: 'PROJECTS', num: '/02' },
-  experience: { title: 'EXPERIENCE', num: '/03' },
-  contact: { title: 'CONTACT', num: '/04' }
+  profile: { title: 'Dashboard', num: '/01' },
+  projects: { title: 'Projects', num: '/02' },
+  experience: { title: 'Experience', num: '/03' },
+  contact: { title: 'Contact', num: '/04' }
 };
 
 export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuToggle }) => {
@@ -40,12 +40,12 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
       <div className="flex items-center gap-4">
 
 
-        <div className="flex flex-col gap-0.5">
-          <div className="flex items-baseline gap-4">
+        <div className="flex flex-col gap-0.5 absolute left-1/2 -translate-x-1/2 lg:relative lg:left-auto lg:translate-x-0">
+          <div className="flex items-baseline gap-4 justify-center lg:justify-start">
              <span className="text-[var(--theme-accent)] font-mono text-lg font-bold tracking-tighter">
                {currentTab.num}
              </span>
-             <h1 className="text-2xl md:text-3xl font-semibold tracking-widest text-tier-1 uppercase truncate max-w-[200px] md:max-w-none">
+             <h1 className="text-2xl md:text-3xl font-semibold tracking-widest text-tier-1 truncate max-w-[200px] md:max-w-none">
                {currentTab.title}
              </h1>
           </div>

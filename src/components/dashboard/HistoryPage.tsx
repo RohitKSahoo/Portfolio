@@ -11,13 +11,7 @@ export const HistoryPage = () => {
         
         {/* Left Column (8/12) - Timeline */}
         <div className="lg:col-span-8 flex flex-col gap-6 py-2 overflow-y-auto pr-2">
-          <div className="flex justify-between items-center text-xs font-satoshi font-medium text-white/40 tracking-wider mb-2">
-            <span>HISTORY // EXPERIENCE</span>
-            <div className="flex gap-1">
-              <div className="w-1 h-1 bg-red-500 rounded-full" />
-              <div className="w-1 h-1 bg-red-500 rounded-full" />
-            </div>
-          </div>
+
 
           {/* Timeline Item 1 */}
           <div className="flex gap-6 group">

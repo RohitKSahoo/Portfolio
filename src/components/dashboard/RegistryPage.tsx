@@ -48,7 +48,7 @@ export const RegistryPage = () => {
           <div className="flex flex-col gap-4 pt-2 relative">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
               <div className="flex flex-col gap-1 max-w-none">
-                <span className="text-xs font-satoshi font-medium text-red-500 tracking-wider uppercase">Registry Mod 01</span>
+
                 <h2 className="text-2xl lg:text-3xl font-bold font-satoshi text-white leading-tight relative group mt-1 tracking-tight">
                   <TextType 
                     text="Engineering systems that automate, optimize, and scale everyday workflows."

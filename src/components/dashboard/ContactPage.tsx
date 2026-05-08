@@ -14,10 +14,7 @@ export const ContactPage = () => {
         {/* Left Column (7/12) */}
         <div className="lg:col-span-7 flex flex-col justify-between py-4">
           <div className="relative">
-            <span className="text-sm font-satoshi font-medium text-red-500 tracking-wider uppercase flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
-              Get In Touch
-            </span>
+
             <h2 className="text-[11vw] sm:text-7xl lg:text-[7rem] font-extrabold font-satoshi tracking-tight leading-none mb-6 text-white mt-3 break-words">
               Let's build<br />something<br />
               <span className="text-red-500">extraordinary.</span>
@@ -26,16 +23,23 @@ export const ContactPage = () => {
               I'm always open to collaborations, exciting projects, and impactful ideas. Let's connect!
             </p>
 
-            {/* Send Message Button (Triggers Modal) */}
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="group relative inline-flex items-center justify-between gap-4 bg-black/40 backdrop-blur-md border border-white/10 rounded-full py-3 px-6 w-auto hover:border-red-500/30 transition-all duration-300"
-            >
-              <span className="text-sm font-bold font-satoshi text-white">Send a Message</span>
-              <div className="w-6 h-6 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/5 transition-all">
-                <ArrowRight size={12} className="text-white/50 group-hover:text-red-500 transition-all" />
-              </div>
-            </button>
+            {/* Action Area: Get in Touch + Button */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-6 mt-2">
+              <span className="text-sm font-satoshi font-medium text-red-500 tracking-wider uppercase flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                Get In Touch
+              </span>
+              
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="group relative inline-flex items-center justify-between gap-4 bg-black/40 backdrop-blur-md border border-white/10 rounded-full py-3 px-6 w-auto hover:border-red-500/30 transition-all duration-300"
+              >
+                <span className="text-sm font-bold font-satoshi text-white">Send a Message</span>
+                <div className="w-6 h-6 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/5 transition-all">
+                  <ArrowRight size={12} className="text-white/50 group-hover:text-red-500 transition-all" />
+                </div>
+              </button>
+            </div>
           </div>
         </div>
 
