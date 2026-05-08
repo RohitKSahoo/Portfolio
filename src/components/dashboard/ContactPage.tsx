@@ -9,7 +9,18 @@ export const ContactPage = () => {
     <div className="w-full h-full flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden font-inter" style={{ backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
       
       {/* Radar Background Graphic */}
-      <div className="absolute left-[35%] top-[40%] -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0">
+      <motion.div 
+        className="absolute left-[35%] top-[40%] -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0"
+        animate={{
+          scale: [1, 1.05, 1],
+          opacity: [0.5, 0.3, 0.5],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      >
         <svg width="600" height="600" viewBox="0 0 400 400">
           <defs>
             <radialGradient id="radarGlow" cx="50%" cy="50%" r="50%">
@@ -28,7 +39,7 @@ export const ContactPage = () => {
           <line x1="0" y1="200" x2="400" y2="200" stroke="#EF4444" strokeWidth="0.5" opacity="0.15" />
           <circle cx="200" cy="200" r="4" fill="#EF4444" />
         </svg>
-      </div>
+      </motion.div>
 
       {/* Main Content Grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 min-h-0 relative z-10">
