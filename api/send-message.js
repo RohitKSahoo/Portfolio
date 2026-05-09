@@ -29,11 +29,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Message too long (max 1000 characters)' });
   }
 
-  if (!process.env.RESEND_API_KEY) {
+  if (!process.env.RESEND_EMAIL_API) {
     return res.status(500).json({ error: 'Server configuration error: Missing API key.' });
   }
 
-  const resend = new Resend(process.env.RESEND_API_KEY);
+  const resend = new Resend(process.env.RESEND_EMAIL_API);
 
   try {
     const data = await resend.emails.send({
