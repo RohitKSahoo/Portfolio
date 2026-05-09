@@ -37,7 +37,7 @@ export const ContactPage = () => {
         setIsModalOpen(false);
       }, 2000);
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setIsSending(false);
     }

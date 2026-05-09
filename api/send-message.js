@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   try {
     const data = await resend.emails.send({
       from: 'Portfolio Contact <onboarding@resend.dev>', // Resend free tier requires this or a verified domain
-      to: 'rohitsahoo2704@gmail.com', // <-- REPLACE THIS WITH YOUR REAL EMAIL
+      to: 'rohitkumarsahoo37@gmail.com', // <-- REPLACE THIS WITH YOUR REAL EMAIL
       subject: subject || `New Message from ${name}`,
       html: `
         <h3>New Message from Portfolio</h3>
