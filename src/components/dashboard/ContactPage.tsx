@@ -6,6 +6,42 @@ import VariableProximity from '../effects/VariableProximity';
 export const ContactPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const containerRef = useRef(null);
+  
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+  const [isSending, setIsSending] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async () => {
+    if (!formData.name || !formData.email || !formData.message) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+    setIsSending(true);
+    setError('');
+    
+    try {
+      const res = await fetch('/api/send-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send message');
+      
+      setIsSent(true);
+      setFormData({ name: '', email: '', subject: '', message: '' });
+      setTimeout(() => {
+        setIsSent(false);
+        setIsModalOpen(false);
+      }, 2000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   return (
     <div className="w-full h-full flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden font-inter" style={{ backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
@@ -165,30 +201,61 @@ export const ContactPage = () => {
                     <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-white/20">
                       <User size={16} />
                     </div>
-                    <input type="text" placeholder="Your Name" className="w-full bg-black border border-white/5 rounded-lg py-3.5 pl-12 pr-4 text-sm text-white placeholder-white/20 focus:border-red-500/50 focus:outline-none transition-all font-inter" />
+                    <input 
+                      type="text" 
+                      placeholder="Your Name" 
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full bg-black border border-white/5 rounded-lg py-3.5 pl-12 pr-4 text-sm text-white placeholder-white/20 focus:border-red-500/50 focus:outline-none transition-all font-inter" 
+                    />
                   </div>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-white/20">
                       <AtSign size={16} />
                     </div>
-                    <input type="email" placeholder="Your Email" className="w-full bg-black border border-white/5 rounded-lg py-3.5 pl-12 pr-4 text-sm text-white placeholder-white/20 focus:border-red-500/50 focus:outline-none transition-all font-inter" />
+                    <input 
+                      type="email" 
+                      placeholder="Your Email" 
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full bg-black border border-white/5 rounded-lg py-3.5 pl-12 pr-4 text-sm text-white placeholder-white/20 focus:border-red-500/50 focus:outline-none transition-all font-inter" 
+                    />
                   </div>
                 </div>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-white/20">
                     <AlignLeft size={16} />
                   </div>
-                  <input type="text" placeholder="Subject" className="w-full bg-black border border-white/5 rounded-lg py-3.5 pl-12 pr-4 text-sm text-white placeholder-white/20 focus:border-red-500/50 focus:outline-none transition-all font-inter" />
+                  <input 
+                    type="text" 
+                    placeholder="Subject" 
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    className="w-full bg-black border border-white/5 rounded-lg py-3.5 pl-12 pr-4 text-sm text-white placeholder-white/20 focus:border-red-500/50 focus:outline-none transition-all font-inter" 
+                  />
                 </div>
                 <div className="relative">
                   <div className="absolute top-4 left-4 pointer-events-none text-white/20">
                     <MessageSquare size={16} />
                   </div>
-                  <textarea placeholder="Your Message" rows={4} className="w-full bg-black border border-white/5 rounded-lg py-3.5 pl-12 pr-4 text-sm text-white placeholder-white/20 focus:border-red-500/50 focus:outline-none transition-all font-inter resize-none" />
+                  <textarea 
+                    placeholder="Your Message" 
+                    rows={4} 
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="w-full bg-black border border-white/5 rounded-lg py-3.5 pl-12 pr-4 text-sm text-white placeholder-white/20 focus:border-red-500/50 focus:outline-none transition-all font-inter resize-none" 
+                  />
                 </div>
                 
-                <button className="w-full py-3.5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg text-sm font-bold font-satoshi flex justify-between items-center px-6 hover:from-red-500 hover:to-red-400 transition-all shadow-[0_0_20px_rgba(239,68,68,0.2)]">
-                  <span>Submit Message</span>
+                {error && <p className="text-xs text-red-500 font-inter">{error}</p>}
+                {isSent && <p className="text-xs text-green-500 font-inter">Message sent successfully!</p>}
+
+                <button 
+                  onClick={handleSubmit}
+                  disabled={isSending || isSent}
+                  className={`w-full py-3.5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg text-sm font-bold font-satoshi flex justify-between items-center px-6 hover:from-red-500 hover:to-red-400 transition-all shadow-[0_0_20px_rgba(239,68,68,0.2)] ${(isSending || isSent) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <span>{isSending ? 'Sending...' : isSent ? 'Sent!' : 'Submit Message'}</span>
                   <ArrowRight size={16} />
                 </button>
               </div>
