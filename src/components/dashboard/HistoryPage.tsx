@@ -1,13 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Github, Smartphone, Code, Clock, Hash, ArrowRight } from 'lucide-react';
+const iconMap: Record<string, string> = {
+  'Kotlin': 'kotlin/kotlin-original',
+  'Java': 'java/java-original',
+  'TypeScript': 'typescript/typescript-original',
+  'JavaScript': 'javascript/javascript-original',
+  'Python': 'python/python-original',
+  'HTML': 'html5/html5-original',
+  'CSS': 'css3/css3-original',
+  'C++': 'cplusplus/cplusplus-original',
+  'C': 'c/c-original',
+  'C#': 'csharp/csharp-original',
+  'Go': 'go/go-original',
+  'Ruby': 'ruby/ruby-original',
+  'PHP': 'php/php-original',
+  'Swift': 'swift/swift-original',
+  'Dart': 'dart/dart-original',
+  'Rust': 'rust/rust-original',
+  'Jupyter Notebook': 'jupyter/jupyter-original',
+  'Shell': 'bash/bash-original',
+};
 
 export const HistoryPage = () => {
   const [githubStats, setGithubStats] = useState({
     projects: '3+',
     technologies: '5+',
     since: '2025',
-    calendar: Array(154).fill(0).map(() => Math.floor(Math.random() * 5)) // 22 weeks * 7 days mock data
+    calendar: Array(154).fill(0).map(() => Math.floor(Math.random() * 5)), // 22 weeks * 7 days mock data
+    languagesList: ['Kotlin', 'Java', 'TypeScript', 'JavaScript', 'Python', 'HTML', 'CSS']
   });
 
   useEffect(() => {
@@ -23,6 +44,7 @@ export const HistoryPage = () => {
             technologies: data.technologies.toString(),
             since: data.since.toString(),
             calendar: data.calendar && data.calendar.length > 0 ? data.calendar : prev.calendar,
+            languagesList: data.languagesList && data.languagesList.length > 0 ? data.languagesList : prev.languagesList,
           }));
         }
       })
@@ -126,16 +148,46 @@ export const HistoryPage = () => {
               </div>
             </div>
 
-            <div className="mt-auto pt-6 border-t border-white/5">
-              <span className="text-[0.6rem] font-satoshi font-medium text-white/30 uppercase block mb-2 tracking-wider">Contribution Calendar</span>
-              <div className="grid grid-rows-7 grid-flow-col gap-[3px] h-[75px] w-full max-w-[300px]">
-                {githubStats.calendar.map((level, i) => {
-                  let bgClass = "bg-white/5"; // Empty (0)
-                  if (level === 1) bgClass = "bg-red-950";
-                  if (level === 2) bgClass = "bg-red-800";
-                  if (level === 3) bgClass = "bg-red-600";
-                  if (level === 4) bgClass = "bg-red-500";
-                  return <div key={i} className={`w-[9px] h-[9px] rounded-[2px] ${bgClass}`} />;
+            <div className="mt-auto pt-6 border-t border-white/5 relative h-[120px] overflow-hidden">
+              <span className="text-[0.6rem] font-satoshi font-medium text-white/30 uppercase block mb-2 tracking-wider">Tech Space</span>
+              <div className="absolute inset-x-0 bottom-0 top-12 overflow-hidden">
+                {githubStats.languagesList.map((lang, i) => {
+                  const startX = (i * 53) % 240;
+                  const startY = (i * 37) % 60;
+                  const iconPath = iconMap[lang];
+                  
+                  return (
+                    <motion.div
+                      key={lang}
+                      className="absolute flex items-center justify-center p-2 rounded-full bg-[#0d0d0d] border border-white/10 shadow-lg cursor-pointer"
+                      initial={{ x: startX, y: startY + 20, opacity: 0, scale: 0 }}
+                      animate={{ 
+                        x: startX, 
+                        y: startY,
+                        opacity: 1,
+                        scale: 1,
+                      }}
+                      whileHover={{
+                        y: startY - 10,
+                        scale: 1.2,
+                        zIndex: 50
+                      }}
+                      transition={{ 
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 15,
+                        delay: i * 0.05
+                      }}
+                      style={{ zIndex: i }}
+                      title={lang}
+                    >
+                      {iconPath ? (
+                        <img src={`https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${iconPath}.svg`} alt={lang} className="w-5 h-5 opacity-80" />
+                      ) : (
+                        <span className="text-[0.6rem] font-satoshi font-bold text-white/70 px-1">{lang.substring(0, 3).toUpperCase()}</span>
+                      )}
+                    </motion.div>
+                  );
                 })}
               </div>
             </div>

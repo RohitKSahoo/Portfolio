@@ -40,3 +40,5 @@ backups/
 
 # GSD
 .planning/
+.vercel
+.env*.local

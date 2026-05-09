@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Zap } from 'lucide-react';
+import { Zap, Download } from 'lucide-react';
 import { SystemAvatar } from '../SystemAvatar';
 import RippleGrid from '../effects/RippleGrid';
 
@@ -64,14 +64,23 @@ export const ProfilePage = ({
               <p className="text-sm lg:text-base text-white/60 font-medium leading-relaxed max-w-[280px] lg:max-w-sm font-inter">
                 Exploring real-time systems, backend architectures, and unconventional ideas.
               </p>
-            <div className="flex flex-col sm:flex-row lg:self-end">
+            <div className="flex flex-col gap-3 lg:self-end">
               <button 
                 onClick={onExploreProjects}
-                className="group relative px-6 py-3 bg-red-500 text-white font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white hover:text-black transition-all overflow-hidden flex items-center gap-4 w-fit shadow-[0_0_20px_rgba(239,68,68,0.2)] rounded-lg"
+                className="group relative px-6 py-3 bg-red-500 text-white font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white hover:text-black transition-all overflow-hidden flex items-center justify-between gap-4 w-full sm:w-auto shadow-[0_0_20px_rgba(239,68,68,0.2)] rounded-lg"
               >
                 <span>Explore Projects</span>
                 <Zap size={14} fill="currentColor" />
               </button>
+              
+              <a 
+                href="/cv.pdf" 
+                download="Rohit_Kumar_Sahoo_CV.pdf"
+                className="group relative px-6 py-3 bg-[#0d0d0d] border border-white/10 text-white/80 font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white/10 hover:text-white transition-all flex items-center justify-between gap-4 w-full sm:w-auto rounded-lg"
+              >
+                <span>Download CV</span>
+                <Download size={14} />
+              </a>
             </div>
             </div>
           </div>

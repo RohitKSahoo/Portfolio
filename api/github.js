@@ -93,6 +93,7 @@ export default async function handler(req, res) {
     res.status(200).json({
       projects: user.repositories.totalCount,
       technologies: languages.size,
+      languagesList: Array.from(languages),
       since: new Date(user.createdAt).getFullYear(),
       calendar: normalizedCalendar,
     });
