@@ -7,16 +7,34 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, message, subject } = req.body;
+  const { name, email, message, subject, honeypot } = req.body;
+
+  // Honeypot check
+  if (honeypot) {
+    return res.status(400).json({ error: 'Spam detected' });
+  }
 
   if (!name || !email || !message) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: 'Invalid email address' });
+  }
+
+  if (message.length < 10) {
+    return res.status(400).json({ error: 'Message too short (min 10 characters)' });
+  }
+  
+  if (message.length > 1000) {
+    return res.status(400).json({ error: 'Message too long (max 1000 characters)' });
+  }
+
   try {
     const data = await resend.emails.send({
       from: 'Portfolio Contact <onboarding@resend.dev>', // Resend free tier requires this or a verified domain
-      to: 'rohitkumarsahoo37@gmail.com', // <-- REPLACE THIS WITH YOUR REAL EMAIL
+      to: 'rohitsahoo2704@gmail.com', // <-- REPLACE THIS WITH YOUR REAL EMAIL
       subject: subject || `New Message from ${name}`,
       html: `
         <h3>New Message from Portfolio</h3>

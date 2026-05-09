@@ -7,16 +7,43 @@ export const ContactPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const containerRef = useRef(null);
   
-  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '', honeypot: '' });
   const [isSending, setIsSending] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async () => {
+    // Honeypot check
+    if (formData.honeypot) {
+      setError('Spam detected.');
+      return;
+    }
+
     if (!formData.name || !formData.email || !formData.message) {
       setError('Please fill in all required fields.');
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    if (formData.message.length < 10) {
+      setError('Message must be at least 10 characters.');
+      return;
+    }
+
+    // Rate limiting (5 minutes)
+    const lastSent = localStorage.getItem('lastEmailSent');
+    const now = Date.now();
+    if (lastSent && now - parseInt(lastSent) < 5 * 60 * 1000) {
+      const waitTime = Math.ceil((5 * 60 * 1000 - (now - parseInt(lastSent))) / 1000 / 60);
+      setError(`Please wait ${waitTime} minute(s) before sending another message.`);
+      return;
+    }
+
     setIsSending(true);
     setError('');
     
@@ -31,7 +58,8 @@ export const ContactPage = () => {
       if (!res.ok) throw new Error(data.error || 'Failed to send message');
       
       setIsSent(true);
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      localStorage.setItem('lastEmailSent', now.toString());
+      setFormData({ name: '', email: '', subject: '', message: '', honeypot: '' });
       setTimeout(() => {
         setIsSent(false);
         setIsModalOpen(false);
@@ -221,6 +249,17 @@ export const ContactPage = () => {
                       className="w-full bg-black border border-white/5 rounded-lg py-3.5 pl-12 pr-4 text-sm text-white placeholder-white/20 focus:border-red-500/50 focus:outline-none transition-all font-inter" 
                     />
                   </div>
+                </div>
+                {/* Honeypot Field */}
+                <div className="hidden" aria-hidden="true">
+                  <input 
+                    type="text" 
+                    name="honeypot" 
+                    value={formData.honeypot}
+                    onChange={(e) => setFormData({ ...formData, honeypot: e.target.value })}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
                 </div>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-white/20">

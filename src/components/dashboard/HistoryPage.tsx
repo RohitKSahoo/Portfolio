@@ -148,43 +148,40 @@ export const HistoryPage = () => {
               </div>
             </div>
 
-            <div className="mt-auto pt-6 border-t border-white/5 relative h-[120px] overflow-hidden">
-              <span className="text-[0.6rem] font-satoshi font-medium text-white/30 uppercase block mb-2 tracking-wider">Tech Space</span>
-              <div className="absolute inset-x-0 bottom-0 top-12 overflow-hidden">
+            <div className="mt-auto pt-6 border-t border-white/5">
+              <span className="text-[0.6rem] font-satoshi font-medium text-white/30 uppercase block mb-3 tracking-wider">Tech Space</span>
+              <div className="flex flex-wrap gap-2.5">
                 {githubStats.languagesList.map((lang, i) => {
-                  const startX = (i * 53) % 240;
-                  const startY = (i * 37) % 60;
                   const iconPath = iconMap[lang];
                   
                   return (
                     <motion.div
                       key={lang}
-                      className="absolute flex items-center justify-center p-2 rounded-full bg-[#0d0d0d] border border-white/10 shadow-lg cursor-pointer"
-                      initial={{ x: startX, y: startY + 20, opacity: 0, scale: 0 }}
+                      className="flex items-center justify-center p-2 rounded-full bg-[#0d0d0d] border border-white/10 shadow-lg cursor-pointer"
+                      initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ 
-                        x: startX, 
-                        y: startY,
                         opacity: 1,
                         scale: 1,
                       }}
                       whileHover={{
-                        y: startY - 10,
-                        scale: 1.2,
-                        zIndex: 50
+                        y: -5,
+                        scale: 1.1,
+                        borderColor: 'rgba(239, 68, 68, 0.3)',
                       }}
                       transition={{ 
                         type: "spring",
-                        stiffness: 300,
+                        stiffness: 400,
                         damping: 15,
-                        delay: i * 0.05
+                        delay: i * 0.03
                       }}
-                      style={{ zIndex: i }}
                       title={lang}
                     >
                       {iconPath ? (
                         <img src={`https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${iconPath}.svg`} alt={lang} className="w-5 h-5 opacity-80" />
                       ) : (
-                        <span className="text-[0.6rem] font-satoshi font-bold text-white/70 px-1">{lang.substring(0, 3).toUpperCase()}</span>
+                        <div className="w-5 h-5 flex items-center justify-center">
+                          <span className="text-[0.6rem] font-satoshi font-bold text-white/70">{lang.substring(0, 2).toUpperCase()}</span>
+                        </div>
                       )}
                     </motion.div>
                   );
