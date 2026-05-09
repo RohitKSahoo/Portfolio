@@ -7,7 +7,7 @@ export const HistoryPage = () => {
     projects: '3+',
     technologies: '5+',
     since: '2025',
-    velocity: [40, 70, 45, 90, 65, 80, 50, 100, 75, 40, 85, 60, 95, 30, 60, 80, 120]
+    calendar: Array(154).fill(0).map(() => Math.floor(Math.random() * 5)) // 22 weeks * 7 days mock data
   });
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export const HistoryPage = () => {
             projects: data.projects.toString(),
             technologies: data.technologies.toString(),
             since: data.since.toString(),
-            velocity: data.velocity && data.velocity.length > 0 ? data.velocity : prev.velocity,
+            calendar: data.calendar && data.calendar.length > 0 ? data.calendar : prev.calendar,
           }));
         }
       })
@@ -127,11 +127,16 @@ export const HistoryPage = () => {
             </div>
 
             <div className="mt-auto pt-6 border-t border-white/5">
-              <span className="text-[0.6rem] font-satoshi font-medium text-white/30 uppercase block mb-2 tracking-wider">Learning Velocity</span>
-              <div className="flex items-end gap-[3px] h-16">
-                {githubStats.velocity.map((h, i) => (
-                  <div key={i} className={`flex-1 ${i === githubStats.velocity.length - 1 ? 'bg-red-500' : 'bg-white/10'} rounded-t-[1px]`} style={{ height: `${h}%`, minHeight: '2px' }} />
-                ))}
+              <span className="text-[0.6rem] font-satoshi font-medium text-white/30 uppercase block mb-2 tracking-wider">Contribution Calendar</span>
+              <div className="grid grid-rows-7 grid-flow-col gap-[3px] h-[75px] w-full max-w-[300px]">
+                {githubStats.calendar.map((level, i) => {
+                  let bgClass = "bg-white/5"; // Empty (0)
+                  if (level === 1) bgClass = "bg-red-950";
+                  if (level === 2) bgClass = "bg-red-800";
+                  if (level === 3) bgClass = "bg-red-600";
+                  if (level === 4) bgClass = "bg-red-500";
+                  return <div key={i} className={`w-[9px] h-[9px] rounded-[2px] ${bgClass}`} />;
+                })}
               </div>
             </div>
           </div>

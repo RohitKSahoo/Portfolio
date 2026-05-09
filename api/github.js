@@ -61,25 +61,40 @@ export default async function handler(req, res) {
       });
     });
 
-    // 2. Extract contributions for the "Learning Velocity" graph
-    // The UI graph has 17 bars. Let's use the last 17 weeks of contributions.
+    // 2. Extract contributions for the "Contribution Calendar" graph
+    // The UI graph will use grid-rows-7 grid-flow-col. Let's use the last 22 weeks of contributions.
     const allWeeks = user.contributionsCollection.contributionCalendar.weeks;
-    const recentWeeks = allWeeks.slice(-17);
-    const velocity = recentWeeks.map(week => {
-      // Sum the contributions for that week
-      return week.contributionDays.reduce((acc, day) => acc + day.contributionCount, 0);
+    const recentWeeks = allWeeks.slice(-22);
+    
+    const calendar = [];
+    let maxContribution = 1;
+
+    recentWeeks.forEach(week => {
+      week.contributionDays.forEach(day => {
+        if (day.contributionCount > maxContribution) {
+          maxContribution = day.contributionCount;
+        }
+        calendar.push(day.contributionCount);
+      });
     });
 
-    // Normalize velocity array to percentages (0-100) for the CSS height
-    const maxVelocity = Math.max(...velocity, 1); // Avoid division by 0
-    const normalizedVelocity = velocity.map(v => Math.round((v / maxVelocity) * 100));
+    // Normalize calendar array to intensity (0 to 4)
+    // 0 = 0, 1 = >0, 2 = >25%, 3 = >50%, 4 = >75%
+    const normalizedCalendar = calendar.map(count => {
+      if (count === 0) return 0;
+      const ratio = count / maxContribution;
+      if (ratio > 0.75) return 4;
+      if (ratio > 0.5) return 3;
+      if (ratio > 0.25) return 2;
+      return 1;
+    });
 
     // Send formatted data to frontend
     res.status(200).json({
       projects: user.repositories.totalCount,
       technologies: languages.size,
       since: new Date(user.createdAt).getFullYear(),
-      velocity: normalizedVelocity,
+      calendar: normalizedCalendar,
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch from GitHub" });
