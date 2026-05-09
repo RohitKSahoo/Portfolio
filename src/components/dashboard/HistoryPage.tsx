@@ -1,8 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Github, Smartphone, Code, Clock, Hash, ArrowRight } from 'lucide-react';
 
 export const HistoryPage = () => {
+  const [githubStats, setGithubStats] = useState({
+    projects: '3+',
+    technologies: '5+',
+    since: '2025',
+    velocity: [40, 70, 45, 90, 65, 80, 50, 100, 75, 40, 85, 60, 95, 30, 60, 80, 120]
+  });
+
+  useEffect(() => {
+    fetch('/api/github')
+      .then(res => {
+        if (!res.ok) throw new Error('API not available');
+        return res.json();
+      })
+      .then(data => {
+        if (!data.error && !data.errors) {
+          setGithubStats(prev => ({
+            projects: data.projects.toString(),
+            technologies: data.technologies.toString(),
+            since: data.since.toString(),
+            velocity: data.velocity && data.velocity.length > 0 ? data.velocity : prev.velocity,
+          }));
+        }
+      })
+      .catch(() => {
+        // Fallback silently to mock data if API fails or runs locally without Vercel CLI
+      });
+  }, []);
+
   return (
     <div className="w-full h-full flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden font-inter" style={{ backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
       
@@ -82,15 +110,15 @@ export const HistoryPage = () => {
             <div className="grid grid-cols-2 gap-y-6 gap-x-4">
               <div className="flex flex-col gap-0.5">
                 <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">Projects</span>
-                <span className="text-4xl font-bold font-satoshi text-white tracking-tight">3+</span>
+                <span className="text-4xl font-bold font-satoshi text-white tracking-tight">{githubStats.projects}</span>
               </div>
               <div className="flex flex-col gap-0.5">
                 <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">Technologies</span>
-                <span className="text-4xl font-bold font-satoshi text-white tracking-tight">5+</span>
+                <span className="text-4xl font-bold font-satoshi text-white tracking-tight">{githubStats.technologies}</span>
               </div>
               <div className="flex flex-col gap-0.5">
                 <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">Since</span>
-                <span className="text-4xl font-bold font-satoshi text-white tracking-tight">2025</span>
+                <span className="text-4xl font-bold font-satoshi text-white tracking-tight">{githubStats.since}</span>
               </div>
               <div className="flex flex-col gap-0.5">
                 <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">Status</span>
@@ -101,8 +129,8 @@ export const HistoryPage = () => {
             <div className="mt-auto pt-6 border-t border-white/5">
               <span className="text-[0.6rem] font-satoshi font-medium text-white/30 uppercase block mb-2 tracking-wider">Learning Velocity</span>
               <div className="flex items-end gap-[3px] h-16">
-                {[40, 70, 45, 90, 65, 80, 50, 100, 75, 40, 85, 60, 95, 30, 60, 80, 120].map((h, i) => (
-                  <div key={i} className={`flex-1 ${i === 16 ? 'bg-red-500' : 'bg-white/10'} rounded-t-[1px]`} style={{ height: `${h}%` }} />
+                {githubStats.velocity.map((h, i) => (
+                  <div key={i} className={`flex-1 ${i === githubStats.velocity.length - 1 ? 'bg-red-500' : 'bg-white/10'} rounded-t-[1px]`} style={{ height: `${h}%`, minHeight: '2px' }} />
                 ))}
               </div>
             </div>

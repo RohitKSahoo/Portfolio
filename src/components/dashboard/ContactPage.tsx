@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Github, Linkedin, Terminal, Send, Clock, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
+import VariableProximity from '../effects/VariableProximity';
 
 export const ContactPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const containerRef = useRef(null);
 
   return (
     <div className="w-full h-full flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden font-inter" style={{ backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
@@ -15,9 +17,12 @@ export const ContactPage = () => {
         <div className="lg:col-span-7 flex flex-col justify-between py-0">
           <div className="relative">
 
-            <h2 className="text-[11vw] sm:text-7xl lg:text-[7rem] font-extrabold font-satoshi tracking-tight leading-none mb-3 text-white mt-1 break-words">
-              Let's build<br />something<br />
-              <span className="text-red-500">extraordinary.</span>
+            <h2 ref={containerRef} className="text-[11vw] sm:text-7xl lg:text-[7rem] font-extrabold font-satoshi tracking-tight leading-none mb-3 text-white mt-1 break-words">
+              <VariableProximity label="Let's build" containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
+              <VariableProximity label="something" containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
+              <span className="text-red-500">
+                <VariableProximity label="extraordinary." containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
+              </span>
             </h2>
             <p className="text-base text-white/60 max-w-xl font-inter leading-relaxed mb-[28px]">
               I'm always open to collaborations, exciting projects, and impactful ideas.
