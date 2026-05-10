@@ -41,7 +41,7 @@ export const ProfilePage = ({
 
   return (
     <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700 font-inter">
-      <div className="relative min-h-[calc(100vh-180px)] border-none bg-transparent overflow-hidden flex flex-col justify-between p-0">
+      <div className="relative min-h-[calc(100dvh-180px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-hidden flex flex-col justify-between p-0">
         <div className="absolute inset-0 flex justify-center items-center z-0">
            <div className="relative w-full h-full max-w-xl pointer-events-none flex items-center justify-center z-10">
               <motion.div
@@ -93,7 +93,7 @@ export const ProfilePage = ({
 
           <motion.div 
             animate={{ 
-              y: isMobile ? -80 : (isDockVisible ? -95 : 12),
+              y: isMobile ? -130 : (isDockVisible ? -95 : 12),
               opacity: 1
             }}
             transition={{ type: "spring", stiffness: 200, damping: 30 }}
