@@ -43,7 +43,7 @@ export const RegistryPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="flex flex-col gap-4 pb-8 pt-4 bento-section font-inter"
+          className="flex flex-col gap-4 pb-8 pt-0 bento-section font-inter"
         >
           <div className="flex flex-col gap-4 pt-2 relative">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
@@ -160,7 +160,7 @@ export const RegistryPage = () => {
               </div>
 
               {/* Metrics */}
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-row gap-2 sm:gap-4 w-full">
                 {Object.entries(activeProject.metrics).map(([k, v]) => {
                   let Icon = Zap;
                   if (k === 'LATENCY' || k === 'SYNC_LATENCY' || k === 'UI_LATENCY') Icon = Zap;
@@ -168,13 +168,13 @@ export const RegistryPage = () => {
                   if (k === 'STABILITY' || k === 'FAILOVER') Icon = AlertTriangle;
                   
                   return (
-                    <div key={k} className="p-4 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center gap-4 min-w-[150px]">
-                      <div className="p-2 bg-red-500/10 text-red-500 rounded-lg">
-                        <Icon size={16} />
+                    <div key={k} className="p-3 sm:p-4 bg-[#0d0d0d] border border-white/5 rounded-xl flex flex-col sm:flex-row items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                      <div className="p-2 bg-red-500/10 text-red-500 rounded-lg shrink-0">
+                        <Icon size={16} className="sm:w-4 sm:h-4" />
                       </div>
-                      <div>
-                        <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase block mb-0.5 tracking-wider">{k}</span>
-                        <span className="text-sm font-bold font-satoshi text-white">{v}</span>
+                      <div className="text-center sm:text-left min-w-0">
+                        <span className="text-[0.6rem] sm:text-[0.65rem] font-satoshi font-medium text-white/30 uppercase block mb-0.5 tracking-wider truncate">{k}</span>
+                        <span className="text-sm sm:text-sm font-bold font-satoshi text-white truncate">{v}</span>
                       </div>
                     </div>
                   );
