@@ -44,9 +44,15 @@ export const ProfilePage = ({
       <div className="relative min-h-[calc(100vh-180px)] border-none bg-transparent overflow-hidden flex flex-col justify-between p-0">
         <div className="absolute inset-0 flex justify-center items-center z-0">
            <div className="relative w-full h-full max-w-xl pointer-events-none flex items-center justify-center z-10">
-              <SystemAvatar 
-                className="w-[110%] h-[110%] lg:w-full lg:h-full opacity-80 lg:opacity-100 scale-95 lg:scale-100 translate-y-8 lg:translate-y-0 transition-transform"
-              />
+              <motion.div
+                animate={isMobile ? { y: [0, -10, 0] } : {}}
+                transition={isMobile ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
+                className="w-full h-full flex items-center justify-center"
+              >
+                <SystemAvatar 
+                  className="w-[110%] h-[110%] lg:w-full lg:h-full opacity-80 lg:opacity-100 scale-95 lg:scale-100 translate-y-8 lg:translate-y-0 transition-transform"
+                />
+              </motion.div>
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-black)] via-transparent to-[var(--bg-black)]/40 pointer-events-none" />
            </div>
         </div>
@@ -55,8 +61,8 @@ export const ProfilePage = ({
           <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-8 items-start w-full px-0">
             <div className="flex flex-col gap-3 lg:gap-4 max-w-lg text-left">
 
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-satoshi text-white leading-tight tracking-tight">
-                CS Student & <br className="hidden sm:block lg:hidden" /> Systems Builder <br /> Based in India
+              <h2 className="text-5xl lg:text-5xl font-bold font-satoshi text-white leading-tight tracking-tight">
+                CS Student & <br className="sm:hidden" /> Systems Builder <br /> Based in <span className="text-red-500">India.</span>
               </h2>
             </div>
 
@@ -67,7 +73,7 @@ export const ProfilePage = ({
             <div className="flex flex-col gap-3 lg:self-end">
               <button 
                 onClick={onExploreProjects}
-                className="group relative px-6 py-3 bg-red-500 text-white font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white hover:text-black transition-all overflow-hidden flex items-center justify-between gap-4 w-full sm:w-auto shadow-[0_0_20px_rgba(239,68,68,0.2)] rounded-lg"
+                className="group relative px-4 py-2.5 sm:px-6 sm:py-3 bg-red-500 text-white font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white hover:text-black transition-all overflow-hidden flex items-center justify-between gap-4 w-56 sm:w-auto shadow-[0_0_20px_rgba(239,68,68,0.2)] rounded-lg"
               >
                 <span>Explore Projects</span>
                 <Zap size={14} fill="currentColor" />
@@ -76,7 +82,7 @@ export const ProfilePage = ({
               <a 
                 href="/cv.pdf" 
                 download="Rohit_Kumar_Sahoo_CV.pdf"
-                className="group relative px-6 py-3 bg-[#0d0d0d] border border-white/10 text-white/80 font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white/10 hover:text-white transition-all flex items-center justify-between gap-4 w-full sm:w-auto rounded-lg"
+                className="group relative px-4 py-2.5 sm:px-6 sm:py-3 bg-[#0d0d0d] border border-white/10 text-white/80 font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white/10 hover:text-white transition-all flex items-center justify-between gap-4 w-56 sm:w-auto rounded-lg"
               >
                 <span>Download CV</span>
                 <Download size={14} />
@@ -87,7 +93,7 @@ export const ProfilePage = ({
 
           <motion.div 
             animate={{ 
-              y: isMobile ? -110 : (isDockVisible ? -95 : 12),
+              y: isMobile ? -40 : (isDockVisible ? -95 : 12),
               opacity: 1
             }}
             transition={{ type: "spring", stiffness: 200, damping: 30 }}

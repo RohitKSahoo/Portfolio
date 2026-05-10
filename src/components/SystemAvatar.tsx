@@ -17,6 +17,42 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
   const mouseX = useSpring(0, headSpring);
   const mouseY = useSpring(0, headSpring);
   
+  const [isMobile, setIsMobile] = useState(false);
+  const [isWaving, setIsWaving] = useState(false);
+  
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const interval = setInterval(() => {
+      // If waving, hold position looking at center
+      if (isWaving) {
+        mouseX.set(0);
+        mouseY.set(0);
+        return;
+      }
+
+      // 30% chance to wave
+      if (Math.random() < 0.3) {
+        setIsWaving(true);
+        mouseX.set(0); // Look at center
+        mouseY.set(0);
+        setTimeout(() => setIsWaving(false), 3000); // Wave for 3 seconds
+      } else {
+        // Otherwise look around
+        mouseX.set((Math.random() - 0.5) * 80);
+        mouseY.set((Math.random() - 0.5) * 60);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isMobile, mouseX, mouseY, isWaving]);
   // Derived parallax values
   const eyeX = useTransform(mouseX, [ -40, 40 ], [ -15, 15 ]);
   const eyeY = useTransform(mouseY, [ -40, 40 ], [ -12, 12 ]);
@@ -82,7 +118,11 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
         animate={isGlitching ? { x: [-2, 2, -1, 3, 0], filter: ['hue-rotate(0deg)', 'hue-rotate(90deg)', 'hue-rotate(0deg)'] } : {}}
       >
         {/* PARALLAX TORSO */}
-        <motion.g style={{ x: torsoX }}>
+        <motion.g 
+          style={{ x: torsoX }}
+          animate={isWaving ? { x: [0, -3, 3, -3, 0] } : {}}
+          transition={{ duration: 1.5, repeat: isWaving ? Infinity : 0, ease: "easeInOut" }}
+        >
           {/* Mechanical Torso Frame */}
           <path
             d="M70,200 L170,200 L190,280 L50,280 Z"
@@ -103,28 +143,22 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
              {/* Right Arm Assembly (Standard or Waving) */}
              <circle cx="170" cy="205" r="4" fill="var(--bg-black)" stroke="var(--tier-3)" strokeWidth="1" />
              
-             {isFullView ? (
-               <motion.path 
-                 d="M170,205 L210,180 L230,150" 
-                 fill="none" 
-                 stroke="var(--tier-1)" 
-                 strokeWidth="2.5" 
-                 strokeLinecap="round"
-                 animate={{ rotate: [0, -20, 0] }}
-                 transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }}
-                 style={{ originX: "170px", originY: "205px" }}
-               />
-             ) : (
-               <path d="M170,205 L200,240 L185,265" fill="none" stroke="var(--tier-1)" strokeWidth="2" strokeLinecap="round" />
-             )}
+             <motion.path 
+               d={(isFullView || isWaving) ? "M170,205 L210,180 L230,150" : "M170,205 L200,240 L185,265"} 
+               fill="none" 
+               stroke="var(--tier-1)" 
+               strokeWidth="2.5" 
+               strokeLinecap="round"
+               animate={(isFullView || isWaving) ? { rotate: [0, -15, 15, -15, 0] } : { rotate: 0 }}
+               transition={{ duration: 1.5, repeat: (isFullView || isWaving) ? Infinity : 0, ease: "easeInOut" }}
+               style={{ originX: "170px", originY: "205px" }}
+             />
 
              <motion.circle 
-                cx={isFullView ? 230 : 185} 
-                cy={isFullView ? 150 : 265} 
+                animate={(isFullView || isWaving) ? { cx: 230, cy: 150, x: [0, -2, 2, -2, 0] } : { cx: 185, cy: 265 }}
                 r="3" 
                 fill="var(--theme-accent)" 
-                animate={isFullView ? { x: [0, -3, 0], y: [0, -2, 0] } : { opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 0.6, repeat: Infinity }}
+                transition={{ duration: 0.5 }}
              />
           </g>
         </motion.g>
@@ -135,7 +169,12 @@ export const SystemAvatar = ({ className }: { className?: string }) => {
         </motion.g>
 
         {/* HEAD SEGMENT */}
-        <motion.g style={{ x: mouseX, y: mouseY, rotate: neckRotate }} transform-origin="120 120">
+        <motion.g 
+          style={{ x: mouseX, y: mouseY, rotate: neckRotate }} 
+          transform-origin="120 120"
+          animate={isWaving ? { rotate: [0, -5, 5, -5, 0] } : {}}
+          transition={{ duration: 1.5, repeat: isWaving ? Infinity : 0, ease: "easeInOut" }}
+        >
           <circle cx="120" cy="120" r="70" fill="var(--bg-black)" stroke="var(--tier-1)" strokeWidth="2" />
           
           <motion.circle 
