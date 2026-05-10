@@ -93,7 +93,7 @@ export const ProfilePage = ({
 
           <motion.div 
             animate={{ 
-              y: isMobile ? -40 : (isDockVisible ? -95 : 12),
+              y: isMobile ? -80 : (isDockVisible ? -95 : 12),
               opacity: 1
             }}
             transition={{ type: "spring", stiffness: 200, damping: 30 }}
