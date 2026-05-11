@@ -11,7 +11,7 @@ export const ProfilePage = ({
   onExploreProjects?: () => void,
   isDockVisible?: boolean 
 }) => {
-  const [displayName, setDisplayName] = React.useState("ROHIT KUMAR SAHOO");
+  const [displayName, setDisplayName] = React.useState("ROHIT K. SAHOO");
   const [isMobile, setIsMobile] = React.useState(false);
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%#!@$*";
 
@@ -24,7 +24,7 @@ export const ProfilePage = ({
 
   React.useEffect(() => {
     let iterations = 0;
-    const target = "ROHIT KUMAR SAHOO";
+    const target = "ROHIT K. SAHOO";
     const interval = setInterval(() => {
       setDisplayName(prev => 
         target.split("").map((char, index) => {
@@ -93,14 +93,14 @@ export const ProfilePage = ({
 
           <motion.div 
             animate={{ 
-              y: isMobile ? -130 : (isDockVisible ? -95 : 12),
+              y: isMobile ? -60 : (isDockVisible ? -95 : 12),
               opacity: 1
             }}
             transition={{ type: "spring", stiffness: 200, damping: 30 }}
             className="mt-auto w-full pt-10 pb-0 pointer-events-none"
           >
-             <h1 className="text-[7.5vw] sm:text-[8vw] lg:text-[6vw] font-bold font-satoshi tracking-tight leading-none text-white drop-shadow-[0_0_50px_rgba(239,68,68,0.1)] uppercase text-center break-words">
-                {displayName}<span className="inline-block w-[1vw] h-[1vw] bg-red-500 ml-3 align-baseline translate-y-[-0.2vw]" />
+             <h1 className="text-[10vw] lg:text-[6vw] font-bold font-satoshi tracking-tight leading-none text-white drop-shadow-[0_0_50px_rgba(239,68,68,0.1)] uppercase text-center break-words">
+                {displayName}<span className="inline-block w-[1.5vw] h-[1.5vw] bg-red-500 ml-1 align-baseline translate-y-[-0.2vw]" />
              </h1>
           </motion.div>
         </div>
