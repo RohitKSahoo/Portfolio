@@ -24,7 +24,7 @@ export const ProfilePage = ({
 
   React.useEffect(() => {
     let iterations = 0;
-    const target = "ROHIT K. SAHOO";
+    const target = isMobile ? "ROHIT K. SAHOO" : "ROHIT KUMAR SAHOO";
     const interval = setInterval(() => {
       setDisplayName(prev => 
         target.split("").map((char, index) => {
@@ -37,7 +37,7 @@ export const ProfilePage = ({
       iterations += 1/3;
     }, 40);
     return () => clearInterval(interval);
-  }, []);
+  }, [isMobile]);
 
   return (
     <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700 font-inter">
