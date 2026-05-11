@@ -47,6 +47,10 @@ export const RegistryPage = () => {
   const [[page, direction], setPage] = React.useState([0, 0]);
   const [isPaused, setIsPaused] = React.useState(false);
 
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [selectedId]);
+
   const imageIndex = React.useMemo(() => {
     if (!activeProject.images || activeProject.images.length === 0) return 0;
     return (page % activeProject.images.length + activeProject.images.length) % activeProject.images.length;
