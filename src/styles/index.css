@@ -36,7 +36,7 @@
   }
 
   body {
-    @apply antialiased select-none overflow-x-hidden;
+    @apply antialiased select-none;
     background-color: var(--bg-black);
     color: var(--tier-1);
     font-family: var(--font-body);

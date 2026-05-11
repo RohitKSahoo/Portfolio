@@ -26,9 +26,7 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem('active-tab', activeTab);
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'instant' });
-    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
   const renderContent = () => {
@@ -62,7 +60,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen selection:bg-[var(--theme-accent)] selection:text-white antialiased relative transition-colors overflow-x-hidden">
+    <div className="min-h-screen selection:bg-[var(--theme-accent)] selection:text-white antialiased relative transition-colors">
       
       {/* MAGNETIC DOCK NAVIGATION */}
       <SystemDock 
