@@ -81,9 +81,11 @@ export const HistoryPage = () => {
                   <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Learning</span>
                 </div>
               </div>
-              <ul className="text-base text-white/60 space-y-2 list-disc list-inside font-inter">
-                <li>Currently in my <strong className="text-white font-medium">3rd year</strong> at <strong className="text-white font-medium">Veer Surendra Sai University of Technology, Odisha</strong>.</li>
-                <li>Focused on building systems, automation tools, and exploring AI.</li>
+              <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># ACADEMIC JOURNEY</span>
+              <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
+                <li>Currently pursuing my Computer Science degree at <strong className="text-white font-medium">Veer Surendra Sai University of Technology</strong> (VSSUT).</li>
+                <li>Currently in my <strong className="text-white font-medium">3rd year</strong>, focusing on core computer science fundamentals.</li>
+                <li>Applying academic knowledge to build complex, real-world projects.</li>
               </ul>
             </div>
           </div>
@@ -106,12 +108,13 @@ export const HistoryPage = () => {
                   <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Projects</span>
                 </div>
               </div>
-              <ul className="text-base text-white/60 space-y-2 list-disc list-inside font-inter">
-                <li><strong className="text-white font-medium">Minimal New Tab</strong> - Jul 2025 - Browser dashboard. Stable.</li>
-                <li><strong className="text-white font-medium">Pausify</strong> - Jan 2026 - AI media pausing app. Stable.</li>
-                <li><strong className="text-white font-medium">AutoCommitBot</strong> - Mar 2026 - AI Git automation. Stable.</li>
-                <li><strong className="text-white font-medium">SoSafe</strong> - Mar 22, 2026 - Real-time safety app. Stable.</li>
-                <li><strong className="text-white font-medium">Sifer</strong> - Apr 2026 - Location-based audio manager. In progress.</li>
+              <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># HOBBY PROJECTS</span>
+              <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
+                <li><strong className="text-white font-medium">Browser Extensions & Web Animations:</strong> Explored building privacy-focused dashboards with WebGL rendering.</li>
+                <li><strong className="text-white font-medium">Edge AI & Audio Processing:</strong> Implemented low-latency voice activity detection on Android.</li>
+                <li><strong className="text-white font-medium">Automation & CLI Tools:</strong> Developed tools to automate Git operations and commit generation using AI.</li>
+                <li><strong className="text-white font-medium">Real-time Systems & Security:</strong> Built live location and audio streaming architectures for personal safety.</li>
+                <li><strong className="text-white font-medium">Location-Based Services:</strong> Explored geofencing APIs to automate system settings based on location.</li>
               </ul>
             </div>
           </div>
