@@ -81,11 +81,9 @@ export const HistoryPage = () => {
                   <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Learning</span>
                 </div>
               </div>
-              <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># ACADEMIC JOURNEY</span>
-              <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
-                <li>Started my Computer Science degree in 2025.</li>
-                <li>Focused on learning fundamentals and building a strong foundation.</li>
-                <li>Working on small projects to apply what I learn in class.</li>
+              <ul className="text-base text-white/60 space-y-2 list-disc list-inside font-inter">
+                <li>Currently in my <strong className="text-white font-medium">3rd year</strong> at <strong className="text-white font-medium">Veer Surendra Sai University of Technology, Odisha</strong>.</li>
+                <li>Focused on building systems, automation tools, and exploring AI.</li>
               </ul>
             </div>
           </div>
@@ -108,13 +106,12 @@ export const HistoryPage = () => {
                   <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Projects</span>
                 </div>
               </div>
-              <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># HOBBY PROJECTS</span>
-              <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
-                <li><strong className="text-white font-medium">Minimal New Tab</strong> - July 4, 2025 - Built a clean, highly functional browser dashboard extension.</li>
-                <li><strong className="text-white font-medium">Pausify</strong> - Jan 6, 2026 - Diving into edge AI with an Android app that auto-pauses media.</li>
-                <li><strong className="text-white font-medium">AutoCommitBot</strong> - Mar 16, 2026 - Automating developer workflows using Gemini AI and GitHub CLI.</li>
-                <li><strong className="text-white font-medium">SoSafe</strong> - Mar 22, 2026 - Exploring real-time streaming and geolocation for personal safety.</li>
-                <li><strong className="text-white font-medium">Sifer</strong> - Apr 3, 2026 - Currently developing a smart location-based sound profile manager.</li>
+              <ul className="text-base text-white/60 space-y-2 list-disc list-inside font-inter">
+                <li><strong className="text-white font-medium">Minimal New Tab</strong> - Jul 2025 - Browser dashboard. Stable.</li>
+                <li><strong className="text-white font-medium">Pausify</strong> - Jan 2026 - AI media pausing app. Stable.</li>
+                <li><strong className="text-white font-medium">AutoCommitBot</strong> - Mar 2026 - AI Git automation. Stable.</li>
+                <li><strong className="text-white font-medium">SoSafe</strong> - Mar 22, 2026 - Real-time safety app. Stable.</li>
+                <li><strong className="text-white font-medium">Sifer</strong> - Apr 2026 - Location-based audio manager. In progress.</li>
               </ul>
             </div>
           </div>
