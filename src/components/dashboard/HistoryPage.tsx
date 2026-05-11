@@ -110,9 +110,10 @@ export const HistoryPage = () => {
               </div>
               <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># HOBBY PROJECTS</span>
               <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
-                <li>Started building websites and small projects in 2025.</li>
-                <li>Learning new technologies by working on ideas that interest me.</li>
-                <li>Enjoying the process of creating things from scratch and learning as I go.</li>
+                <li>Started building my first major project, <strong className="text-white font-medium">Minimal New Tab</strong>, in <strong className="text-white font-medium">July 2025</strong>.</li>
+                <li>Built <strong className="text-white font-medium">Pausify</strong> in <strong className="text-white font-medium">Jan 2026</strong>, diving into AI-powered Android apps.</li>
+                <li>Created <strong className="text-white font-medium">AutoCommitBot</strong> & <strong className="text-white font-medium">SoSafe</strong> in <strong className="text-white font-medium">March 2026</strong>, exploring automation and real-time systems.</li>
+                <li>Currently working on <strong className="text-white font-medium">Sifer</strong> (started <strong className="text-white font-medium">April 2026</strong>), focusing on location-based automation.</li>
               </ul>
             </div>
           </div>
