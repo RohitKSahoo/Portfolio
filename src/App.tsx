@@ -76,14 +76,14 @@ function App() {
       <DotGrid className="fixed inset-0 -z-10" />
 
       {/* MAIN SYSTEM VIEWPORT */}
-      <main className="flex flex-col h-screen overflow-hidden relative transition-all duration-500">
+      <main className="flex flex-col relative transition-all duration-500">
         {/* TOP TELEMETRY HEADER */}
         <Header 
           activeTab={activeTab}
         />
 
         {/* ACTIVE MODULE VIEWPORT */}
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-5 pt-[95px] lg:pt-[110px] pb-24 lg:pb-24 custom-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div ref={scrollContainerRef} className="px-5 pt-[95px] lg:pt-[110px] pb-24 lg:pb-24" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div className="max-w-[1600px] w-full mx-auto">
              {renderContent()}
           </div>

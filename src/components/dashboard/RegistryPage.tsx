@@ -63,6 +63,11 @@ export const RegistryPage = () => {
       }, 50);
       
       return () => clearTimeout(timer);
+    } else {
+      window.scrollTo(0, 0);
+      if (selectedId && detailRef.current) {
+        detailRef.current.scrollIntoView({ behavior: 'auto' });
+      }
     }
   }, [selectedId]);
 
