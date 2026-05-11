@@ -44,11 +44,15 @@ export const RegistryPage = () => {
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const activeProject = PROJECTS.find(p => p.id === selectedId) || PROJECTS[0];
   const gridRef = React.useRef<HTMLDivElement>(null);
+  const detailRef = React.useRef<HTMLDivElement>(null);
   const [[page, direction], setPage] = React.useState([0, 0]);
   const [isPaused, setIsPaused] = React.useState(false);
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
+    if (selectedId && detailRef.current) {
+      detailRef.current.scrollIntoView({ behavior: 'auto' });
+    }
   }, [selectedId]);
 
   const imageIndex = React.useMemo(() => {
@@ -184,6 +188,7 @@ export const RegistryPage = () => {
       ) : (
         <motion.div 
           key="detail"
+          ref={detailRef}
           initial={{ opacity: 0, scale: 1.02 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.98 }}
