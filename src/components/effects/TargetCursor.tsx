@@ -43,8 +43,8 @@ const TargetCursor = ({
     gsap.to(cursorRef.current, {
       x,
       y,
-      duration: 0.1,
-      ease: 'power3.out'
+      duration: 0.04, // Reduced from 0.1 for better responsiveness on battery
+      ease: 'power2.out' // Changed from power3.out for a snappier feel
     });
   }, []);
 
@@ -117,7 +117,7 @@ const TargetCursor = ({
         const finalX = currentX + (targetX - currentX) * strength;
         const finalY = currentY + (targetY - currentY) * strength;
 
-        const duration = strength >= 0.99 ? (parallaxOn ? 0.2 : 0) : 0.05;
+        const duration = strength >= 0.99 ? (parallaxOn ? 0.1 : 0) : 0.02;
 
         gsap.to(corner, {
           x: finalX,
