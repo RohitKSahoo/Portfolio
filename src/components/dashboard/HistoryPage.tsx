@@ -192,30 +192,7 @@ export const HistoryPage = () => {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-white/5 pt-4 mt-auto flex justify-between items-center text-sm font-satoshi relative z-10">
-        <div className="flex items-center gap-12">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[0.65rem] text-white/30 uppercase tracking-wider font-medium">Focus Areas</span>
-            <div className="flex items-center gap-2 font-bold text-white text-sm">
-              <span className="text-red-500">Learning</span>
-              <span className="text-white/20">•</span>
-              <span className="text-red-500">Building</span>
-              <span className="text-white/20">•</span>
-              <span className="text-red-500">Exploring</span>
-            </div>
-          </div>
 
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[0.65rem] text-white/30 uppercase tracking-wider font-medium">Open To</span>
-            <div className="text-white font-bold text-sm">
-              Learning Opportunities & Collaborations
-            </div>
-          </div>
-        </div>
-
-        <ArrowRight size={16} className="text-white/50" />
-      </div>
     </div>
   );
 };
