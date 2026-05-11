@@ -4,7 +4,7 @@ import { gsap } from 'gsap';
 import './TargetCursor.css';
 
 const TargetCursor = ({
-  targetSelector = '.cursor-target',
+  targetSelector = '.cursor-target, button, a, .cursor-pointer, [role="button"]',
   spinDuration = 2,
   hideDefaultCursor = true,
   hoverDuration = 0.2,
