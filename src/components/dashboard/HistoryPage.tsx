@@ -110,10 +110,11 @@ export const HistoryPage = () => {
               </div>
               <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># HOBBY PROJECTS</span>
               <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
-                <li>Started building my first major project, <strong className="text-white font-medium">Minimal New Tab</strong>, in <strong className="text-white font-medium">July 2025</strong>.</li>
-                <li>Built <strong className="text-white font-medium">Pausify</strong> in <strong className="text-white font-medium">Jan 2026</strong>, diving into AI-powered Android apps.</li>
-                <li>Created <strong className="text-white font-medium">AutoCommitBot</strong> & <strong className="text-white font-medium">SoSafe</strong> in <strong className="text-white font-medium">March 2026</strong>, exploring automation and real-time systems.</li>
-                <li>Currently working on <strong className="text-white font-medium">Sifer</strong> (started <strong className="text-white font-medium">April 2026</strong>), focusing on location-based automation.</li>
+                <li><strong className="text-white font-medium">Minimal New Tab</strong> - July 4, 2025 - Built a clean, highly functional browser dashboard extension.</li>
+                <li><strong className="text-white font-medium">Pausify</strong> - Jan 6, 2026 - Diving into edge AI with an Android app that auto-pauses media.</li>
+                <li><strong className="text-white font-medium">AutoCommitBot</strong> - Mar 16, 2026 - Automating developer workflows using Gemini AI and GitHub CLI.</li>
+                <li><strong className="text-white font-medium">SoSafe</strong> - Mar 22, 2026 - Exploring real-time streaming and geolocation for personal safety.</li>
+                <li><strong className="text-white font-medium">Sifer</strong> - Apr 3, 2026 - Currently developing a smart location-based sound profile manager.</li>
               </ul>
             </div>
           </div>
