@@ -1,8 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Github, Linkedin, Terminal, Send, Clock, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
 import VariableProximity from '../effects/VariableProximity';
-import SplitText from '../effects/SplitText';
 
 export const ContactPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,6 +11,57 @@ export const ContactPage = () => {
   const [isSending, setIsSending] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [error, setError] = useState('');
+
+  const fullText1 = "Let's build";
+  const fullText2 = "something";
+  const fullText3 = "extraordinary.";
+
+  const [text1, setText1] = useState('');
+  const [text2, setText2] = useState('');
+  const [text3, setText3] = useState('');
+
+  useEffect(() => {
+    let currentText = '';
+    let i = 0;
+    const speed = 50;
+
+    const type1 = () => {
+      if (i < fullText1.length) {
+        currentText += fullText1[i];
+        setText1(currentText);
+        i++;
+        setTimeout(type1, speed);
+      } else {
+        currentText = '';
+        i = 0;
+        setTimeout(type2, speed);
+      }
+    };
+
+    const type2 = () => {
+      if (i < fullText2.length) {
+        currentText += fullText2[i];
+        setText2(currentText);
+        i++;
+        setTimeout(type2, speed);
+      } else {
+        currentText = '';
+        i = 0;
+        setTimeout(type3, speed);
+      }
+    };
+
+    const type3 = () => {
+      if (i < fullText3.length) {
+        currentText += fullText3[i];
+        setText3(currentText);
+        i++;
+        setTimeout(type3, speed);
+      }
+    };
+
+    type1();
+  }, []);
 
   const handleSubmit = async () => {
     // Honeypot check
@@ -83,12 +133,10 @@ export const ContactPage = () => {
           <div className="relative">
 
             <h2 ref={containerRef} className="text-[11vw] sm:text-7xl lg:text-[7rem] font-extrabold font-satoshi tracking-tight leading-none mb-3 text-white mt-1 break-words">
-              <SplitText text="Let's build" tag="span" textAlign="left" className="text-white" delay={50} duration={0.8} />
-              <br />
-              <SplitText text="something" tag="span" textAlign="left" className="text-white" delay={50} duration={0.8} />
-              <br />
+              <VariableProximity label={text1} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
+              <VariableProximity label={text2} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
               <span className="text-red-500">
-                <SplitText text="extraordinary." tag="span" textAlign="left" className="text-red-500" delay={50} duration={0.8} />
+                <VariableProximity label={text3} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
               </span>
             </h2>
             <p className="text-base text-white/60 max-w-xl font-inter leading-relaxed mb-[28px]">
