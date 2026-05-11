@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Github, Terminal, Zap, ArrowLeft, Shield, AlertTriangle } from 'lucide-react';
+import { Github, Terminal, Zap, ArrowLeft, ArrowRight, Shield, AlertTriangle } from 'lucide-react';
 import Folder from '../effects/Folder';
 import { MagicBentoCard } from '../effects/MagicBento';
 import TextType from '../effects/TextType';
@@ -8,8 +8,19 @@ import { PROJECTS } from './data';
 
 export const RegistryPage = () => {
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const [currentImgIdx, setCurrentImgIdx] = React.useState(0);
   const activeProject = PROJECTS.find(p => p.id === selectedId) || PROJECTS[0];
   const gridRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!activeProject.images || activeProject.images.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentImgIdx((prev) => (prev === activeProject.images.length - 1 ? 0 : prev + 1));
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, [activeProject.images, currentImgIdx]);
 
   const getFolderItems = (project: typeof PROJECTS[0]) => [
     <div key="1" className="w-full h-full flex flex-col items-center justify-center p-2 bg-[#0c0c0c] text-[var(--theme-accent)] overflow-hidden font-satoshi">
@@ -25,7 +36,7 @@ export const RegistryPage = () => {
       </div>
     </div>,
     <div key="2" className="w-full h-full flex items-center justify-center bg-black relative">
-       <img src={project.image} className="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all duration-500" alt="Preview" />
+       <img src={project.images[0]} className="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all duration-500" alt="Preview" />
        <div className="absolute inset-0 bg-black/40" />
        <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-red-500 text-white text-[0.5rem] font-bold font-satoshi uppercase rounded">LIVE</div>
     </div>,
@@ -77,7 +88,7 @@ export const RegistryPage = () => {
                 enableMagnetism={false}
                 clickEffect={false}
                 className="flex flex-col gap-3 group cursor-pointer relative p-5 bg-[#0d0d0d] border border-white/5 transition-all duration-500 rounded-xl hover:border-white/10"
-                onClick={() => setSelectedId(project.id)}
+                onClick={() => { setSelectedId(project.id); setCurrentImgIdx(0); }}
               >
                 <div className="absolute top-5 right-5 flex items-center gap-2">
                   <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
@@ -206,31 +217,77 @@ export const RegistryPage = () => {
 
             {/* Right Column (Waveform) */}
             <div className="flex-1 min-h-0 relative">
-              <div className="w-full h-full min-h-[350px] bg-[#0d0d0d] border border-white/5 rounded-2xl overflow-hidden flex flex-col p-6">
-                <div className="flex-1 flex items-center justify-center relative">
-                  {/* Waveform Graphic */}
-                  <svg width="100%" height="100%" viewBox="0 0 400 200" className="opacity-70">
-                    <defs>
-                      <radialGradient id="waveformGlow" cx="50%" cy="50%" r="30%">
-                        <stop offset="0%" stopColor="#EF4444" stopOpacity="0.4" />
-                        <stop offset="100%" stopColor="#EF4444" stopOpacity="0" />
-                      </radialGradient>
-                    </defs>
-                    <circle cx="200" cy="100" r="100" fill="url(#waveformGlow)" />
-                    <line x1="0" y1="100" x2="400" y2="100" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-                    <path d="M 10 100 Q 30 50 50 100 T 90 100 T 130 100 T 170 100 T 210 100 T 250 100 T 290 100 T 330 100 T 370 100" stroke="rgba(255,255,255,0.3)" strokeWidth="1" fill="none" />
-                    <path d="M 10 100 Q 20 150 40 100 T 80 100 T 120 100 T 160 100 T 200 100 T 240 100 T 280 100 T 320 100 T 360 100" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none" />
-                    <path d="M 50 100 L 60 80 L 70 120 L 80 70 L 90 130 L 100 60 L 110 140 L 120 50 L 130 150 L 140 70 L 150 130 L 160 60 L 170 140 L 180 40 L 190 160 L 200 30 L 210 170 L 220 50 L 230 150 L 240 60 L 250 140 L 260 70 L 270 130 L 280 80 L 290 120 L 300 90 L 310 110 L 320 100" stroke="white" strokeWidth="1.5" fill="none" opacity="0.8" />
-                    <path d="M 50 100 L 60 120 L 70 80 L 80 130 L 90 70 L 100 140 L 110 60 L 120 150 L 130 50 L 140 130 L 150 70 L 160 140 L 170 60 L 180 160 L 190 40 L 200 170 L 210 30 L 220 150 L 230 50 L 240 140 L 250 60 L 260 130 L 270 70 L 280 120 L 290 80 L 300 110 L 310 90 L 320 100" stroke="white" strokeWidth="1" fill="none" opacity="0.5" />
-                  </svg>
+              <div className="w-full h-full min-h-[350px] lg:max-h-[600px] bg-[#0d0d0d] border border-white/5 rounded-2xl overflow-hidden flex flex-col p-6">
+                <div className="flex-1 flex items-center justify-center relative overflow-hidden max-h-[500px]">
+                  {activeProject.images && activeProject.images.length > 0 ? (
+                    <div className="relative w-full h-full group flex items-center justify-center">
+                      <AnimatePresence mode="wait">
+                        <motion.img
+                          key={currentImgIdx}
+                          src={activeProject.images[currentImgIdx]}
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 1.05 }}
+                          transition={{ duration: 0.3 }}
+                          className="max-w-full max-h-full object-contain"
+                          alt={`Screenshot ${currentImgIdx + 1}`}
+                        />
+                      </AnimatePresence>
+                      
+                      {activeProject.images.length > 1 && (
+                        <>
+                          <button
+                            onClick={() => setCurrentImgIdx((prev) => (prev === 0 ? activeProject.images.length - 1 : prev - 1))}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-black/60 border border-white/10 rounded-full text-white/70 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <ArrowLeft size={14} />
+                          </button>
+                          <button
+                            onClick={() => setCurrentImgIdx((prev) => (prev === activeProject.images.length - 1 ? 0 : prev + 1))}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-black/60 border border-white/10 rounded-full text-white/70 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <ArrowRight size={14} />
+                          </button>
+                          
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                            {activeProject.images.map((_, idx) => (
+                              <div
+                                key={idx}
+                                className={`w-1.5 h-1.5 rounded-full ${idx === currentImgIdx ? 'bg-red-500' : 'bg-white/20'}`}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <svg width="100%" height="100%" viewBox="0 0 400 200" className="opacity-70">
+                      <defs>
+                        <radialGradient id="waveformGlow" cx="50%" cy="50%" r="30%">
+                          <stop offset="0%" stopColor="#EF4444" stopOpacity="0.4" />
+                          <stop offset="100%" stopColor="#EF4444" stopOpacity="0" />
+                        </radialGradient>
+                      </defs>
+                      <circle cx="200" cy="100" r="100" fill="url(#waveformGlow)" />
+                      <line x1="0" y1="100" x2="400" y2="100" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+                      <path d="M 10 100 Q 30 50 50 100 T 90 100 T 130 100 T 170 100 T 210 100 T 250 100 T 290 100 T 330 100 T 370 100" stroke="rgba(255,255,255,0.3)" strokeWidth="1" fill="none" />
+                      <path d="M 10 100 Q 20 150 40 100 T 80 100 T 120 100 T 160 100 T 200 100 T 240 100 T 280 100 T 320 100 T 360 100" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none" />
+                      <path d="M 50 100 L 60 80 L 70 120 L 80 70 L 90 130 L 100 60 L 110 140 L 120 50 L 130 150 L 140 70 L 150 130 L 160 60 L 170 140 L 180 40 L 190 160 L 200 30 L 210 170 L 220 50 L 230 150 L 240 60 L 250 140 L 260 70 L 270 130 L 280 80 L 290 120 L 300 90 L 310 110 L 320 100" stroke="white" strokeWidth="1.5" fill="none" opacity="0.8" />
+                      <path d="M 50 100 L 60 120 L 70 80 L 80 130 L 90 70 L 100 140 L 110 60 L 120 150 L 130 50 L 140 130 L 150 70 L 160 140 L 170 60 L 180 160 L 190 40 L 200 170 L 210 30 L 220 150 L 230 50 L 240 140 L 250 60 L 260 130 L 270 70 L 280 120 L 290 80 L 300 110 L 310 90 L 320 100" stroke="white" strokeWidth="1" fill="none" opacity="0.5" />
+                    </svg>
+                  )}
                 </div>
 
                 <div className="mt-auto pt-4 border-t border-white/5 flex flex-col gap-0.5">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-                    <span className="text-sm font-bold font-satoshi text-white">LIVE_UPLINK</span>
+                    <span className="text-sm font-bold font-satoshi text-white">
+                      {activeProject.images && activeProject.images.length > 1 ? `GALLERY [${currentImgIdx + 1}/${activeProject.images.length}]` : 'LIVE_UPLINK'}
+                    </span>
                   </div>
-                  <span className="text-[0.6rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">Real-Time Voice Detection</span>
+                  <span className="text-[0.6rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">
+                    {activeProject.images && activeProject.images.length > 1 ? 'Project Screenshots' : 'Real-Time Voice Detection'}
+                  </span>
                 </div>
               </div>
             </div>

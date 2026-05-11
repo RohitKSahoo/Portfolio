@@ -5,32 +5,42 @@ export const PROJECTS = [
     category: 'SYSTEMS',
     status: 'STABLE',
     ver: '1.0.0',
-    primaryDescription: 'Automatically pauses and resumes media playback using real-time voice detection with sub-50ms latency.',
-    details: ['Real-time voice detection', 'Audio focus handling', 'Silence-based resume logic'],
-    architecture: 'State-machine driven audio control engine with low-latency signal processing and noise robustness.',
-    metrics: { LATENCY: '<50ms', RELIABILITY: 'High', STABILITY: 'Fault-Tolerant' },
-    stack: ['Kotlin'],
+    primaryDescription: 'An intelligent Android service that automatically manages media playback by detecting human speech in real-time using a hybrid Voice Activity Detection (VAD) engine.',
+    details: [
+      'Hybrid VAD Pipeline (WebRTC + Silero VAD)',
+      'State-Machine Orchestration with SpeechStateMachine',
+      'System-Level Audio Control via AudioManager',
+      'Low-Latency Audio Processing with RingBuffer'
+    ],
+    architecture: 'Service-oriented architecture with VoiceMonitorService as orchestrator. Employs a producer-consumer pattern for real-time audio analysis with ONNX AI inference.',
+    metrics: { AI: 'ONNX', LATENCY: 'Low', BACKGROUND: 'Full' },
+    stack: ['Kotlin', 'ONNX Runtime', 'Silero VAD', 'WebRTC'],
     access: 'PUBLIC',
     github: 'https://github.com/RohitKSahoo/Pausify',
-    image: '/pausify_module_1775283678626.png',
+    images: ['/Pausify1.png', '/Pausify2.png', '/Pausify3.png'],
     featured: true,
-    whyItMatters: 'Designed to eliminate manual interruptions during conversations while listening to music.'
+    whyItMatters: 'Enhances hands-free productivity by using edge AI to automatically synchronize media playback with real-world interactions.'
   },
   { 
     id: 'P_02', 
     name: 'SOSAFE', 
-    category: 'COMMUNICATION',
+    category: 'SECURITY',
     status: 'STABLE',
     ver: '1.2.0',
-    primaryDescription: 'Enables seamless voice communication with automatic P2P to cloud failover and live tracking.',
-    details: ['WebRTC Audio streaming (P2P)', 'Live location tracking (Firestore)', 'Cloud fallback (Cloudinary)'],
-    architecture: 'Hybrid real-time communication system with dynamic failover between P2P and Cloud streaming.',
-    metrics: { SYNC_LATENCY: '<1s', RELIABILITY: 'High', STABILITY: 'Multi-Channel' },
-    stack: ['Kotlin', 'WebRTC'],
+    primaryDescription: 'A mission-critical emergency response platform featuring a redundant real-time communication engine that synchronizes live location tracking with multi-mode audio streaming and automated guardian alerting.',
+    details: [
+      'Hybrid Audio Streaming (WebRTC + AAC chunking)',
+      'Dynamic WebRTC Signaling via Firestore',
+      'Persistent Foreground Architecture with WakeLocks',
+      'Critical Alerting System bypassing DND'
+    ],
+    architecture: 'Reactive, role-based architecture (Sender/Guardian) built with Jetpack Compose and Kotlin Coroutines. Employs a centralized Firestore-as-a-Bus pattern for state synchronization.',
+    metrics: { REDUNDANCY: 'Multi-Mode', LATENCY: 'Sub-Second', TRACKING: 'High-Avail' },
+    stack: ['Kotlin', 'Jetpack Compose', 'WebRTC', 'Firebase'],
     access: 'PUBLIC',
     github: 'https://github.com/RohitKSahoo/sosafe',
-    image: '/sosafe_module_1775283699833.png',
-    whyItMatters: 'Ensures continuous communication in low-bandwidth scenarios.'
+    images: ['/SoSafe1.png', '/SoSafe2.png', '/SoSafe3.png', '/SoSafe4.png'],
+    whyItMatters: 'Bridges the reliability gap in personal safety technology by providing a redundant, forensic-ready architecture.'
   },
   { 
     id: 'P_03', 
@@ -38,65 +48,65 @@ export const PROJECTS = [
     category: 'AUTOMATION',
     status: 'STABLE',
     ver: '1.1.0',
-    primaryDescription: 'Automates Git version control entirely by writing commits driven by AI context analysis.',
-    details: ['AI-generated commits (Gemini API)', 'Diff analysis via GitPython', 'Background Execution (Task)'],
-    architecture: 'Autonomous CLI agent for context-aware version control with failsafe fallback execution.',
-    metrics: { AUTOMATION: 'High', FAILOVER: 'Enabled', MODE: 'Background' },
-    stack: ['Python', 'Gemini'],
+    primaryDescription: "An intelligent Git automation CLI that maintains a consistent contribution history using Google's Gemini AI for context-aware commit messages and the GitHub CLI for secure authentication.",
+    details: [
+      'AI-Powered Commit Generation with fallback chain',
+      'Secure Tokenless Auth via GitHub CLI',
+      'Secret Shield Detection for sensitive files',
+      'Two-Stage Background Execution on Windows',
+      'Simulated Developer Behavior (Natural Activity Mode)'
+    ],
+    architecture: 'Python-based CLI application orchestrating Git operations via subprocesses. Employs a two-stage background execution model with a silent network watcher and a minimized worker process via ShellExecuteW.',
+    metrics: { BACKGROUND: 'Full', OFFLINE: 'Polling', API: 'Fallback' },
+    stack: ['Python', 'GitHub CLI', 'Gemini API', 'Rich'],
     access: 'PUBLIC',
     github: 'https://github.com/RohitKSahoo/auto-commit-bot',
-    image: '/autocommit_module_1775283716495.png',
+    images: ['/autocommitbot.png'],
     featured: true,
-    whyItMatters: 'Designed to eliminate manual commit overhead and guarantee semantic git histories.'
+    whyItMatters: 'Bridges the gap between consistent contribution tracking and meaningful code history without sacrificing commit quality or security.'
   },
   { 
     id: 'P_04', 
     name: 'SIFER', 
-    category: 'SECURITY',
+    category: 'AUTOMATION',
     status: 'STABLE',
-    ver: '1.0.0',
-    primaryDescription: 'A project on GitHub.',
-    details: ['Project details here'],
-    architecture: 'System architecture here.',
-    metrics: { STATUS: 'Active' },
-    stack: ['Python'], // Placeholder
+    ver: '4.0.2',
+    primaryDescription: 'An automated, location-aware Android utility that dynamically manages device audio profiles and "Do Not Disturb" states using high-precision geofencing.',
+    details: [
+      'Low-Power Geofencing with Google Play Services',
+      'State-Aware Action Engine for overlapping zones',
+      'Deep System Integration with AudioManager',
+      'Privacy-Centric Mapping with OpenStreetMap'
+    ],
+    architecture: 'MVVM with an event-driven service layer. Persists zones via Room, delegates boundary detection to Android, and applies audio policies via ActionEngine.',
+    metrics: { BATTERY: 'Optimized', OFFLINE: 'Full', LATENCY: 'Zero' },
+    stack: ['Kotlin', 'Jetpack Compose', 'Room', 'Geofencing API'],
     access: 'PUBLIC',
     github: 'https://github.com/RohitKSahoo/Sifer',
-    image: '/monitor_module_ui_1775283735380.png', // Placeholder
-    whyItMatters: 'Project importance here.'
+    images: ['/Sifer1.png', '/Sifer2.png', '/Sifer3.png'],
+    whyItMatters: 'Eliminates the cognitive load of manual sound management by bridging the gap between location awareness and system-level configuration.'
   },
   { 
     id: 'P_05', 
-    name: 'MINIMAL_TAB', 
+    name: 'MINIMAL NEW TAB', 
     category: 'EXTENSION',
     status: 'STABLE',
     ver: '1.0.0',
-    primaryDescription: 'A browser extension. (Forked with added features)',
-    details: ['Forked project', 'Added custom features'],
-    architecture: 'Extension architecture.',
-    metrics: { STATUS: 'Forked' },
-    stack: ['JavaScript'],
+    primaryDescription: 'A high-performance Chrome extension that replaces the default new tab page with a customizable, privacy-focused productivity dashboard.',
+    details: [
+      'Dynamic backgrounds with real-time luminance analysis',
+      'Integrated sidebar with Calendar, Todo, Pomodoro, and Notes',
+      'Optimized asset management using IndexedDB'
+    ],
+    architecture: 'Manifest V3 Chrome Extension with zero server dependency. Utilizes DOM for UI, 2D Canvas for physics, and WebGL for fluid dynamics.',
+    metrics: { OFFLINE: 'Full', RENDER: 'WebGL', MEDIA: 'Optimized' },
+    stack: ['JavaScript', 'HTML5', 'CSS3', 'WebGL'],
     access: 'PUBLIC',
     github: 'https://github.com/RohitKSahoo/Minimal_Tab',
-    image: '/monitor_module_ui_1775283735380.png', // Placeholder
-    whyItMatters: 'Customized for better productivity.'
+    images: ['/minimaltab1.png', '/minimaltab2.png'],
+    whyItMatters: 'Provides a privacy-respecting, highly performant hub with sophisticated local media handling and dynamic UI adaptation.'
   },
-  { 
-    id: 'P_06', 
-    name: 'PORTFOLIO', 
-    category: 'FRONTEND',
-    status: 'STABLE',
-    ver: '1.0.0',
-    primaryDescription: 'This interactive portfolio website.',
-    details: ['Interactive UI', 'Dashboard theme', 'Animated avatar'],
-    architecture: 'React with Framer Motion and Tailwind CSS.',
-    metrics: { STATUS: 'Active' },
-    stack: ['TypeScript', 'React'],
-    access: 'PUBLIC',
-    github: 'https://github.com/RohitKSahoo/Portfolio',
-    image: '/monitor_module_ui_1775283735380.png', // Placeholder
-    whyItMatters: 'Showcases projects and skills in a premium, interactive way.'
-  }
+
 ];
 
 export const experiences = [
