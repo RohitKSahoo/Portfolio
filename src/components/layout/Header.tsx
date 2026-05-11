@@ -7,7 +7,7 @@ interface HeaderProps {
 }
 
 const TAB_TITLES: Record<string, { title: string; num: string }> = {
-  profile: { title: 'Dashboard', num: '/01' },
+  profile: { title: 'Home', num: '/01' },
   projects: { title: 'Projects', num: '/02' },
   experience: { title: 'Experience', num: '/03' },
   contact: { title: 'Contact', num: '/04' }

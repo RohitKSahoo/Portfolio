@@ -10,7 +10,7 @@ interface DockProps {
 }
 
 const navItems = [
-  { id: 'profile', icon: User, label: 'DASHBOARD' },
+  { id: 'profile', icon: User, label: 'HOME' },
   { id: 'projects', icon: Database, label: 'PROJECTS' },
   { id: 'experience', icon: Briefcase, label: 'EXPERIENCE' },
   { id: 'contact', icon: Mail, label: 'CONTACT' },
