@@ -95,6 +95,7 @@ export default async function handler(req, res) {
       technologies: languages.size,
       languagesList: Array.from(languages),
       since: new Date(user.createdAt).getFullYear(),
+      commits: user.contributionsCollection.contributionCalendar.totalContributions,
       calendar: normalizedCalendar,
     });
   } catch (error) {

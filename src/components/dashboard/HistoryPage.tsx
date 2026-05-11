@@ -27,6 +27,7 @@ export const HistoryPage = () => {
     projects: '3+',
     technologies: '5+',
     since: '2025',
+    commits: '0',
     calendar: Array(154).fill(0).map(() => Math.floor(Math.random() * 5)), // 22 weeks * 7 days mock data
     languagesList: ['Kotlin', 'Java', 'TypeScript', 'JavaScript', 'Python', 'HTML', 'CSS']
   });
@@ -43,6 +44,7 @@ export const HistoryPage = () => {
             projects: data.projects.toString(),
             technologies: data.technologies.toString(),
             since: data.since.toString(),
+            commits: data.commits ? data.commits.toString() : '0',
             calendar: data.calendar && data.calendar.length > 0 ? data.calendar : prev.calendar,
             languagesList: data.languagesList && data.languagesList.length > 0 ? data.languagesList : prev.languagesList,
           }));
@@ -144,8 +146,8 @@ export const HistoryPage = () => {
                 <span className="text-4xl font-bold font-satoshi text-white tracking-tight">{githubStats.since}</span>
               </div>
               <div className="flex flex-col gap-0.5">
-                <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">Status</span>
-                <span className="text-base font-bold font-satoshi text-green-500 mt-1">Learning</span>
+                <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">Commits</span>
+                <span className="text-4xl font-bold font-satoshi text-white tracking-tight">{githubStats.commits}</span>
               </div>
             </div>
 
