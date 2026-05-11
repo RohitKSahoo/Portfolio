@@ -40,6 +40,23 @@ const laptopVariants = {
   })
 };
 
+const fullscreenVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? '100%' : '-100%',
+    opacity: 0
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction > 0 ? '-100%' : '100%',
+    opacity: 0
+  })
+};
+
 export const RegistryPage = () => {
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const activeProject = PROJECTS.find(p => p.id === selectedId) || PROJECTS[0];
@@ -48,7 +65,7 @@ export const RegistryPage = () => {
   const [[page, direction], setPage] = React.useState([0, 0]);
   const [isPaused, setIsPaused] = React.useState(false);
   const [fullscreenImageIndex, setFullscreenImageIndex] = React.useState<number | null>(null);
-  const [lightboxDirection, setLightboxDirection] = React.useState(0);
+  const [[fullscreenPage, fullscreenDirection], setFullscreenPage] = React.useState([0, 0]);
 
   React.useEffect(() => {
     const container = document.querySelector('.custom-scrollbar');
@@ -96,6 +113,24 @@ export const RegistryPage = () => {
     
     return () => clearInterval(timer);
   }, [activeProject.images, paginate, isPaused]);
+
+  // Keyboard navigation for fullscreen image view
+  React.useEffect(() => {
+    if (fullscreenImageIndex === null) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        setFullscreenPage((prev) => [prev[0] - 1, -1]);
+      } else if (e.key === 'ArrowRight') {
+        setFullscreenPage((prev) => [prev[0] + 1, 1]);
+      } else if (e.key === 'Escape') {
+        setFullscreenImageIndex(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [fullscreenImageIndex]);
 
   const getFolderItems = (project: typeof PROJECTS[0]) => [
     <div key="1" className="w-full h-full flex flex-col items-center justify-center p-2 bg-[#0c0c0c] text-[var(--theme-accent)] overflow-hidden font-satoshi">
@@ -205,7 +240,7 @@ export const RegistryPage = () => {
         </motion.div>
       ) : (
         <motion.div 
-          key="detail"
+          key={selectedId}
           ref={detailRef}
           initial={{ opacity: 0, scale: 1.02 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -328,7 +363,10 @@ export const RegistryPage = () => {
                               paginate(-1);
                             }
                           }}
-                          onClick={() => setFullscreenImageIndex(imageIndex)}
+                          onClick={() => {
+                            setFullscreenImageIndex(imageIndex);
+                            setFullscreenPage([imageIndex, 0]);
+                          }}
                           className="absolute w-full h-full object-cover cursor-pointer cursor-target" 
                           alt="Preview" 
                         />
@@ -367,7 +405,10 @@ export const RegistryPage = () => {
                               paginate(-1);
                             }
                           }}
-                          onClick={() => setFullscreenImageIndex(imageIndex)}
+                          onClick={() => {
+                            setFullscreenImageIndex(imageIndex);
+                            setFullscreenPage([imageIndex, 0]);
+                          }}
                           className="absolute w-full h-full object-contain cursor-pointer cursor-target scale-95" 
                           alt="Preview" 
                         />
@@ -430,8 +471,7 @@ export const RegistryPage = () => {
                     className="absolute left-8 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 p-4 rounded-full text-white border border-white/10 hover:border-white/30 transition-all cursor-target z-[310]"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setLightboxDirection(-1);
-                      setFullscreenImageIndex((fullscreenImageIndex - 1 + activeProject.images.length) % activeProject.images.length);
+                      setFullscreenPage([fullscreenPage - 1, -1]);
                     }}
                   >
                     <ArrowLeft size={28} />
@@ -440,8 +480,7 @@ export const RegistryPage = () => {
                     className="absolute right-8 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 p-4 rounded-full text-white border border-white/10 hover:border-white/30 transition-all cursor-target z-[310]"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setLightboxDirection(1);
-                      setFullscreenImageIndex((fullscreenImageIndex + 1) % activeProject.images.length);
+                      setFullscreenPage([fullscreenPage + 1, 1]);
                     }}
                   >
                     <ArrowRight size={28} />
@@ -454,12 +493,12 @@ export const RegistryPage = () => {
                   className="relative max-w-[75vw] max-h-[85vh] flex items-center justify-center overflow-hidden"
                   onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image or controls
                 >
-                  <AnimatePresence mode="popLayout" initial={false} custom={lightboxDirection}>
+                  <AnimatePresence mode="popLayout" initial={false} custom={fullscreenDirection}>
                     <motion.img 
-                      key={fullscreenImageIndex}
-                      src={activeProject.images[fullscreenImageIndex]} 
-                      custom={lightboxDirection}
-                      variants={phoneVariants} // Reusing phoneVariants for slide effect
+                      key={fullscreenPage}
+                      src={activeProject.images[(fullscreenPage % activeProject.images.length + activeProject.images.length) % activeProject.images.length]} 
+                      custom={fullscreenDirection}
+                      variants={fullscreenVariants}
                       initial="enter"
                       animate="center"
                       exit="exit"
@@ -468,11 +507,9 @@ export const RegistryPage = () => {
                       dragConstraints={{ left: 0, right: 0 }}
                       onDragEnd={(_, info) => {
                         if (info.offset.x < -50) {
-                          setLightboxDirection(1);
-                          setFullscreenImageIndex((fullscreenImageIndex + 1) % activeProject.images.length);
+                          setFullscreenPage([fullscreenPage + 1, 1]);
                         } else if (info.offset.x > 50) {
-                          setLightboxDirection(-1);
-                          setFullscreenImageIndex((fullscreenImageIndex - 1 + activeProject.images.length) % activeProject.images.length);
+                          setFullscreenPage([fullscreenPage - 1, -1]);
                         }
                       }}
                       className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl border border-white/10 cursor-grab active:cursor-grabbing"
@@ -483,7 +520,7 @@ export const RegistryPage = () => {
                   {/* Image Counter */}
                   {activeProject.images.length > 1 && (
                     <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 px-4 py-1.5 rounded-full text-xs font-satoshi font-medium text-white/70 border border-white/10 z-[310]">
-                      {fullscreenImageIndex + 1} / {activeProject.images.length}
+                      {(fullscreenPage % activeProject.images.length + activeProject.images.length) % activeProject.images.length + 1} / {activeProject.images.length}
                     </div>
                   )}
                 </div>
