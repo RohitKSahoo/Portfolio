@@ -58,7 +58,7 @@ const DockItem = ({
       ref={ref}
       onClick={handleTap}
       style={{ width }}
-      className="aspect-square relative flex items-center justify-center cursor-pointer group"
+      className="aspect-square relative flex items-center justify-center cursor-pointer group cursor-target"
     >
       <motion.div 
         onClick={handleTap}

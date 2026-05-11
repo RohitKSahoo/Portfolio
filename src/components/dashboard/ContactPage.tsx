@@ -156,7 +156,7 @@ export const ContactPage = () => {
               
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="group relative inline-flex items-center justify-between gap-4 bg-black/40 backdrop-blur-md border border-white/10 rounded-full py-2.5 px-5 w-auto hover:border-red-500/30 transition-all duration-300"
+                className="group relative inline-flex items-center justify-between gap-4 bg-black/40 backdrop-blur-md border border-white/10 rounded-full py-2.5 px-5 w-auto hover:border-red-500/30 transition-all duration-300 cursor-target"
               >
                 <span className="text-sm font-bold font-satoshi text-white">Send a Message</span>
                 <div className="w-6 h-6 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/5 transition-all">
@@ -175,7 +175,7 @@ export const ContactPage = () => {
           </div>
 
           {/* Email Card */}
-          <a href="mailto:rohitkumarsahoo37@gmail.com" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
+          <a href="mailto:rohitkumarsahoo37@gmail.com" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer cursor-target">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Mail size={24} />
@@ -191,7 +191,7 @@ export const ContactPage = () => {
           </a>
 
           {/* GitHub Card */}
-          <a href="https://github.com/RohitKSahoo" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
+          <a href="https://github.com/RohitKSahoo" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer cursor-target">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Github size={24} />
@@ -207,7 +207,7 @@ export const ContactPage = () => {
           </a>
 
           {/* LinkedIn Card */}
-          <a href="https://linkedin.com/in/rohitksahoo" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
+          <a href="https://linkedin.com/in/rohitksahoo" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer cursor-target">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Linkedin size={24} />
@@ -223,7 +223,7 @@ export const ContactPage = () => {
           </a>
 
           {/* Instagram Card */}
-          <a href="https://www.instagram.com/rohit.ks_?igsh=MTU4c3hhMGI1eXdqMQ==" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
+          <a href="https://www.instagram.com/rohit.ks_?igsh=MTU4c3hhMGI1eXdqMQ==" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer cursor-target">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Instagram size={24} />

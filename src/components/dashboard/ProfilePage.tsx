@@ -73,7 +73,7 @@ export const ProfilePage = ({
             <div className="flex flex-col gap-3 lg:self-end">
               <button 
                 onClick={onExploreProjects}
-                className="group relative px-4 py-2.5 sm:px-6 sm:py-3 bg-red-500 text-white font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white hover:text-black transition-all overflow-hidden flex items-center justify-between gap-4 w-56 sm:w-auto shadow-[0_0_20px_rgba(239,68,68,0.2)] rounded-lg"
+                className="group relative px-4 py-2.5 sm:px-6 sm:py-3 bg-red-500 text-white font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white hover:text-black transition-all overflow-hidden flex items-center justify-between gap-4 w-56 sm:w-auto shadow-[0_0_20px_rgba(239,68,68,0.2)] rounded-lg cursor-target"
               >
                 <span>Explore Projects</span>
                 <Zap size={14} fill="currentColor" />
@@ -82,7 +82,7 @@ export const ProfilePage = ({
               <a 
                 href="/cv.pdf" 
                 download="Rohit_Kumar_Sahoo_CV.pdf"
-                className="group relative px-4 py-2.5 sm:px-6 sm:py-3 bg-[#0d0d0d] border border-white/10 text-white/80 font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white/10 hover:text-white transition-all flex items-center justify-between gap-4 w-56 sm:w-auto rounded-lg"
+                className="group relative px-4 py-2.5 sm:px-6 sm:py-3 bg-[#0d0d0d] border border-white/10 text-white/80 font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white/10 hover:text-white transition-all flex items-center justify-between gap-4 w-56 sm:w-auto rounded-lg cursor-target"
               >
                 <span>Download CV</span>
                 <Download size={14} />
@@ -99,7 +99,7 @@ export const ProfilePage = ({
             transition={{ type: "spring", stiffness: 200, damping: 30 }}
             className="mt-auto w-full pt-10 pb-0 pointer-events-none"
           >
-             <h1 className="text-[10vw] lg:text-[6vw] font-bold font-satoshi tracking-tight leading-none text-white drop-shadow-[0_0_50px_rgba(239,68,68,0.1)] uppercase text-center break-words">
+             <h1 className="text-[10vw] lg:text-[6vw] font-bold font-satoshi tracking-tight leading-none text-white drop-shadow-[0_0_50px_rgba(239,68,68,0.1)] uppercase text-center break-words pb-2">
                 {displayName}<span className="inline-block w-[1.5vw] h-[1.5vw] bg-red-500 ml-1 align-baseline translate-y-[-0.2vw]" />
              </h1>
           </motion.div>
