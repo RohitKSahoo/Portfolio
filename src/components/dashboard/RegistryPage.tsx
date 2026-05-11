@@ -47,6 +47,7 @@ export const RegistryPage = () => {
   const detailRef = React.useRef<HTMLDivElement>(null);
   const [[page, direction], setPage] = React.useState([0, 0]);
   const [isPaused, setIsPaused] = React.useState(false);
+  const [fullscreenImageIndex, setFullscreenImageIndex] = React.useState<number | null>(null);
 
   React.useEffect(() => {
     const container = document.querySelector('.custom-scrollbar');
@@ -326,7 +327,8 @@ export const RegistryPage = () => {
                               paginate(-1);
                             }
                           }}
-                          className="absolute w-full h-full object-cover cursor-grab active:cursor-grabbing" 
+                          onClick={() => setFullscreenImageIndex(imageIndex)}
+                          className="absolute w-full h-full object-cover cursor-pointer cursor-target" 
                           alt="Preview" 
                         />
                       </AnimatePresence>
@@ -364,7 +366,8 @@ export const RegistryPage = () => {
                               paginate(-1);
                             }
                           }}
-                          className="absolute w-full h-full object-contain cursor-grab active:cursor-grabbing scale-95" 
+                          onClick={() => setFullscreenImageIndex(imageIndex)}
+                          className="absolute w-full h-full object-contain cursor-pointer cursor-target scale-95" 
                           alt="Preview" 
                         />
                       </AnimatePresence>
@@ -412,6 +415,67 @@ export const RegistryPage = () => {
               )}
             </div>
           </div>
+
+          {/* Fullscreen Image View */}
+          {fullscreenImageIndex !== null && (
+            <div 
+              className="fixed inset-0 z-[300] bg-black/95 flex items-center justify-center"
+              onClick={() => setFullscreenImageIndex(null)}
+            >
+              <div className="relative w-full h-full flex items-center justify-center p-4">
+                <div 
+                  className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+                  onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image or controls
+                >
+                  <img 
+                    src={activeProject.images[fullscreenImageIndex]} 
+                    className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl border border-white/10"
+                    alt="Fullscreen Preview"
+                  />
+                  
+                  {/* Navigation buttons */}
+                  {activeProject.images.length > 1 && (
+                    <>
+                      <button 
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 p-3 rounded-full text-white border border-white/10 hover:border-white/30 transition-all cursor-target"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setFullscreenImageIndex((fullscreenImageIndex - 1 + activeProject.images.length) % activeProject.images.length);
+                        }}
+                      >
+                        <ArrowLeft size={24} />
+                      </button>
+                      <button 
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 p-3 rounded-full text-white border border-white/10 hover:border-white/30 transition-all cursor-target"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setFullscreenImageIndex((fullscreenImageIndex + 1) % activeProject.images.length);
+                        }}
+                      >
+                        <ArrowRight size={24} />
+                      </button>
+                      
+                      {/* Image Counter */}
+                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 px-4 py-1.5 rounded-full text-xs font-satoshi font-medium text-white/70 border border-white/10">
+                        {fullscreenImageIndex + 1} / {activeProject.images.length}
+                      </div>
+                    </>
+                  )}
+                  
+                  {/* Close Button */}
+                  <button 
+                    className="absolute -top-4 -right-4 bg-black/60 hover:bg-black/80 p-2 rounded-full text-white border border-white/10 hover:border-white/30 transition-all cursor-target"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFullscreenImageIndex(null);
+                    }}
+                  >
+                    <span className="text-sm font-bold px-1">✕</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>
