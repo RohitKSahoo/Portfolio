@@ -83,7 +83,7 @@ function App() {
         />
 
         {/* ACTIVE MODULE VIEWPORT */}
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-5 pt-[95px] lg:pt-[110px] pb-24 lg:pb-24 custom-scrollbar scroll-smooth">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-5 pt-[95px] lg:pt-[110px] pb-24 lg:pb-24 custom-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div className="max-w-[1600px] w-full mx-auto">
              {renderContent()}
           </div>

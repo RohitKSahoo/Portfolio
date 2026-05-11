@@ -49,17 +49,21 @@ export const RegistryPage = () => {
   const [isPaused, setIsPaused] = React.useState(false);
 
   React.useEffect(() => {
-    // Small timeout to let the DOM update and layout before scrolling
-    const timer = setTimeout(() => {
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      if (selectedId && detailRef.current) {
-        detailRef.current.scrollIntoView({ behavior: 'auto' });
-      }
-    }, 100);
-    
-    return () => clearTimeout(timer);
+    const container = document.querySelector('.custom-scrollbar');
+    if (container) {
+      const prevScrollBehavior = (container as HTMLElement).style.scrollBehavior;
+      (container as HTMLElement).style.scrollBehavior = 'auto';
+      container.scrollTop = 0;
+      
+      const timer = setTimeout(() => {
+        (container as HTMLElement).style.scrollBehavior = prevScrollBehavior;
+        if (selectedId && detailRef.current) {
+          detailRef.current.scrollIntoView({ behavior: 'auto' });
+        }
+      }, 50);
+      
+      return () => clearTimeout(timer);
+    }
   }, [selectedId]);
 
   const imageIndex = React.useMemo(() => {
