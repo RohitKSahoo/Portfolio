@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Github, Linkedin, Terminal, Send, Clock, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
 import VariableProximity from '../effects/VariableProximity';
+import SplitText from '../effects/SplitText';
 
 export const ContactPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -82,10 +83,12 @@ export const ContactPage = () => {
           <div className="relative">
 
             <h2 ref={containerRef} className="text-[11vw] sm:text-7xl lg:text-[7rem] font-extrabold font-satoshi tracking-tight leading-none mb-3 text-white mt-1 break-words">
-              <VariableProximity label="Let's build" containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
-              <VariableProximity label="something" containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
+              <SplitText text="Let's build" tag="span" textAlign="left" className="text-white" delay={50} duration={0.8} />
+              <br />
+              <SplitText text="something" tag="span" textAlign="left" className="text-white" delay={50} duration={0.8} />
+              <br />
               <span className="text-red-500">
-                <VariableProximity label="extraordinary." containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
+                <SplitText text="extraordinary." tag="span" textAlign="left" className="text-red-500" delay={50} duration={0.8} />
               </span>
             </h2>
             <p className="text-base text-white/60 max-w-xl font-inter leading-relaxed mb-[28px]">
