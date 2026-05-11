@@ -499,8 +499,6 @@ export const RegistryPage = () => {
               >
                 <span className="text-sm font-bold px-1">✕</span>
               </button>
-                </div>
-              </div>
             </div>
           )}
         </motion.div>
