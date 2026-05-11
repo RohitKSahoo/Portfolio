@@ -48,6 +48,7 @@ export const RegistryPage = () => {
   const [[page, direction], setPage] = React.useState([0, 0]);
   const [isPaused, setIsPaused] = React.useState(false);
   const [fullscreenImageIndex, setFullscreenImageIndex] = React.useState<number | null>(null);
+  const [lightboxDirection, setLightboxDirection] = React.useState(0);
 
   React.useEffect(() => {
     const container = document.querySelector('.custom-scrollbar');
@@ -422,56 +423,82 @@ export const RegistryPage = () => {
               className="fixed inset-0 z-[300] bg-black/95 flex items-center justify-center"
               onClick={() => setFullscreenImageIndex(null)}
             >
-              <div className="relative w-full h-full flex items-center justify-center p-4">
-                <div 
-                  className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center"
-                  onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image or controls
-                >
-                  <img 
-                    src={activeProject.images[fullscreenImageIndex]} 
-                    className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl border border-white/10"
-                    alt="Fullscreen Preview"
-                  />
-                  
-                  {/* Navigation buttons */}
-                  {activeProject.images.length > 1 && (
-                    <>
-                      <button 
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 p-3 rounded-full text-white border border-white/10 hover:border-white/30 transition-all cursor-target"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setFullscreenImageIndex((fullscreenImageIndex - 1 + activeProject.images.length) % activeProject.images.length);
-                        }}
-                      >
-                        <ArrowLeft size={24} />
-                      </button>
-                      <button 
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 p-3 rounded-full text-white border border-white/10 hover:border-white/30 transition-all cursor-target"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setFullscreenImageIndex((fullscreenImageIndex + 1) % activeProject.images.length);
-                        }}
-                      >
-                        <ArrowRight size={24} />
-                      </button>
-                      
-                      {/* Image Counter */}
-                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 px-4 py-1.5 rounded-full text-xs font-satoshi font-medium text-white/70 border border-white/10">
-                        {fullscreenImageIndex + 1} / {activeProject.images.length}
-                      </div>
-                    </>
-                  )}
-                  
-                  {/* Close Button */}
+              {/* Navigation buttons (Moved to sides) */}
+              {activeProject.images.length > 1 && (
+                <>
                   <button 
-                    className="absolute -top-4 -right-4 bg-black/60 hover:bg-black/80 p-2 rounded-full text-white border border-white/10 hover:border-white/30 transition-all cursor-target"
+                    className="absolute left-8 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 p-4 rounded-full text-white border border-white/10 hover:border-white/30 transition-all cursor-target z-[310]"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setFullscreenImageIndex(null);
+                      setLightboxDirection(-1);
+                      setFullscreenImageIndex((fullscreenImageIndex - 1 + activeProject.images.length) % activeProject.images.length);
                     }}
                   >
-                    <span className="text-sm font-bold px-1">✕</span>
+                    <ArrowLeft size={28} />
                   </button>
+                  <button 
+                    className="absolute right-8 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 p-4 rounded-full text-white border border-white/10 hover:border-white/30 transition-all cursor-target z-[310]"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setLightboxDirection(1);
+                      setFullscreenImageIndex((fullscreenImageIndex + 1) % activeProject.images.length);
+                    }}
+                  >
+                    <ArrowRight size={28} />
+                  </button>
+                </>
+              )}
+
+              <div className="relative w-full h-full flex items-center justify-center p-4">
+                <div 
+                  className="relative max-w-[75vw] max-h-[85vh] flex items-center justify-center overflow-hidden"
+                  onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image or controls
+                >
+                  <AnimatePresence mode="popLayout" initial={false} custom={lightboxDirection}>
+                    <motion.img 
+                      key={fullscreenImageIndex}
+                      src={activeProject.images[fullscreenImageIndex]} 
+                      custom={lightboxDirection}
+                      variants={phoneVariants} // Reusing phoneVariants for slide effect
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      onDragEnd={(_, info) => {
+                        if (info.offset.x < -50) {
+                          setLightboxDirection(1);
+                          setFullscreenImageIndex((fullscreenImageIndex + 1) % activeProject.images.length);
+                        } else if (info.offset.x > 50) {
+                          setLightboxDirection(-1);
+                          setFullscreenImageIndex((fullscreenImageIndex - 1 + activeProject.images.length) % activeProject.images.length);
+                        }
+                      }}
+                      className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl border border-white/10 cursor-grab active:cursor-grabbing"
+                      alt="Fullscreen Preview"
+                    />
+                  </AnimatePresence>
+                  
+                  {/* Image Counter */}
+                  {activeProject.images.length > 1 && (
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 px-4 py-1.5 rounded-full text-xs font-satoshi font-medium text-white/70 border border-white/10 z-[310]">
+                      {fullscreenImageIndex + 1} / {activeProject.images.length}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <button 
+                className="absolute top-8 right-8 bg-black/60 hover:bg-black/80 p-3 rounded-full text-white border border-white/10 hover:border-white/30 transition-all cursor-target z-[310]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFullscreenImageIndex(null);
+                }}
+              >
+                <span className="text-sm font-bold px-1">✕</span>
+              </button>
                 </div>
               </div>
             </div>
