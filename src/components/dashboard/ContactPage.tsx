@@ -169,9 +169,9 @@ export const ContactPage = () => {
 
         {/* Right Column (5/12) */}
         <div className="lg:col-span-5 flex flex-col gap-6 py-0 justify-center">
-          <div className="text-xs font-satoshi font-medium text-white/40 tracking-wider mb-2">
+          <div className="text-sm font-satoshi font-bold text-white/50 tracking-wider mb-1 mt-8">
             <span>SOCIALS</span>
-            <div className="w-10 h-0.5 bg-red-500 mt-1" />
+            <div className="w-12 h-0.5 bg-red-500 mt-1" />
           </div>
 
           {/* Email Card */}
