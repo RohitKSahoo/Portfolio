@@ -28,7 +28,7 @@ export const ContactPage = () => {
     const type1 = () => {
       if (i < fullText1.length) {
         currentText += fullText1[i];
-        setText1(currentText + '_');
+        setText1(currentText + '|');
         i++;
         setTimeout(type1, speed);
       } else {
@@ -42,7 +42,7 @@ export const ContactPage = () => {
     const type2 = () => {
       if (i < fullText2.length) {
         currentText += fullText2[i];
-        setText2(currentText + '_');
+        setText2(currentText + '|');
         i++;
         setTimeout(type2, speed);
       } else {
@@ -56,7 +56,7 @@ export const ContactPage = () => {
     const type3 = () => {
       if (i < fullText3.length) {
         currentText += fullText3[i];
-        setText3(currentText + '_');
+        setText3(currentText + '|');
         i++;
         setTimeout(type3, speed);
       } else {
