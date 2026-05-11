@@ -341,7 +341,7 @@ export const RegistryPage = () => {
                   <div className="flex flex-col items-center justify-center h-full w-full max-w-[660px]">
                     {/* Laptop Screen */}
                     <div 
-                      className="relative border-[8px] border-[#1a1a1a] bg-[#0d0d0d] rounded-t-lg w-[320px] h-[200px] lg:w-[600px] lg:h-[380px] overflow-hidden shadow-2xl"
+                      className="relative border-[8px] border-[#1a1a1a] bg-[#0d0d0d] rounded-t-lg w-[90vw] max-w-[360px] h-[56vw] max-h-[225px] lg:max-w-none lg:max-h-none lg:w-[600px] lg:h-[380px] overflow-hidden shadow-2xl"
                       onMouseEnter={() => setIsPaused(true)}
                       onMouseLeave={() => setIsPaused(false)}
                     >
@@ -372,7 +372,7 @@ export const RegistryPage = () => {
 
                     </div>
                     {/* Laptop Base */}
-                    <div className="relative h-[14px] w-[350px] lg:w-[660px] bg-[#333] rounded-b-lg border-t border-white/10 shadow-xl">
+                    <div className="relative h-[14px] w-[98vw] max-w-[390px] lg:max-w-none lg:w-[660px] bg-[#333] rounded-b-lg border-t border-white/10 shadow-xl">
                       {/* Notch to open */}
                       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-1.5 bg-[#1a1a1a] rounded-b-md"></div>
                     </div>
