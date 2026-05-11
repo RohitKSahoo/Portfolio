@@ -270,7 +270,7 @@ export const RegistryPage = () => {
               {activeProject.images && activeProject.images.length > 0 ? (
                 ['PAUSIFY', 'SOSAFE', 'SIFER'].some(name => activeProject.name.toUpperCase().includes(name)) ? (
                   // Android Phone Frame
-                  <div className="relative border-[8px] border-[#1a1a1a] bg-[#0d0d0d] rounded-[1.5rem] h-[670px] w-[300px] shadow-2xl overflow-hidden transform translate-x-20">
+                  <div className="relative border-[8px] border-[#1a1a1a] bg-[#0d0d0d] rounded-[1.5rem] h-[670px] w-[300px] shadow-2xl overflow-hidden transform lg:translate-x-20 translate-x-0">
                     {/* Punch-hole Camera */}
                     <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-[#0a0a0a] rounded-full z-10 flex items-center justify-center border border-[#222]">
                       <div className="w-1.5 h-1.5 bg-[#151515] rounded-full"></div>
