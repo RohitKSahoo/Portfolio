@@ -45,7 +45,7 @@ export const RegistryPage = () => {
           exit={{ opacity: 0, scale: 0.95 }}
           className="flex flex-col gap-4 pb-8 pt-0 bento-section font-inter"
         >
-          <div className="flex flex-col gap-4 pt-2 relative">
+          <div className="flex flex-col gap-4 pt-0 relative">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
               <div className="flex flex-col gap-1 max-w-none">
 
