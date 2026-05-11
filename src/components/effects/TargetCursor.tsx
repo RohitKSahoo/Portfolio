@@ -89,6 +89,13 @@ const TargetCursor = ({
     createSpinTimeline();
 
     const tickerFn = () => {
+      if (activeTarget && !document.body.contains(activeTarget)) {
+        if (currentLeaveHandler) {
+          currentLeaveHandler();
+        }
+        return;
+      }
+
       if (!targetCornerPositionsRef.current || !cursorRef.current || !cornersRef.current) {
         return;
       }
