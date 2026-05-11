@@ -83,9 +83,8 @@ export const HistoryPage = () => {
               </div>
               <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># ACADEMIC JOURNEY</span>
               <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
-                <li>Currently pursuing my Computer Science degree at <strong className="text-white font-medium">Veer Surendra Sai University of Technology</strong> (VSSUT).</li>
-                <li>Currently in my <strong className="text-white font-medium">3rd year</strong>, focusing on core computer science fundamentals.</li>
-                <li>Applying academic knowledge to build complex, real-world projects.</li>
+                <li><strong className="text-white font-medium">3rd-year</strong> Computer Science student at <strong className="text-white font-medium">Veer Surendra Sai University of Technology</strong> (VSSUT).</li>
+                <li>Focusing on mastering core CS fundamentals while building practical software solutions.</li>
               </ul>
             </div>
           </div>
@@ -104,8 +103,8 @@ export const HistoryPage = () => {
               <div className="flex items-center gap-4 mt-1 mb-3">
                 <h3 className="text-3xl font-bold font-satoshi text-white/80 tracking-tight">Exploring Development</h3>
                 <div className="flex gap-1.5">
-                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Web</span>
-                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Projects</span>
+                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">AI</span>
+                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Android</span>
                 </div>
               </div>
               <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># HOBBY PROJECTS</span>
