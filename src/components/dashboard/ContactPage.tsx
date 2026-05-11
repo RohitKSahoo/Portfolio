@@ -131,7 +131,7 @@ export const ContactPage = () => {
       
 
       {/* Main Content Grid */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-9 min-h-0 relative z-10 px-6 lg:px-16">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-9 min-h-0 relative z-10">
         {/* Left Column (7/12) */}
         <div className="lg:col-span-7 flex flex-col justify-between py-0">
           <div className="relative">
@@ -168,8 +168,8 @@ export const ContactPage = () => {
         </div>
 
         {/* Right Column (5/12) */}
-        <div className="lg:col-span-5 flex flex-col gap-6 py-0 justify-center">
-          <div className="text-sm font-satoshi font-bold text-white/50 tracking-wider mb-1 mt-8">
+        <div className="lg:col-span-5 flex flex-col gap-6 py-0">
+          <div className="text-sm font-satoshi font-bold text-white/50 tracking-wider mb-1 mt-1">
             <span>SOCIALS</span>
             <div className="w-12 h-0.5 bg-red-500 mt-1" />
           </div>
