@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Header } from './components/layout/Header';
 import { 
   ProfilePage, 
@@ -16,6 +16,7 @@ import { SystemDock } from './components/layout/SystemDock';
 function App() {
   const [activeTab, setActiveTab] = useState('profile');
   const [isDockVisible, setIsDockVisible] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Load persistence logic
   useEffect(() => {
@@ -25,6 +26,9 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem('active-tab', activeTab);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }, [activeTab]);
 
   const renderContent = () => {
@@ -79,7 +83,7 @@ function App() {
         />
 
         {/* ACTIVE MODULE VIEWPORT */}
-        <div className="flex-1 overflow-y-auto px-5 pt-[95px] lg:pt-[110px] pb-24 lg:pb-24 custom-scrollbar scroll-smooth">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-5 pt-[95px] lg:pt-[110px] pb-24 lg:pb-24 custom-scrollbar scroll-smooth">
           <div className="max-w-[1600px] w-full mx-auto">
              {renderContent()}
           </div>
