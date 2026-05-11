@@ -5,7 +5,7 @@ export const PROJECTS = [
     category: 'SYSTEMS',
     status: 'STABLE',
     ver: '1.0.0',
-    primaryDescription: 'An intelligent Android service that automatically manages media playback by detecting human speech in real-time using a hybrid Voice Activity Detection (VAD) engine.',
+    primaryDescription: "An Android app that automatically pauses your music or videos when it hears you or someone else speaking. It uses AI to listen for human voices in real-time so you don't have to manually pause your media when someone talks to you.",
     details: [
       'Hybrid VAD Pipeline (WebRTC + Silero VAD)',
       'State-Machine Orchestration with SpeechStateMachine',
@@ -27,7 +27,7 @@ export const PROJECTS = [
     category: 'SECURITY',
     status: 'STABLE',
     ver: '1.2.0',
-    primaryDescription: 'A mission-critical emergency response platform featuring a redundant real-time communication engine that synchronizes live location tracking with multi-mode audio streaming and automated guardian alerting.',
+    primaryDescription: "A personal safety app designed for emergencies. It lets you stream your live location and audio to your trusted guardians. If you are in danger, it alerts them immediately and makes sure they can hear and see where you are, even if the internet is slow.",
     details: [
       'Hybrid Audio Streaming (WebRTC + AAC chunking)',
       'Dynamic WebRTC Signaling via Firestore',
@@ -48,7 +48,7 @@ export const PROJECTS = [
     category: 'AUTOMATION',
     status: 'STABLE',
     ver: '1.1.0',
-    primaryDescription: "An intelligent Git automation CLI that maintains a consistent contribution history using Google's Gemini AI for context-aware commit messages and the GitHub CLI for secure authentication.",
+    primaryDescription: "A tool that automatically saves your code changes and writes meaningful commit messages using AI (Google's Gemini). It helps you keep a consistent coding history on GitHub without you having to manually type commit messages every time.",
     details: [
       'AI-Powered Commit Generation with fallback chain',
       'Secure Tokenless Auth via GitHub CLI',
@@ -71,7 +71,7 @@ export const PROJECTS = [
     category: 'AUTOMATION',
     status: 'STABLE',
     ver: '4.0.2',
-    primaryDescription: 'An automated, location-aware Android utility that dynamically manages device audio profiles and "Do Not Disturb" states using high-precision geofencing.',
+    primaryDescription: "An app that automatically changes your phone's sound profile based on where you are. For example, it can automatically put your phone on silent when you reach work or school, and turn the volume back up when you leave, using your GPS location.",
     details: [
       'Low-Power Geofencing with Google Play Services',
       'State-Aware Action Engine for overlapping zones',
@@ -92,7 +92,7 @@ export const PROJECTS = [
     category: 'EXTENSION',
     status: 'STABLE',
     ver: '1.0.0',
-    primaryDescription: 'A high-performance Chrome extension that replaces the default new tab page with a customizable, privacy-focused productivity dashboard.',
+    primaryDescription: "A browser extension that makes your new tab page look beautiful and useful. It adds a clean dashboard with a calendar, to-do list, timer, and notes, while keeping your data private and making the page load super fast.",
     details: [
       'Dynamic backgrounds with real-time luminance analysis',
       'Integrated sidebar with Calendar, Todo, Pomodoro, and Notes',

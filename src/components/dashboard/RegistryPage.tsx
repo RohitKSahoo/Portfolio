@@ -6,21 +6,70 @@ import { MagicBentoCard } from '../effects/MagicBento';
 import TextType from '../effects/TextType';
 import { PROJECTS } from './data';
 
+const phoneVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 300 : -300,
+    opacity: 0
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction > 0 ? -300 : 300,
+    opacity: 0
+  })
+};
+
+const laptopVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 500 : -500,
+    opacity: 0
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction > 0 ? -500 : 500,
+    opacity: 0
+  })
+};
+
 export const RegistryPage = () => {
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
-  const [currentImgIdx, setCurrentImgIdx] = React.useState(0);
   const activeProject = PROJECTS.find(p => p.id === selectedId) || PROJECTS[0];
   const gridRef = React.useRef<HTMLDivElement>(null);
+  const [[page, direction], setPage] = React.useState([0, 0]);
+  const [isPaused, setIsPaused] = React.useState(false);
+
+  const imageIndex = React.useMemo(() => {
+    if (!activeProject.images || activeProject.images.length === 0) return 0;
+    return (page % activeProject.images.length + activeProject.images.length) % activeProject.images.length;
+  }, [page, activeProject.images]);
 
   React.useEffect(() => {
-    if (!activeProject.images || activeProject.images.length <= 1) return;
+    setPage([0, 0]);
+    setIsPaused(false);
+  }, [selectedId]);
+
+  const paginate = React.useCallback((newDirection: number) => {
+    setPage([page + newDirection, newDirection]);
+  }, [page]);
+
+  React.useEffect(() => {
+    if (!activeProject.images || activeProject.images.length <= 1 || isPaused) return;
     
-    const interval = setInterval(() => {
-      setCurrentImgIdx((prev) => (prev === activeProject.images.length - 1 ? 0 : prev + 1));
+    const timer = setInterval(() => {
+      paginate(1);
     }, 3000);
     
-    return () => clearInterval(interval);
-  }, [activeProject.images, currentImgIdx]);
+    return () => clearInterval(timer);
+  }, [activeProject.images, paginate, isPaused]);
 
   const getFolderItems = (project: typeof PROJECTS[0]) => [
     <div key="1" className="w-full h-full flex flex-col items-center justify-center p-2 bg-[#0c0c0c] text-[var(--theme-accent)] overflow-hidden font-satoshi">
@@ -88,7 +137,7 @@ export const RegistryPage = () => {
                 enableMagnetism={false}
                 clickEffect={false}
                 className="flex flex-col gap-3 group cursor-pointer relative p-5 bg-[#0d0d0d] border border-white/5 transition-all duration-500 rounded-xl hover:border-white/10"
-                onClick={() => { setSelectedId(project.id); setCurrentImgIdx(0); }}
+                onClick={() => { setSelectedId(project.id); }}
               >
                 <div className="absolute top-5 right-5 flex items-center gap-2">
                   <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
@@ -165,7 +214,17 @@ export const RegistryPage = () => {
                   {activeProject.name}
                 </h2>
                 <div className="w-10 h-0.5 bg-red-500 mb-4" />
-                <p className="text-sm text-white/60 max-w-lg leading-relaxed font-inter">
+                
+                {/* Stack Tags */}
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {activeProject.stack.map(tech => (
+                    <span key={tech} className="text-[0.65rem] font-satoshi font-medium text-red-500 border border-red-500/20 bg-red-500/5 px-2 py-0.5 rounded uppercase tracking-wider">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                <p className="text-base text-white/60 max-w-lg leading-relaxed font-inter">
                   {activeProject.primaryDescription}
                 </p>
               </div>
@@ -204,63 +263,99 @@ export const RegistryPage = () => {
                   ))}
                 </ul>
               </div>
-
-              {/* Stack Tags */}
-              <div className="flex flex-wrap gap-1.5 mt-auto">
-                {activeProject.stack.map(tech => (
-                  <span key={tech} className="text-[0.65rem] font-satoshi font-medium text-red-500 border border-red-500/20 bg-red-500/5 px-2 py-0.5 rounded uppercase tracking-wider">
-                    {tech}
-                  </span>
-                ))}
-              </div>
             </div>
 
             {/* Right Column (Waveform) */}
-            <div className="flex-1 min-h-0 relative">
-              <div className="w-full h-full min-h-[350px] lg:max-h-[600px] bg-[#0d0d0d] border border-white/5 rounded-2xl overflow-hidden flex flex-col p-6">
-                <div className="flex-1 flex items-center justify-center relative overflow-hidden max-h-[500px]">
-                  {activeProject.images && activeProject.images.length > 0 ? (
-                    <div className="relative w-full h-full group flex items-center justify-center">
-                      <AnimatePresence mode="wait">
-                        <motion.img
-                          key={currentImgIdx}
-                          src={activeProject.images[currentImgIdx]}
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 1.05 }}
-                          transition={{ duration: 0.3 }}
-                          className="max-w-full max-h-full object-contain"
-                          alt={`Screenshot ${currentImgIdx + 1}`}
+            <div className="flex-1 min-h-0 relative flex justify-center">
+              {activeProject.images && activeProject.images.length > 0 ? (
+                ['PAUSIFY', 'SOSAFE', 'SIFER'].some(name => activeProject.name.toUpperCase().includes(name)) ? (
+                  // Android Phone Frame
+                  <div className="relative border-[8px] border-[#1a1a1a] bg-[#0d0d0d] rounded-[1.5rem] h-[670px] w-[300px] shadow-2xl overflow-hidden transform translate-x-20">
+                    {/* Punch-hole Camera */}
+                    <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-[#0a0a0a] rounded-full z-10 flex items-center justify-center border border-[#222]">
+                      <div className="w-1.5 h-1.5 bg-[#151515] rounded-full"></div>
+                    </div>
+                    
+                    {/* Screen Content */}
+                    <div 
+                      className="w-full h-full overflow-hidden flex items-center justify-center bg-black relative"
+                      onMouseEnter={() => setIsPaused(true)}
+                      onMouseLeave={() => setIsPaused(false)}
+                    >
+                      <AnimatePresence mode="popLayout" initial={false} custom={direction}>
+                        <motion.img 
+                          key={page}
+                          src={activeProject.images[imageIndex]} 
+                          custom={direction}
+                          variants={phoneVariants}
+                          initial="enter"
+                          animate="center"
+                          exit="exit"
+                          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                          drag="x"
+                          dragConstraints={{ left: 0, right: 0 }}
+                          onDragEnd={(_, info) => {
+                            if (info.offset.x < -50) {
+                              paginate(1);
+                            } else if (info.offset.x > 50) {
+                              paginate(-1);
+                            }
+                          }}
+                          className="absolute w-full h-full object-cover cursor-grab active:cursor-grabbing" 
+                          alt="Preview" 
                         />
                       </AnimatePresence>
-                      
-                      {activeProject.images.length > 1 && (
-                        <>
-                          <button
-                            onClick={() => setCurrentImgIdx((prev) => (prev === 0 ? activeProject.images.length - 1 : prev - 1))}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-black/60 border border-white/10 rounded-full text-white/70 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <ArrowLeft size={14} />
-                          </button>
-                          <button
-                            onClick={() => setCurrentImgIdx((prev) => (prev === activeProject.images.length - 1 ? 0 : prev + 1))}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-black/60 border border-white/10 rounded-full text-white/70 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <ArrowRight size={14} />
-                          </button>
-                          
-                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-                            {activeProject.images.map((_, idx) => (
-                              <div
-                                key={idx}
-                                className={`w-1.5 h-1.5 rounded-full ${idx === currentImgIdx ? 'bg-red-500' : 'bg-white/20'}`}
-                              />
-                            ))}
-                          </div>
-                        </>
-                      )}
+
+
                     </div>
-                  ) : (
+
+
+                  </div>
+                ) : (
+                  // Laptop Frame
+                  <div className="flex flex-col items-center justify-center h-full w-full max-w-[660px]">
+                    {/* Laptop Screen */}
+                    <div 
+                      className="relative border-[8px] border-[#1a1a1a] bg-[#0d0d0d] rounded-t-lg h-[380px] w-[600px] overflow-hidden shadow-2xl"
+                      onMouseEnter={() => setIsPaused(true)}
+                      onMouseLeave={() => setIsPaused(false)}
+                    >
+                      <AnimatePresence mode="popLayout" initial={false} custom={direction}>
+                        <motion.img 
+                          key={page}
+                          src={activeProject.images[imageIndex]} 
+                          custom={direction}
+                          variants={laptopVariants}
+                          initial="enter"
+                          animate="center"
+                          exit="exit"
+                          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                          drag="x"
+                          dragConstraints={{ left: 0, right: 0 }}
+                          onDragEnd={(_, info) => {
+                            if (info.offset.x < -50) {
+                              paginate(1);
+                            } else if (info.offset.x > 50) {
+                              paginate(-1);
+                            }
+                          }}
+                          className="absolute w-full h-full object-contain cursor-grab active:cursor-grabbing scale-95" 
+                          alt="Preview" 
+                        />
+                      </AnimatePresence>
+
+
+                    </div>
+                    {/* Laptop Base */}
+                    <div className="relative h-[14px] w-[660px] bg-[#333] rounded-b-lg border-t border-white/10 shadow-xl">
+                      {/* Notch to open */}
+                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-1.5 bg-[#1a1a1a] rounded-b-md"></div>
+                    </div>
+                  </div>
+                )
+              ) : (
+                <div className="w-full h-full min-h-[350px] lg:max-h-[600px] bg-[#0d0d0d] border border-white/5 rounded-2xl overflow-hidden flex flex-col p-6">
+                  <div className="flex-1 flex items-center justify-center relative overflow-hidden max-h-[500px]">
                     <svg width="100%" height="100%" viewBox="0 0 400 200" className="opacity-70">
                       <defs>
                         <radialGradient id="waveformGlow" cx="50%" cy="50%" r="30%">
@@ -275,21 +370,21 @@ export const RegistryPage = () => {
                       <path d="M 50 100 L 60 80 L 70 120 L 80 70 L 90 130 L 100 60 L 110 140 L 120 50 L 130 150 L 140 70 L 150 130 L 160 60 L 170 140 L 180 40 L 190 160 L 200 30 L 210 170 L 220 50 L 230 150 L 240 60 L 250 140 L 260 70 L 270 130 L 280 80 L 290 120 L 300 90 L 310 110 L 320 100" stroke="white" strokeWidth="1.5" fill="none" opacity="0.8" />
                       <path d="M 50 100 L 60 120 L 70 80 L 80 130 L 90 70 L 100 140 L 110 60 L 120 150 L 130 50 L 140 130 L 150 70 L 160 140 L 170 60 L 180 160 L 190 40 L 200 170 L 210 30 L 220 150 L 230 50 L 240 140 L 250 60 L 260 130 L 270 70 L 280 120 L 290 80 L 300 110 L 310 90 L 320 100" stroke="white" strokeWidth="1" fill="none" opacity="0.5" />
                     </svg>
-                  )}
-                </div>
+                  </div>
 
-                <div className="mt-auto pt-4 border-t border-white/5 flex flex-col gap-0.5">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-                    <span className="text-sm font-bold font-satoshi text-white">
-                      {activeProject.images && activeProject.images.length > 1 ? `GALLERY [${currentImgIdx + 1}/${activeProject.images.length}]` : 'LIVE_UPLINK'}
+                  <div className="mt-auto pt-4 border-t border-white/5 flex flex-col gap-0.5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+                      <span className="text-sm font-bold font-satoshi text-white">
+                        LIVE_UPLINK
+                      </span>
+                    </div>
+                    <span className="text-[0.6rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">
+                      Real-Time Voice Detection
                     </span>
                   </div>
-                  <span className="text-[0.6rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">
-                    {activeProject.images && activeProject.images.length > 1 ? 'Project Screenshots' : 'Real-Time Voice Detection'}
-                  </span>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </motion.div>
