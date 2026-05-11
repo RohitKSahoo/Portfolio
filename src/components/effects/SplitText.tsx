@@ -173,7 +173,8 @@ const SplitText = ({
       display: 'inline-block',
       whiteSpace: 'normal' as const,
       wordWrap: 'break-word' as const,
-      willChange: 'transform, opacity'
+      willChange: 'transform, opacity',
+      paddingBottom: '0.15em'
     };
     const classes = `split-parent ${className}`;
     const Tag = tag || 'p';
