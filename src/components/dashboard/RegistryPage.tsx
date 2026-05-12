@@ -67,6 +67,7 @@ export const RegistryPage = () => {
   const [fullscreenImageIndex, setFullscreenImageIndex] = React.useState<number | null>(null);
   const [[fullscreenPage, fullscreenDirection], setFullscreenPage] = React.useState([0, 0]);
   const [isBooting, setIsBooting] = React.useState(false);
+  const [bootProgress, setBootProgress] = React.useState(0);
 
   React.useEffect(() => {
     const container = document.querySelector('.custom-scrollbar');
@@ -100,8 +101,23 @@ export const RegistryPage = () => {
     setPage([0, 0]);
     setIsPaused(false);
     setIsBooting(true);
+    setBootProgress(0);
+    
+    const interval = setInterval(() => {
+      setBootProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 1;
+      });
+    }, 15); // 15ms * 100 steps = 1500ms
+    
     const timer = setTimeout(() => setIsBooting(false), 2000); // 2 seconds boot
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
   }, [selectedId]);
 
   const paginate = React.useCallback((newDirection: number) => {
@@ -407,17 +423,15 @@ export const RegistryPage = () => {
                             <div className="flex flex-col gap-1 items-start w-48">
                               <div className="flex justify-between w-full text-[0.6rem] font-bold tracking-wider">
                                 <span>SYSTEM_BOOTING</span>
-                                <span>100%</span>
+                                <span>{bootProgress}%</span>
                               </div>
                               <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                                <motion.div 
+                                <div 
                                   className="h-full bg-white"
-                                  initial={{ width: '0%' }}
-                                  animate={{ width: '100%' }}
-                                  transition={{ duration: 1.5, ease: 'easeInOut' }}
+                                  style={{ width: `${bootProgress}%` }}
                                 />
                               </div>
-                              <span className="text-[0.5rem] text-white/30 truncate w-full">{">>"} LOADING_CORE_ASSETS...</span>
+                              <span className="text-[0.5rem] text-white/30 truncate w-full">made by rohitksahoo</span>
                             </div>
                           </motion.div>
                         )}
@@ -482,17 +496,15 @@ export const RegistryPage = () => {
                             <div className="flex flex-col gap-1 items-start w-48">
                               <div className="flex justify-between w-full text-[0.6rem] font-bold tracking-wider">
                                 <span>SYSTEM_BOOTING</span>
-                                <span>100%</span>
+                                <span>{bootProgress}%</span>
                               </div>
                               <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                                <motion.div 
+                                <div 
                                   className="h-full bg-white"
-                                  initial={{ width: '0%' }}
-                                  animate={{ width: '100%' }}
-                                  transition={{ duration: 1.5, ease: 'easeInOut' }}
+                                  style={{ width: `${bootProgress}%` }}
                                 />
                               </div>
-                              <span className="text-[0.5rem] text-white/30 truncate w-full">{">>"} LOADING_CORE_ASSETS...</span>
+                              <span className="text-[0.5rem] text-white/30 truncate w-full">made by rohitksahoo</span>
                             </div>
                           </motion.div>
                         )}
