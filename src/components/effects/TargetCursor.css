@@ -60,3 +60,14 @@
 .hide-cursor-global * {
   cursor: none !important;
 }
+
+@media (max-width: 768px) {
+  .target-cursor-wrapper {
+    display: none !important;
+  }
+  
+  .hide-cursor-global,
+  .hide-cursor-global * {
+    cursor: auto !important;
+  }
+}

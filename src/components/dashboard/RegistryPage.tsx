@@ -66,6 +66,7 @@ export const RegistryPage = () => {
   const [isPaused, setIsPaused] = React.useState(false);
   const [fullscreenImageIndex, setFullscreenImageIndex] = React.useState<number | null>(null);
   const [[fullscreenPage, fullscreenDirection], setFullscreenPage] = React.useState([0, 0]);
+  const [isBooting, setIsBooting] = React.useState(false);
 
   React.useEffect(() => {
     const container = document.querySelector('.custom-scrollbar');
@@ -98,6 +99,9 @@ export const RegistryPage = () => {
   React.useEffect(() => {
     setPage([0, 0]);
     setIsPaused(false);
+    setIsBooting(true);
+    const timer = setTimeout(() => setIsBooting(false), 2000); // 2 seconds boot
+    return () => clearTimeout(timer);
   }, [selectedId]);
 
   const paginate = React.useCallback((newDirection: number) => {
@@ -270,7 +274,7 @@ export const RegistryPage = () => {
 
           <div className="flex-1 flex flex-col lg:flex-row gap-8 lg:gap-10 min-h-0">
             {/* Left Column */}
-            <div className="flex-[1.2] flex flex-col gap-6 py-2">
+            <div className="flex-[1.2] flex flex-col gap-6">
               <div>
                 <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold font-satoshi tracking-tight text-white mb-3 break-words">
                   {activeProject.name}
@@ -372,7 +376,52 @@ export const RegistryPage = () => {
                         />
                       </AnimatePresence>
 
-
+                      {/* Booting Animation Overlay */}
+                      <AnimatePresence>
+                        {isBooting && (
+                          <motion.div 
+                            className="absolute inset-0 bg-black flex flex-col items-center justify-center font-satoshi text-white z-20"
+                            initial={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.5 }}
+                          >
+                            {/* Android Icon */}
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" className="text-[#3DDC84] mb-4">
+                              {/* Head */}
+                              <path d="M12 2C8.7 2 6 4.7 6 8H18C18 5.7 15.3 2 12 2Z" />
+                              {/* Body */}
+                              <rect x="6" y="9.5" width="12" height="10" rx="1.5" />
+                              {/* Arms */}
+                              <rect x="2.5" y="9.5" width="2.5" height="7.5" rx="1.25" />
+                              <rect x="19" y="9.5" width="2.5" height="7.5" rx="1.25" />
+                              {/* Legs */}
+                              <rect x="8.5" y="19.5" width="2.5" height="3.5" rx="1.25" />
+                              <rect x="13" y="19.5" width="2.5" height="3.5" rx="1.25" />
+                              {/* Antennas */}
+                              <line x1="7.5" y1="0.5" x2="9.5" y2="2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                              <line x1="16.5" y1="0.5" x2="14.5" y2="2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                              {/* Eyes */}
+                              <circle cx="10" cy="5.5" r="0.75" fill="#0d0d0d" />
+                              <circle cx="14" cy="5.5" r="0.75" fill="#0d0d0d" />
+                            </svg>
+                            <div className="flex flex-col gap-1 items-start w-48">
+                              <div className="flex justify-between w-full text-[0.6rem] font-bold tracking-wider">
+                                <span>SYSTEM_BOOTING</span>
+                                <span>100%</span>
+                              </div>
+                              <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                                <motion.div 
+                                  className="h-full bg-white"
+                                  initial={{ width: '0%' }}
+                                  animate={{ width: '100%' }}
+                                  transition={{ duration: 1.5, ease: 'easeInOut' }}
+                                />
+                              </div>
+                              <span className="text-[0.5rem] text-white/30 truncate w-full">{">>"} LOADING_CORE_ASSETS...</span>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
 
 
@@ -414,7 +463,40 @@ export const RegistryPage = () => {
                         />
                       </AnimatePresence>
 
-
+                      {/* Booting Animation Overlay */}
+                      <AnimatePresence>
+                        {isBooting && (
+                          <motion.div 
+                            className="absolute inset-0 bg-black flex flex-col items-center justify-center font-satoshi text-white z-20"
+                            initial={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.5 }}
+                          >
+                            {/* Windows Icon */}
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" className="text-[#0078D7] mb-4">
+                              <rect x="2" y="2" width="9.5" height="9.5" />
+                              <rect x="12.5" y="2" width="9.5" height="9.5" />
+                              <rect x="2" y="12.5" width="9.5" height="9.5" />
+                              <rect x="12.5" y="12.5" width="9.5" height="9.5" />
+                            </svg>
+                            <div className="flex flex-col gap-1 items-start w-48">
+                              <div className="flex justify-between w-full text-[0.6rem] font-bold tracking-wider">
+                                <span>SYSTEM_BOOTING</span>
+                                <span>100%</span>
+                              </div>
+                              <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                                <motion.div 
+                                  className="h-full bg-white"
+                                  initial={{ width: '0%' }}
+                                  animate={{ width: '100%' }}
+                                  transition={{ duration: 1.5, ease: 'easeInOut' }}
+                                />
+                              </div>
+                              <span className="text-[0.5rem] text-white/30 truncate w-full">{">>"} LOADING_CORE_ASSETS...</span>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                     {/* Laptop Base */}
                     <div className="relative h-[14px] w-[98vw] max-w-[390px] lg:max-w-none lg:w-[660px] bg-[#333] rounded-b-lg border-t border-white/10 shadow-xl">
