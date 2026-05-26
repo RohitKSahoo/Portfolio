@@ -13,6 +13,9 @@ import './styles/index.css';
 
 import { SystemDock } from './components/layout/SystemDock';
 import TargetCursor from './components/effects/TargetCursor';
+import { inject } from '@vercel/analytics';
+
+inject();
 
 function App() {
   const [activeTab, setActiveTab] = useState('profile');
