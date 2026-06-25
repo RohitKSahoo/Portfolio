@@ -1,0 +1,129 @@
+:root {
+  --folder-color: #ef4444; /* Updated to match portfolio theme accent */
+  --folder-back-color: #991b1b;
+  --paper-1: #e6e6e6;
+  --paper-2: #f2f2f2;
+  --paper-3: #ffffff;
+}
+
+.folder {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  width: 100px;
+  height: 80px;
+}
+
+/* "Open a bit" Stage - Hover effect on the folder container or parent group */
+.folder:hover,
+.group:hover .folder {
+  transform: translateY(-8px);
+}
+
+.folder:hover .folder__front,
+.group:hover .folder .folder__front {
+  transform: skew(15deg) scaleY(0.6);
+}
+
+.folder:hover .right,
+.group:hover .folder .right {
+  transform: skew(-15deg) scaleY(0.6);
+}
+
+/* "Reveal Files" Stage - Triggered by .open class OR parent .group hover */
+.folder.open .paper:nth-child(1),
+.group:hover .folder .paper:nth-child(1) {
+  transform: translate(-110%, -45%) rotateZ(-15deg) translate(var(--magnet-x, 0px), var(--magnet-y, 0px));
+}
+
+.folder.open .paper:nth-child(1):hover,
+.group:hover .folder .paper:nth-child(1):hover {
+  transform: translate(-110%, -45%) rotateZ(-15deg) scale(1.1) translate(var(--magnet-x, 0px), var(--magnet-y, 0px));
+}
+
+.folder.open .paper:nth-child(2),
+.group:hover .folder .paper:nth-child(2) {
+  transform: translate(10%, -45%) rotateZ(15deg) translate(var(--magnet-x, 0px), var(--magnet-y, 0px));
+  height: 80%;
+}
+
+.folder.open .paper:nth-child(2):hover,
+.group:hover .folder .paper:nth-child(2):hover {
+  transform: translate(10%, -45%) rotateZ(15deg) scale(1.1) translate(var(--magnet-x, 0px), var(--magnet-y, 0px));
+}
+
+.folder.open .paper:nth-child(3),
+.group:hover .folder .paper:nth-child(3) {
+  transform: translate(-50%, -75%) rotateZ(5deg) translate(var(--magnet-x, 0px), var(--magnet-y, 0px));
+  height: 80%;
+}
+
+.folder.open .paper:nth-child(3):hover,
+.group:hover .folder .paper:nth-child(3):hover {
+  transform: translate(-50%, -75%) rotateZ(5deg) scale(1.1) translate(var(--magnet-x, 0px), var(--magnet-y, 0px));
+}
+
+.folder__back {
+  position: relative;
+  width: 100px;
+  height: 80px;
+  background: var(--folder-back-color);
+  border-radius: 0px 10px 10px 10px;
+}
+
+.folder__back::after {
+  position: absolute;
+  z-index: 0;
+  bottom: 98%;
+  left: 0;
+  content: '';
+  width: 30px;
+  height: 10px;
+  background: var(--folder-back-color);
+  border-radius: 5px 5px 0 0;
+}
+
+.paper {
+  position: absolute;
+  z-index: 2;
+  bottom: 10%;
+  left: 50%;
+  transform: translate(-50%, 10%);
+  width: 70%;
+  height: 80%;
+  background: var(--paper-1);
+  border: 1px solid var(--paper-border, transparent);
+  border-radius: 5px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.paper:nth-child(2) {
+  background: var(--paper-2);
+  width: 80%;
+  height: 70%;
+  border: 1px solid var(--paper-border, transparent);
+}
+
+.paper:nth-child(3) {
+  background: var(--paper-3);
+  width: 90%;
+  height: 60%;
+  border: 1px solid var(--paper-border, transparent);
+}
+
+.folder__front {
+  position: absolute;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  background: var(--folder-color);
+  border-radius: 5px 10px 10px 10px;
+  transform-origin: bottom;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+}
