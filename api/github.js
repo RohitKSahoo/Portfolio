@@ -40,7 +40,8 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `bearer ${GITHUB_TOKEN}`,
+        "User-Agent": "RohitKSahoo-Portfolio",
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
       },
       body: JSON.stringify({ query }),
     });

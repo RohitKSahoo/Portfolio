@@ -33,13 +33,46 @@ export const HistoryPage = () => {
   });
 
   useEffect(() => {
+    const fetchPublicGithubData = async () => {
+      try {
+        const [userRes, reposRes] = await Promise.all([
+          fetch('https://api.github.com/users/RohitKSahoo'),
+          fetch('https://api.github.com/users/RohitKSahoo/repos?per_page=100&sort=updated')
+        ]);
+        if (!userRes.ok || !reposRes.ok) return;
+        const userData = await userRes.json();
+        const reposData = await reposRes.json();
+
+        const languagesSet = new Set<string>();
+        if (Array.isArray(reposData)) {
+          reposData.forEach((repo: any) => {
+            if (repo.language) {
+              languagesSet.add(repo.language);
+            }
+          });
+        }
+
+        const sinceYear = userData.created_at ? new Date(userData.created_at).getFullYear().toString() : '2025';
+
+        setGithubStats(prev => ({
+          ...prev,
+          projects: userData.public_repos ? userData.public_repos.toString() : prev.projects,
+          technologies: languagesSet.size > 0 ? languagesSet.size.toString() : prev.technologies,
+          since: sinceYear,
+          languagesList: languagesSet.size > 0 ? Array.from(languagesSet) : prev.languagesList,
+        }));
+      } catch (e) {
+        // Keep default mock state if public API fails
+      }
+    };
+
     fetch('/api/github')
       .then(res => {
         if (!res.ok) throw new Error('API not available');
         return res.json();
       })
       .then(data => {
-        if (!data.error && !data.errors) {
+        if (data && !data.error && !data.errors) {
           setGithubStats(prev => ({
             projects: data.projects.toString(),
             technologies: data.technologies.toString(),
@@ -48,10 +81,13 @@ export const HistoryPage = () => {
             calendar: data.calendar && data.calendar.length > 0 ? data.calendar : prev.calendar,
             languagesList: data.languagesList && data.languagesList.length > 0 ? data.languagesList : prev.languagesList,
           }));
+        } else {
+          fetchPublicGithubData();
         }
       })
       .catch(() => {
-        // Fallback silently to mock data if API fails or runs locally without Vercel CLI
+        // Fallback to client-side public GitHub REST API
+        fetchPublicGithubData();
       });
   }, []);
 
