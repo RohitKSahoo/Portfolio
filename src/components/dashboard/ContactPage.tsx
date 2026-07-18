@@ -223,14 +223,14 @@ export const ContactPage = () => {
           </a>
 
           {/* Instagram Card */}
-          <a href="https://www.instagram.com/rohit.ks_?igsh=MTU4c3hhMGI1eXdqMQ==" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer cursor-target">
+          <a href="https://www.instagram.com/rohitks.md?igsh=MTU4c3hhMGI1eXdqMQ==" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer cursor-target">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Instagram size={24} />
               </div>
               <div>
                 <h3 className="text-base font-bold font-satoshi text-white">Instagram</h3>
-                <p className="text-sm text-white/40 font-inter">@rohit.ks_</p>
+                <p className="text-sm text-white/40 font-inter">@rohitks.md</p>
               </div>
             </div>
             <div className="w-8 h-8 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/5 transition-all">

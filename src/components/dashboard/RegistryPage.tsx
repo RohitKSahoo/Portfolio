@@ -188,19 +188,6 @@ export const RegistryPage = () => {
         >
           <div className="flex flex-col gap-4 pt-0 relative">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
-              <div className="flex flex-col gap-1 max-w-none">
-
-                <h2 className="text-2xl lg:text-3xl font-bold font-satoshi text-white leading-tight relative group mt-1 tracking-tight">
-                  <TextType 
-                    text="Engineering systems that automate, optimize, and scale everyday workflows."
-                    typingSpeed={40}
-                    initialDelay={500}
-                    loop={false}
-                    cursorCharacter={<span className="inline-block w-1 h-[0.9em] bg-red-500 ml-1 align-baseline" />}
-                    className="relative z-10 block transition-all duration-700 group-hover:text-red-500"
-                  />
-                </h2>
-              </div>
             </div>
             <div className="w-full h-px bg-white/5 relative mt-2">
                <div className="absolute -top-1 -right-1 w-2 h-2 border border-white/10" />
