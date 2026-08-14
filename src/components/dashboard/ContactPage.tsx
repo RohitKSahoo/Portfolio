@@ -230,7 +230,7 @@ export const ContactPage = () => {
               </div>
               <div>
                 <h3 className="text-base font-bold font-satoshi text-white">Instagram</h3>
-                <p className="text-sm text-white/40 font-inter">@rohitks.md</p>
+                <p className="text-sm text-white/40 font-inter">@rohitks.2407</p>
               </div>
             </div>
             <div className="w-8 h-8 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/5 transition-all">
