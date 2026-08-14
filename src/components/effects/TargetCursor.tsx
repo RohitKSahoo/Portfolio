@@ -44,7 +44,8 @@ const TargetCursor = ({
       x,
       y,
       duration: 0.04, // Reduced from 0.1 for better responsiveness on battery
-      ease: 'power2.out' // Changed from power3.out for a snappier feel
+      ease: 'power2.out', // Changed from power3.out for a snappier feel
+      overwrite: 'auto'
     });
   }, []);
 
@@ -132,7 +133,7 @@ const TargetCursor = ({
     tickerFnRef.current = tickerFn;
 
     const moveHandler = e => moveCursor(e.clientX, e.clientY);
-    window.addEventListener('mousemove', moveHandler);
+    window.addEventListener('mousemove', moveHandler, { passive: true });
 
     const scrollHandler = () => {
       if (!activeTarget || !cursorRef.current) return;

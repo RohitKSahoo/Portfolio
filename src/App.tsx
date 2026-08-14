@@ -6,7 +6,7 @@ import {
   HistoryPage, 
   ContactPage 
 } from './components/dashboard/DashboardPages';
-import DotGrid from './components/effects/DotGrid';
+import CursorWave from './components/effects/CursorWave';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import './styles/index.css';
@@ -80,7 +80,7 @@ function App() {
       />
 
       {/* INTERACTIVE KINETIC GRID (Primary Background) */}
-      <DotGrid className="fixed inset-0 -z-10" />
+      <CursorWave className="fixed inset-0 -z-10" />
 
       {/* MAIN SYSTEM VIEWPORT */}
       <main className="flex flex-col relative transition-all duration-500">
