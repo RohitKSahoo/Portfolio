@@ -223,7 +223,7 @@ export const ContactPage = () => {
           </a>
 
           {/* Instagram Card */}
-          <a href="https://www.instagram.com/rohitks.md?igsh=MTU4c3hhMGI1eXdqMQ==" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer cursor-target">
+          <a href="https://www.instagram.com/rohitks.2407?igsh=MTU4c3hhMGI1eXdqMQ==" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer cursor-target">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Instagram size={24} />
