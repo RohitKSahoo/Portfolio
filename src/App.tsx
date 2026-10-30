@@ -21,8 +21,6 @@ const LIQUID_COLORS = ['#5227FF', '#FF9FFC', '#B497CF'];
 
 function App() {
   const [activeTab, setActiveTab] = useState('profile');
-  const [pendingTab, setPendingTab] = useState<string | null>(null);
-  const [isHomeExiting, setIsHomeExiting] = useState(false);
   const [isDockVisible, setIsDockVisible] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -37,46 +35,23 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
-  const handleTabChange = (nextTab: string) => {
-    if (nextTab === activeTab && !pendingTab) return;
-    if (isHomeExiting) return;
-
-    if (activeTab === 'profile' && nextTab !== 'profile') {
-      // Initiate avatar downward exit transition before switching pages
-      setPendingTab(nextTab);
-      setIsHomeExiting(true);
-    } else {
-      setActiveTab(nextTab);
-    }
-  };
-
-  const handleHomeExitComplete = () => {
-    if (pendingTab) {
-      setActiveTab(pendingTab);
-      setPendingTab(null);
-    }
-    setIsHomeExiting(false);
-  };
-
   const renderContent = () => {
     return (
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
+          exit={{ opacity: 0, y: 32 }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="w-full"
         >
           {(() => {
             switch (activeTab) {
               case 'profile': return (
                 <ProfilePage 
-                  onExploreProjects={() => handleTabChange('projects')} 
+                  onExploreProjects={() => setActiveTab('projects')} 
                   isDockVisible={isDockVisible}
-                  isExiting={isHomeExiting}
-                  onExitComplete={handleHomeExitComplete}
                 />
               );
               case 'projects': return <RegistryPage />;
@@ -100,8 +75,8 @@ function App() {
       
       {/* MAGNETIC DOCK NAVIGATION */}
       <SystemDock 
-        activeTab={pendingTab || activeTab} 
-        setActiveTab={handleTabChange} 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
         isDockVisible={isDockVisible}
         setIsDockVisible={setIsDockVisible}
       />
