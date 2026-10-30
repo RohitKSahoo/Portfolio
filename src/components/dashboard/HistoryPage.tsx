@@ -211,8 +211,8 @@ export const HistoryPage = () => {
             <Lanyard
               frontImage={frontTexture}
               backImage={backTexture}
-              strapColor="#000000ff"
-              strapWidth={0.6}
+              strapColor="#0a0a0c"
+              strapWidth={0.55}
               metal="silver"
               finish="metallic"
               orientation="landscape"
