@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 interface HeaderProps {
   activeTab?: string;
@@ -11,6 +11,41 @@ const TAB_TITLES: Record<string, { title: string; num: string }> = {
   projects: { title: 'Projects', num: '/02' },
   experience: { title: 'Experience', num: '/03' },
   contact: { title: 'Contact', num: '/04' }
+};
+
+const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!<>-_\\/[]{}*^?#';
+
+const useScrambleText = (targetText: string, glyphs = GLYPHS, speed = 25) => {
+  const [displayText, setDisplayText] = useState(targetText);
+
+  useEffect(() => {
+    let iteration = 0;
+    const maxIterations = targetText.length * 3;
+    const interval = setInterval(() => {
+      setDisplayText(() => {
+        return targetText
+          .split('')
+          .map((char, index) => {
+            if (char === ' ') return ' ';
+            if (index < iteration / 3) {
+              return targetText[index];
+            }
+            return glyphs[Math.floor(Math.random() * glyphs.length)];
+          })
+          .join('');
+      });
+
+      iteration += 1;
+      if (iteration > maxIterations) {
+        setDisplayText(targetText);
+        clearInterval(interval);
+      }
+    }, speed);
+
+    return () => clearInterval(interval);
+  }, [targetText, glyphs, speed]);
+
+  return displayText;
 };
 
 export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuToggle }) => {
@@ -31,6 +66,8 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
   };
 
   const currentTab = TAB_TITLES[activeTab] || TAB_TITLES.profile;
+  const scrambledTitle = useScrambleText(currentTab.title, GLYPHS, 25);
+  const scrambledNum = useScrambleText(currentTab.num, '/0123456789', 30);
 
   return (
     <header className="fixed top-5 left-5 right-5 h-16 lg:h-20 px-4 lg:px-8 flex justify-between items-center z-[130] transition-all duration-500 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md overflow-hidden">
@@ -38,22 +75,20 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
       <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/20 to-transparent" />
 
       <div className="flex items-center gap-4">
-
-
         <div className="flex flex-col gap-0.5">
           <div className="flex items-baseline gap-4">
-             <span className="text-[var(--theme-accent)] font-mono text-lg font-bold tracking-tighter">
-               {currentTab.num}
-             </span>
-             <h1 className="text-2xl md:text-3xl font-semibold tracking-widest text-tier-1 uppercase truncate max-w-[200px] md:max-w-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:relative lg:left-auto lg:top-auto lg:translate-x-0 lg:translate-y-0">
-               {currentTab.title}
-             </h1>
+            <span className="text-[var(--theme-accent)] font-mono text-lg font-bold tracking-tighter">
+              {scrambledNum}
+            </span>
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-widest text-tier-1 uppercase truncate max-w-[200px] md:max-w-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:relative lg:left-auto lg:top-auto lg:translate-x-0 lg:translate-y-0">
+              {scrambledTitle}
+            </h1>
           </div>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-4 lg:gap-8">
-        <a 
+        <a
           href="mailto:rohitkumarsahoo37@gmail.com"
           className="hidden md:flex items-center gap-3 px-4 py-2.5 border-2 border-[var(--theme-accent)] bg-[var(--theme-accent)]/10 hover:bg-[var(--theme-accent)] text-[var(--theme-accent)] hover:text-black transition-all rounded-lg font-mono text-[0.65rem] tracking-[0.2em] uppercase font-bold shadow-[0_0_15px_rgba(var(--theme-accent-rgb),0.15)]"
         >

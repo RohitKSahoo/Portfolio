@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback, useState } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { gsap } from 'gsap';
 import './MagicBento.css';
 
@@ -76,7 +76,7 @@ export const MagicBentoCard: React.FC<{
   enableMagnetism?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
-  onClick?: () => void;
+  onClick?: (e?: any) => void;
 }> = ({
   children,
   className = '',
@@ -249,7 +249,7 @@ export const MagicBentoCard: React.FC<{
     };
 
     const handleClicked = (e: MouseEvent) => {
-      onClick?.();
+      onClick?.(e);
       if (!clickEffect) return;
 
       const rect = element.getBoundingClientRect();

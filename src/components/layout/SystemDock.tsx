@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { User, Briefcase, Database, Mail } from 'lucide-react';
 
 interface DockProps {
@@ -10,21 +10,21 @@ interface DockProps {
 }
 
 const navItems = [
-  { id: 'profile', icon: User, label: 'HOME' },
+  { id: 'profile', icon: User, label: ' HOME' },
   { id: 'projects', icon: Database, label: 'PROJECTS' },
   { id: 'experience', icon: Briefcase, label: 'EXPERIENCE' },
   { id: 'contact', icon: Mail, label: 'CONTACT' },
 ];
 
-const DockItem = ({ 
-  item, 
-  activeTab, 
-  setActiveTab, 
+const DockItem = ({
+  item,
+  activeTab,
+  setActiveTab,
   mouseX,
   isMobile
-}: { 
-  item: typeof navItems[0], 
-  activeTab: string, 
+}: {
+  item: typeof navItems[0],
+  activeTab: string,
   setActiveTab: (tab: string) => void,
   mouseX: any,
   isMobile: boolean
@@ -33,7 +33,7 @@ const DockItem = ({
   const [showTooltip, setShowTooltip] = useState(false);
   const timeoutRef = useRef<number | null>(null);
   const isActive = activeTab === item.id;
-  
+
   const distance = useTransform(mouseX, (val: number) => {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
     return val - bounds.x - bounds.width / 2;
@@ -60,39 +60,35 @@ const DockItem = ({
       style={{ width }}
       className="aspect-square relative flex items-center justify-center cursor-pointer group cursor-target"
     >
-      <motion.div 
+      <motion.div
         onClick={handleTap}
-        style={{ 
-          width, 
+        style={{
+          width,
           height: width,
-          y: useTransform(width, [60, 100], [0, -20]) 
+          y: useTransform(width, [60, 100], [0, -20])
         }}
         className="absolute bottom-0 rounded-xl transition-colors duration-300 flex items-center justify-center shadow-lg z-10"
       >
-        <div className={`absolute inset-0 rounded-xl transition-colors duration-300 bg-[#0a0a0a] ${
-          isActive 
-            ? 'border border-[var(--theme-accent)] shadow-[0_0_20px_rgba(var(--theme-accent-rgb),0.25)]' 
+        <div className={`absolute inset-0 rounded-xl transition-colors duration-300 bg-[#0a0a0a] ${isActive
+            ? 'border border-[var(--theme-accent)] shadow-[0_0_20px_rgba(var(--theme-accent-rgb),0.25)]'
             : 'border border-white/10 group-hover:border-white/20'
-        }`} />
-        
+          }`} />
+
         {isActive && (
           <div className="absolute inset-0 rounded-xl bg-[var(--theme-accent)]/20 pointer-events-none" />
         )}
-        
-        <div className={`relative z-10 transition-all duration-300 ${
-          isActive ? 'text-[var(--theme-accent)] scale-110' : 'text-tier-3 group-hover:text-tier-1'
-        }`}>
+
+        <div className={`relative z-10 transition-all duration-300 ${isActive ? 'text-[var(--theme-accent)] scale-110' : 'text-tier-3 group-hover:text-tier-1'
+          }`}>
           <item.icon size={24} strokeWidth={isActive ? 2.5 : 2} />
         </div>
 
         {/* Tooltip */}
-        <div className={`absolute -top-14 left-1/2 -translate-x-1/2 transition-all duration-300 pointer-events-none ${
-          showTooltip ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-        } ${
-          !isMobile ? 'group-hover:opacity-100 group-hover:translate-y-0' : ''
-        }`}>
+        <div className={`absolute -top-14 left-1/2 -translate-x-1/2 transition-all duration-300 pointer-events-none ${showTooltip ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+          } ${!isMobile ? 'group-hover:opacity-100 group-hover:translate-y-0' : ''
+          }`}>
           <div className="bg-[#0a0a0a] border border-white/10 px-2.5 py-1 rounded-lg whitespace-nowrap">
-             <span className="text-[9px] font-bold tracking-[.2em] text-white uppercase">{item.label}</span>
+            <span className="text-[9px] font-bold tracking-[.2em] text-white uppercase">{item.label}</span>
           </div>
         </div>
 
@@ -138,7 +134,7 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
   }, [isHovered, setIsDockVisible]);
 
   return (
-    <div 
+    <div
       className="fixed bottom-0 left-0 right-0 h-32 z-[200] pointer-events-none flex justify-center items-end pb-3 lg:pb-5"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
@@ -150,8 +146,8 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
         initial={{ y: 100, opacity: 0 }}
-        animate={{ 
-          y: isDockVisible || isHovered || isMobile ? 0 : 75, 
+        animate={{
+          y: isDockVisible || isHovered || isMobile ? 0 : 75,
           opacity: 1,
         }}
         transition={{ type: "spring", stiffness: 260, damping: 25 }}
@@ -159,14 +155,14 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
       >
         {/* Subtle accent line on top */}
         <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/20 to-transparent" />
-        
+
         {navItems.map((item) => (
-          <DockItem 
-            key={item.id} 
-            item={item} 
-            activeTab={activeTab} 
-            setActiveTab={setActiveTab} 
-            mouseX={mouseX} 
+          <DockItem
+            key={item.id}
+            item={item}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            mouseX={mouseX}
             isMobile={isMobile}
           />
         ))}

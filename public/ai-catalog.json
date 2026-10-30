@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agenticresourcediscovery.org/spec/v1/schema.json",
+  "name": "rohitksahoo-portfolio",
+  "description": "Portfolio of Rohit Kumar Sahoo, Systems Architect & Full-Stack Engineer",
+  "url": "https://rohitksahoo.me/",
+  "version": "1.0.0",
+  "resources": [
+    {
+      "name": "Projects",
+      "description": "Showcase of systems architecture, web, and AI projects",
+      "url": "https://rohitksahoo.me/#projects"
+    },
+    {
+      "name": "Curriculum Vitae",
+      "description": "Full resume and professional background",
+      "url": "https://rohitksahoo.me/rohitkumarsahoo_cv.pdf"
+    }
+  ]
+}

@@ -3,7 +3,7 @@ export const PROJECTS = [
     id: 'P_01', 
     name: 'PAUSIFY', 
     category: 'SYSTEMS',
-    status: 'STABLE',
+    status: 'IN PROGRESS',
     ver: '1.0.0',
     primaryDescription: "An Android app that automatically pauses your music or videos when it hears you or someone else speaking. It uses AI to listen for human voices in real-time so you don't have to manually pause your media when someone talks to you.",
     details: [
@@ -25,7 +25,7 @@ export const PROJECTS = [
     id: 'P_02', 
     name: 'SOSAFE', 
     category: 'SECURITY',
-    status: 'STABLE',
+    status: 'IN PROGRESS',
     ver: '1.2.0',
     primaryDescription: "A personal safety app designed for emergencies. It lets you stream your live location and audio to your trusted guardians. If you are in danger, it alerts them immediately and makes sure they can hear and see where you are, even if the internet is slow.",
     details: [
@@ -46,7 +46,7 @@ export const PROJECTS = [
     id: 'P_03', 
     name: 'AUTOCOMMITBOT', 
     category: 'AUTOMATION',
-    status: 'STABLE',
+    status: 'IN PROGRESS',
     ver: '1.1.0',
     primaryDescription: "A tool that automatically saves your code changes and writes meaningful commit messages using AI (Google's Gemini). It helps you keep a consistent coding history on GitHub without you having to manually type commit messages every time.",
     details: [
@@ -69,7 +69,7 @@ export const PROJECTS = [
     id: 'P_04', 
     name: 'SIFER', 
     category: 'AUTOMATION',
-    status: 'STABLE',
+    status: 'IN PROGRESS',
     ver: '4.0.2',
     primaryDescription: "An app that automatically changes your phone's sound profile based on where you are. For example, it can automatically put your phone on silent when you reach work or school, and turn the volume back up when you leave, using your GPS location.",
     details: [
@@ -90,7 +90,7 @@ export const PROJECTS = [
     id: 'P_05', 
     name: 'MINIMAL NEW TAB', 
     category: 'EXTENSION',
-    status: 'STABLE',
+    status: 'IN PROGRESS',
     ver: '1.0.0',
     primaryDescription: "A browser extension that makes your new tab page look beautiful and useful. It adds a clean dashboard with a calendar, to-do list, timer, and notes, while keeping your data private and making the page load super fast.",
     details: [
@@ -109,37 +109,3 @@ export const PROJECTS = [
 
 ];
 
-export const experiences = [
-  {
-    role: 'Backend Systems Developer',
-    period: '2023 - PRESENT',
-    company: 'PROJECT-BASED',
-    tags: ['BACKEND', 'SYSTEMS'],
-    logs: [
-      'Built voice-triggered audio control system with sub-50ms response time.',
-      'Implemented real-time monitoring with efficient background thread handling.',
-      'Optimized system lifecycle to auto-suspend idle services.'
-    ],
-    active: true
-  },
-  {
-    role: 'App Developer (Personal)',
-    period: '2022 - 2023',
-    company: 'COMMUNICATION PROJECTS',
-    tags: ['ANDROID', 'WEBRTC'],
-    logs: [
-      'Developed continuous P2P voice network with dynamic cloud fallback routing.',
-      'Synchronized live geolocation tracking across highly constrained network states.'
-    ]
-  },
-  {
-    role: 'Open Source Contributor',
-    period: '2021 - 2022',
-    company: 'AUTOMATION PROJECTS',
-    tags: ['PYTHON', 'AI'],
-    logs: [
-      'Authored autonomous CLI agent validating and generating git commits via AI context analysis.',
-      'Formulated secure CI/CD deployment routines using robust git-hook automation.'
-    ]
-  }
-];
