@@ -7,10 +7,14 @@ import { CVViewerModal } from '../CVViewerModal';
 
 export const ProfilePage = ({ 
   onExploreProjects, 
-  isDockVisible = false 
+  isDockVisible = false,
+  isExiting = false,
+  onExitComplete
 }: { 
   onExploreProjects?: () => void,
-  isDockVisible?: boolean 
+  isDockVisible?: boolean,
+  isExiting?: boolean,
+  onExitComplete?: () => void
 }) => {
   const [isMobile, setIsMobile] = React.useState(false);
   const [isCVModalOpen, setIsCVModalOpen] = React.useState(false);
@@ -56,15 +60,24 @@ export const ProfilePage = ({
         {/* CENTER AVATAR FIGURE - ANCHORED TO BOTTOM OF SCREEN */}
         <div className="fixed inset-x-0 bottom-0 flex justify-center items-end z-0 pointer-events-none">
            <motion.div 
-             initial={{ opacity: 0, y: '80%' }}
-             animate={isAvatarLoaded ? { opacity: 1, y: '0%' } : { opacity: 0, y: '80%' }}
-             transition={{ duration: 1.25, ease: [0.16, 1, 0.3, 1], delay: 0.08 }}
+             initial={{ opacity: 0, y: '85%' }}
+             animate={isExiting ? { opacity: 0, y: '95%' } : isAvatarLoaded ? { opacity: 1, y: '0%' } : { opacity: 0, y: '85%' }}
+             transition={
+               isExiting
+                 ? { duration: 1.1, ease: [0.16, 1, 0.3, 1] }
+                 : { duration: 1.25, ease: [0.16, 1, 0.3, 1], delay: 0.08 }
+             }
+             onAnimationComplete={() => {
+               if (isExiting) {
+                 onExitComplete?.();
+               }
+             }}
              className="relative w-full max-w-6xl xl:max-w-[1700px] h-[65vh] sm:h-[75vh] lg:h-[85vh] pointer-events-auto flex items-end justify-center z-10"
            >
               <motion.div
                 animate={isMobile ? { y: [0, -8, 0] } : {}}
                 transition={isMobile ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
-                className="w-full h-full flex items-end justify-center bg-transparent scale-110 sm:scale-120 lg:scale-135 origin-bottom"
+                className="relative w-full h-full flex items-end justify-center bg-transparent scale-110 sm:scale-120 lg:scale-135 origin-bottom"
               >
                 <DitherVeil 
                   src="/avatar.png"
@@ -87,11 +100,33 @@ export const ProfilePage = ({
                   transparentBg={true}
                   className="w-full h-full cursor-crosshair bg-transparent"
                 />
+
+                {/* Color-to-Black-and-White Entrance Transition Overlay */}
+                <motion.img
+                  src="/avatar.png"
+                  alt="Rohit Kumar Sahoo"
+                  initial={{ opacity: 1, filter: 'grayscale(0%)' }}
+                  animate={
+                    isAvatarLoaded
+                      ? { opacity: 0, filter: 'grayscale(100%)' }
+                      : { opacity: 1, filter: 'grayscale(0%)' }
+                  }
+                  transition={{ 
+                    duration: 1.35, 
+                    delay: 0.12, 
+                    ease: [0.16, 1, 0.3, 1] 
+                  }}
+                  className="absolute inset-0 w-full h-full object-contain object-bottom pointer-events-none select-none"
+                />
               </motion.div>
            </motion.div>
         </div>
 
-        <div className="relative z-10 flex flex-col min-h-[inherit] justify-between p-0 pointer-events-none">
+        <motion.div 
+          animate={{ opacity: isExiting ? 0 : 1, y: isExiting ? 20 : 0 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+          className="relative z-10 flex flex-col min-h-[inherit] justify-between p-0 pointer-events-none"
+        >
           <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-8 items-start w-full px-0 pt-6 sm:pt-8 lg:pt-6">
             <div className="flex flex-col gap-3 lg:gap-4 max-w-lg text-left pointer-events-auto">
 
@@ -162,7 +197,7 @@ export const ProfilePage = ({
               />
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Windows 11 Document Viewer Window */}
