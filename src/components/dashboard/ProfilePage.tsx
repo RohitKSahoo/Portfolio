@@ -7,10 +7,14 @@ import { CVViewerModal } from '../CVViewerModal';
 
 export const ProfilePage = ({ 
   onExploreProjects, 
-  isDockVisible = false 
+  isDockVisible = false,
+  isExiting = false,
+  onExitComplete
 }: { 
   onExploreProjects?: () => void,
-  isDockVisible?: boolean 
+  isDockVisible?: boolean,
+  isExiting?: boolean,
+  onExitComplete?: () => void
 }) => {
   const [isMobile, setIsMobile] = React.useState(false);
   const [isCVModalOpen, setIsCVModalOpen] = React.useState(false);
@@ -36,15 +40,38 @@ export const ProfilePage = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  React.useEffect(() => {
+    if (isAvatarLoaded) {
+      // Trigger dynamic background ripple and fluid surge synchronized with avatar slide-up
+      const timer = setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent('liquid-ether-surge', {
+            detail: { origin: 'bottom-center', intensity: 1.6 }
+          })
+        );
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAvatarLoaded]);
+
   return (
-    <div className="flex flex-col gap-10 font-inter">
+    <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700 font-inter">
       <div className="relative min-h-[calc(100dvh-180px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
         {/* CENTER AVATAR FIGURE - ANCHORED TO BOTTOM OF SCREEN */}
-        <div className="absolute inset-x-0 bottom-0 flex justify-center items-end z-0 pointer-events-none">
+        <div className="fixed inset-x-0 bottom-0 flex justify-center items-end z-0 pointer-events-none">
            <motion.div 
-             initial={{ opacity: 0, y: 140 }}
-             animate={isAvatarLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 140 }}
-             transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+             initial={{ opacity: 0, y: '85%' }}
+             animate={isExiting ? { opacity: 0, y: '95%' } : isAvatarLoaded ? { opacity: 1, y: '0%' } : { opacity: 0, y: '85%' }}
+             transition={
+               isExiting
+                 ? { duration: 1.1, ease: [0.16, 1, 0.3, 1] }
+                 : { duration: 1.25, ease: [0.16, 1, 0.3, 1], delay: 0.08 }
+             }
+             onAnimationComplete={() => {
+               if (isExiting) {
+                 onExitComplete?.();
+               }
+             }}
              className="relative w-full max-w-6xl xl:max-w-[1700px] h-[65vh] sm:h-[75vh] lg:h-[85vh] pointer-events-auto flex items-end justify-center z-10"
            >
               <motion.div
@@ -57,6 +84,9 @@ export const ProfilePage = ({
                   fit="contain"
                   align="bottom"
                   intro={false}
+                  colorEntrance={true}
+                  colorEntranceDuration={1500}
+                  triggerEntrance={isAvatarLoaded ? 1 : 0}
                   onLoad={() => setIsAvatarLoaded(true)}
                   pattern="atkinson"
                   pixelSize={2}
@@ -77,7 +107,11 @@ export const ProfilePage = ({
            </motion.div>
         </div>
 
-        <div className="relative z-10 flex flex-col min-h-[inherit] justify-between p-0 pointer-events-none">
+        <motion.div 
+          animate={{ opacity: isExiting ? 0 : 1, y: isExiting ? 20 : 0 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+          className="relative z-10 flex flex-col min-h-[inherit] justify-between p-0 pointer-events-none"
+        >
           <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-8 items-start w-full px-0 pt-6 sm:pt-8 lg:pt-6">
             <div className="flex flex-col gap-3 lg:gap-4 max-w-lg text-left pointer-events-auto">
 
@@ -148,7 +182,7 @@ export const ProfilePage = ({
               />
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Windows 11 Document Viewer Window */}

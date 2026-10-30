@@ -283,7 +283,7 @@ uniform vec4 uBursts[4];
 uniform float uBurstWidth;
 uniform float uTransparentBg;
 uniform float uAlign;
-uniform float uColorIntro;
+uniform float uEntranceColor;
 
 in vec2 vUv;
 out vec4 fragColor;
@@ -372,16 +372,16 @@ void main() {
   float mask = max(clamp(texture(tMask, cellUv).r * uHold, 0.0, 1.0), shockwave(point));
   float shown = mix(mask, 1.0 - mask, uReverse);
 
+  // Entrance color fusion: fuses from full color into Atkinson dither on slide-in
+  shown = max(shown, uEntranceColor);
+
   // Strictly constrain the reveal and rim to the figure only - never leak to background
   shown *= isSubject;
 
-  // Imitate cursor hover effect during entrance: fuse smoothly from full-color via Bayer matrix
-  float effectiveShown = max(shown, uColorIntro * isSubject);
-
   float order = bayer(cell.yx);
   float low = order * (1.0 - uRim);
-  float isRim = step(low, effectiveShown) * step(0.001, uRim) * isSubject;
-  float isPhoto = step(low + uRim, effectiveShown) * isSubject;
+  float isRim = step(low, shown) * step(0.001, uRim) * isSubject;
+  float isPhoto = step(low + uRim, shown) * isSubject;
   color = mix(color, uRimColor, isRim);
   color = mix(color, photo, isPhoto);
 
@@ -421,6 +421,9 @@ export interface DitherVeilProps {
   wander?: boolean;
   clickBurst?: boolean;
   transparentBg?: boolean;
+  colorEntrance?: boolean;
+  colorEntranceDuration?: number;
+  triggerEntrance?: boolean | number | string;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -446,6 +449,9 @@ interface Settings {
   wander: boolean;
   clickBurst: boolean;
   transparentBg: boolean;
+  colorEntrance: boolean;
+  colorEntranceDuration: number;
+  triggerEntrance?: boolean | number | string;
 }
 
 export const DitherVeil: React.FC<DitherVeilProps> = ({
@@ -471,12 +477,24 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
   wander = false,
   clickBurst = true,
   transparentBg = true,
+  colorEntrance = false,
+  colorEntranceDuration = 1600,
+  triggerEntrance,
   className = '',
   style
-}) => {
+}: DitherVeilProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsRef = useRef<Settings | null>(null);
   const wakeRef = useRef<() => void>(() => { });
+  const triggerRef = useRef<(() => void) | null>(null);
+  const lastTriggerRef = useRef<any>(undefined);
+
+  useEffect(() => {
+    if (triggerEntrance !== undefined && triggerEntrance !== lastTriggerRef.current) {
+      lastTriggerRef.current = triggerEntrance;
+      triggerRef.current?.();
+    }
+  }, [triggerEntrance]);
 
   useEffect(() => {
     settingsRef.current = {
@@ -499,7 +517,10 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       reverse,
       wander,
       clickBurst,
-      transparentBg
+      transparentBg,
+      colorEntrance,
+      colorEntranceDuration,
+      triggerEntrance
     };
     wakeRef.current();
   });
@@ -589,7 +610,7 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       uBurstWidth: { value: 60 },
       uTransparentBg: { value: 1.0 },
       uAlign: { value: 0.0 },
-      uColorIntro: { value: 1.0 }
+      uEntranceColor: { value: 0 }
     };
     const program = (fragment: string, uniforms: any) =>
       new Program(gl, { vertex, fragment, uniforms, depthTest: false, depthWrite: false });
@@ -804,23 +825,23 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       const intro = s.intro ? (image ? Math.min(1, (now - introStart) / INTRO_MS) : 0) : 1;
       viewUniforms.uIntro.value = s.intro ? 1 - Math.pow(1 - intro, 2) : 1.0;
 
-      // Color to black & white Bayer dither-fusion during entrance
-      const colorElapsed = introStart > 0 ? (now - introStart) / 1000 : 0;
-      let colorIntro = 0.0;
-      if (colorElapsed <= 0.6) {
-        colorIntro = 1.0;
-      } else if (colorElapsed <= 2.2) {
-        const k = (colorElapsed - 0.6) / 1.6;
-        colorIntro = 0.5 * (1.0 + Math.cos(k * Math.PI));
-      } else {
-        colorIntro = 0.0;
+      const colorEntranceDuration = s.colorEntranceDuration || 1600;
+      let entranceColor = 0;
+      if (s.colorEntrance && image) {
+        const elapsed = (now - introStart) / colorEntranceDuration;
+        if (elapsed < 1.0) {
+          // Hold full color for the initial upward motion (first ~18% of duration),
+          // then smoothly fuse into Atkinson B&W dither through the Bayer matrix
+          const progress = Math.max(0, (elapsed - 0.16) / 0.84);
+          entranceColor = progress >= 1.0 ? 0 : 0.5 * (1 + Math.cos(progress * Math.PI));
+        }
       }
-      viewUniforms.uColorIntro.value = colorIntro;
-
+      viewUniforms.uEntranceColor.value = entranceColor;
       renderer.render({ scene: viewMesh });
 
+      const isFusing = s.colorEntrance && image && (now - introStart) < (s.colorEntranceDuration || 1600);
       const busy =
-        pointer.inside || wanderOn || presence > 0.002 || bursts.length > 0 || now < trailUntil || (s.intro && image && intro < 1) || colorIntro > 0.001;
+        pointer.inside || wanderOn || presence > 0.002 || bursts.length > 0 || now < trailUntil || (s.intro && image && intro < 1) || isFusing;
       if (busy && visible) raf = requestAnimationFrame(frame);
     };
 
@@ -830,6 +851,10 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       raf = requestAnimationFrame(frame);
     };
     wakeRef.current = wake;
+    triggerRef.current = () => {
+      introStart = performance.now();
+      wake();
+    };
 
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -854,6 +879,14 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       }
     };
     img.src = src;
+
+    if (img.complete && img.naturalWidth > 0) {
+      image = img;
+      imageTexture.image = img;
+      introStart = performance.now();
+      onLoad?.();
+      wake();
+    }
 
     const locate = (e: PointerEvent) => {
       const rect = container.getBoundingClientRect();
