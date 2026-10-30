@@ -17,6 +17,8 @@ import { inject } from '@vercel/analytics';
 
 inject();
 
+const LIQUID_COLORS = ['#5227FF', '#FF9FFC', '#B497CF'];
+
 function App() {
   const [activeTab, setActiveTab] = useState('profile');
   const [isDockVisible, setIsDockVisible] = useState(false);
@@ -81,9 +83,9 @@ function App() {
 
       {/* LIQUID ETHER FLUID SIMULATION BACKGROUND */}
       <LiquidEther
-        colors={['#5227FF', '#FF9FFC', '#B497CF']}
+        colors={LIQUID_COLORS}
         mouseForce={20}
-        cursorSize={100}
+        cursorSize={130}
         persistence={0.75}
         autoDemo={true}
         autoSpeed={0.5}

@@ -275,6 +275,7 @@ const link = (gl: WebGL2RenderingContext, fragmentSource: string): ProgramEntry 
 
 export interface LiquidEtherProps {
   colors?: string[];
+  preset?: string;
   intensity?: number;
   mouseForce?: number;
   cursorSize?: number;
@@ -312,13 +313,14 @@ interface Splat {
 
 export const LiquidEther: React.FC<LiquidEtherProps> = ({
   colors = ['#5227FF', '#FF9FFC', '#B497CF'],
+  preset = 'syrup',
   intensity = 1.2,
   mouseForce = 25,
-  cursorSize = 120,
+  cursorSize = 130,
   persistence = 0.75,
-  viscosity = 0,
+  viscosity = 0.8,
   resolution = 0.5,
-  bounceEdges = false,
+  bounceEdges = true,
   clickBurst = true,
   autoDemo = true,
   autoSpeed = 0.6,
@@ -508,15 +510,51 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
       const scale = base * Math.min(1, Math.sqrt(MAX_CELLS / (cssWidth * cssHeight * base * base)));
       const gridWidth = clamp(Math.round(cssWidth * scale), 16, 1024);
       const gridHeight = clamp(Math.round(cssHeight * scale), 16, 1024);
+
       if (gridWidth === grid.width && gridHeight === grid.height) return;
+
+      // Keep existing simulation targets if change is minor (e.g. scrollbar appearance, tab switch)
+      const widthDiff = Math.abs(gridWidth - grid.width);
+      const heightDiff = Math.abs(gridHeight - grid.height);
+      if (grid.width > 0 && grid.height > 0 && widthDiff <= 32 && heightDiff <= 32) {
+        return;
+      }
+
+      const oldVelocity = targets.velocity;
+      const oldWidth = grid.width;
+      const oldHeight = grid.height;
+
+      // Allocate new targets
+      const newVelocity = makeTarget(gridWidth, gridHeight);
+      const newVelocityNext = makeTarget(gridWidth, gridHeight);
+      const newDivergence = makeTarget(gridWidth, gridHeight);
+      const newPressure = makeTarget(gridWidth, gridHeight);
+      const newPressureNext = makeTarget(gridWidth, gridHeight);
+
+      // Preserve existing velocity texture data across resize so background never flashes black
+      if (oldVelocity && oldWidth > 0 && oldHeight > 0) {
+        try {
+          gl.bindFramebuffer(gl.READ_FRAMEBUFFER, oldVelocity.framebuffer);
+          gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, newVelocity.framebuffer);
+          gl.blitFramebuffer(
+            0, 0, oldWidth, oldHeight,
+            0, 0, gridWidth, gridHeight,
+            gl.COLOR_BUFFER_BIT,
+            gl.LINEAR
+          );
+        } catch {
+          // Graceful fallback if blit is unsupported
+        }
+      }
+
       dropTargets();
       grid.width = gridWidth;
       grid.height = gridHeight;
-      targets.velocity = makeTarget(gridWidth, gridHeight);
-      targets.velocityNext = makeTarget(gridWidth, gridHeight);
-      targets.divergence = makeTarget(gridWidth, gridHeight);
-      targets.pressure = makeTarget(gridWidth, gridHeight);
-      targets.pressureNext = makeTarget(gridWidth, gridHeight);
+      targets.velocity = newVelocity;
+      targets.velocityNext = newVelocityNext;
+      targets.divergence = newDivergence;
+      targets.pressure = newPressure;
+      targets.pressureNext = newPressureNext;
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     };
 
@@ -708,7 +746,6 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
       raf = requestAnimationFrame(frame);
     };
     wakeRef.current = () => {
-      resize();
       wake();
     };
 
@@ -854,7 +891,11 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
   }, [generation]);
 
   return (
-    <div ref={containerRef} className={`liquid-ether${className ? ` ${className}` : ''}`} style={style}>
+    <div
+      ref={containerRef}
+      className={`liquid-ether${className ? ` ${className}` : ''}`}
+      style={{ width: '100vw', height: '100vh', ...style }}
+    >
       <canvas ref={canvasRef} className="liquid-ether__canvas" aria-hidden="true" />
     </div>
   );

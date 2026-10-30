@@ -35,6 +35,10 @@
     cursor: default;
   }
 
+  html {
+    scrollbar-gutter: stable;
+  }
+
   body {
     @apply antialiased select-none;
     background-color: var(--bg-black);
