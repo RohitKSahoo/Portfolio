@@ -6,7 +6,7 @@ import {
   HistoryPage, 
   ContactPage 
 } from './components/dashboard/DashboardPages';
-import CursorWave from './components/effects/CursorWave';
+import LiquidEther from './components/effects/LiquidEther';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import './styles/index.css';
@@ -79,11 +79,20 @@ function App() {
         setIsDockVisible={setIsDockVisible}
       />
 
-      {/* INTERACTIVE KINETIC GRID (Primary Background) */}
-      <CursorWave className="fixed inset-0 -z-10" />
+      {/* LIQUID ETHER FLUID SIMULATION BACKGROUND */}
+      <LiquidEther
+        colors={['#5227FF', '#FF9FFC', '#B497CF']}
+        mouseForce={20}
+        cursorSize={100}
+        persistence={0.75}
+        autoDemo={true}
+        autoSpeed={0.5}
+        autoIntensity={2.2}
+        className="fixed inset-0 z-0 pointer-events-none"
+      />
 
       {/* MAIN SYSTEM VIEWPORT */}
-      <main className="flex flex-col relative transition-all duration-500">
+      <main className="flex flex-col relative z-10 transition-all duration-500">
         {/* TOP TELEMETRY HEADER */}
         <Header 
           activeTab={activeTab}
