@@ -12,7 +12,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import './styles/index.css';
 
 import { SystemDock } from './components/layout/SystemDock';
-import TargetCursor from './components/effects/TargetCursor';
 import { inject } from '@vercel/analytics';
 
 inject();
@@ -92,12 +91,6 @@ function App() {
 
   return (
     <div className="min-h-screen selection:bg-[var(--theme-accent)] selection:text-white antialiased relative transition-colors">
-      <TargetCursor 
-        spinDuration={2}
-        hideDefaultCursor={true}
-        parallaxOn={true}
-      />
-      
       {/* MAGNETIC DOCK NAVIGATION */}
       <SystemDock 
         activeTab={pendingTab || activeTab} 
