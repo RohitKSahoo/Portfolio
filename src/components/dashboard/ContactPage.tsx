@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Github, Linkedin, Send, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
 import VariableProximity from '../effects/VariableProximity';
+import GlassSurface from '../effects/GlassSurface';
 
 export const ContactPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -156,12 +157,28 @@ export const ContactPage = () => {
               
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="group relative inline-flex items-center justify-between gap-4 bg-black/40 backdrop-blur-md border border-white/10 rounded-full py-2.5 px-5 w-auto hover:border-red-500/30 transition-all duration-300 cursor-target"
+                className="group relative block focus:outline-none cursor-pointer rounded-full overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
-                <span className="text-sm font-bold font-satoshi text-white">Send a Message</span>
-                <div className="w-6 h-6 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/5 transition-all">
-                  <ArrowRight size={12} className="text-white/50 group-hover:text-red-500 transition-all" />
-                </div>
+                <GlassSurface
+                  width="auto"
+                  height={44}
+                  borderRadius={22}
+                  distortionScale={-90}
+                  displace={0.3}
+                  backgroundOpacity={0.14}
+                  saturation={1.2}
+                  redOffset={18}
+                  greenOffset={5}
+                  blueOffset={10}
+                  className="border border-red-500/40 group-hover:border-red-500/80 shadow-[0_0_20px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_28px_rgba(239,68,68,0.45)] transition-all"
+                >
+                  <div className="flex items-center justify-between gap-4 px-5 py-1 text-white font-bold font-satoshi text-sm">
+                    <span className="group-hover:text-red-400 transition-colors">Send a Message</span>
+                    <div className="w-6 h-6 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
+                      <ArrowRight size={12} className="text-white/50 group-hover:text-red-500 transition-all" />
+                    </div>
+                  </div>
+                </GlassSurface>
               </button>
             </div>
           </div>
@@ -175,7 +192,7 @@ export const ContactPage = () => {
           </div>
 
           {/* Email Card */}
-          <a href="mailto:rohitkumarsahoo37@gmail.com" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer cursor-target">
+          <a href="mailto:rohitkumarsahoo37@gmail.com" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Mail size={24} />
@@ -191,7 +208,7 @@ export const ContactPage = () => {
           </a>
 
           {/* GitHub Card */}
-          <a href="https://github.com/RohitKSahoo" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer cursor-target">
+          <a href="https://github.com/RohitKSahoo" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Github size={24} />
@@ -207,7 +224,7 @@ export const ContactPage = () => {
           </a>
 
           {/* LinkedIn Card */}
-          <a href="https://linkedin.com/in/rohitksahoo" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer cursor-target">
+          <a href="https://linkedin.com/in/rohitksahoo" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Linkedin size={24} />
@@ -223,7 +240,7 @@ export const ContactPage = () => {
           </a>
 
           {/* Instagram Card */}
-          <a href="https://www.instagram.com/rohitks.2407?igsh=MTU4c3hhMGI1eXdqMQ==" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer cursor-target">
+          <a href="https://www.instagram.com/rohitks.2407?igsh=MTU4c3hhMGI1eXdqMQ==" target="_blank" rel="noopener noreferrer" className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex items-center justify-between hover:border-white/10 transition-all group cursor-pointer">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
                 <Instagram size={24} />
@@ -347,10 +364,28 @@ export const ContactPage = () => {
                 <button 
                   onClick={handleSubmit}
                   disabled={isSending || isSent}
-                  className={`w-full py-3.5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg text-sm font-bold font-satoshi flex justify-between items-center px-6 hover:from-red-500 hover:to-red-400 transition-all shadow-[0_0_20px_rgba(239,68,68,0.2)] ${(isSending || isSent) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`group relative block w-full focus:outline-none rounded-lg overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] ${(isSending || isSent) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                 >
-                  <span>{isSending ? 'Sending...' : isSent ? 'Sent!' : 'Submit Message'}</span>
-                  <ArrowRight size={16} />
+                  <GlassSurface
+                    width="100%"
+                    height={48}
+                    borderRadius={10}
+                    distortionScale={-110}
+                    displace={0.3}
+                    backgroundOpacity={0.2}
+                    saturation={1.3}
+                    redOffset={25}
+                    greenOffset={5}
+                    blueOffset={10}
+                    className="w-full border border-red-500/50 group-hover:border-red-500/90 shadow-[0_0_25px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_35px_rgba(239,68,68,0.45)] transition-all"
+                  >
+                    <div className="flex justify-between items-center w-full px-6 text-white text-sm font-bold font-satoshi tracking-wide">
+                      <span className="group-hover:text-red-300 transition-colors">
+                        {isSending ? 'Sending...' : isSent ? 'Sent!' : 'Submit Message'}
+                      </span>
+                      <ArrowRight size={16} className="text-red-500 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </GlassSurface>
                 </button>
               </div>
             </motion.div>
