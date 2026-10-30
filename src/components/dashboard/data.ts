@@ -109,37 +109,3 @@ export const PROJECTS = [
 
 ];
 
-export const experiences = [
-  {
-    role: 'Backend Systems Developer',
-    period: '2023 - PRESENT',
-    company: 'PROJECT-BASED',
-    tags: ['BACKEND', 'SYSTEMS'],
-    logs: [
-      'Built voice-triggered audio control system with sub-50ms response time.',
-      'Implemented real-time monitoring with efficient background thread handling.',
-      'Optimized system lifecycle to auto-suspend idle services.'
-    ],
-    active: true
-  },
-  {
-    role: 'App Developer (Personal)',
-    period: '2022 - 2023',
-    company: 'COMMUNICATION PROJECTS',
-    tags: ['ANDROID', 'WEBRTC'],
-    logs: [
-      'Developed continuous P2P voice network with dynamic cloud fallback routing.',
-      'Synchronized live geolocation tracking across highly constrained network states.'
-    ]
-  },
-  {
-    role: 'Open Source Contributor',
-    period: '2021 - 2022',
-    company: 'AUTOMATION PROJECTS',
-    tags: ['PYTHON', 'AI'],
-    logs: [
-      'Authored autonomous CLI agent validating and generating git commits via AI context analysis.',
-      'Formulated secure CI/CD deployment routines using robust git-hook automation.'
-    ]
-  }
-];

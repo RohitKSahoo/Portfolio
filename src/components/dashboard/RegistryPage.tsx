@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import Folder from '../effects/Folder';
 import { MagicBentoCard } from '../effects/MagicBento';
-import TextType from '../effects/TextType';
 import { PROJECTS } from './data';
 
 const phoneVariants = {

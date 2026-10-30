@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Github, Smartphone, Code, Clock, Hash, ArrowRight } from 'lucide-react';
 import { Lanyard } from '../effects/Lanyard';
 import { generateFrontBadge, generateBackBadge, generateStrapImage } from '../effects/badgeGenerator';
 
@@ -10,7 +8,6 @@ export const HistoryPage = () => {
     technologies: '8+',
     since: '2025',
     commits: '986+',
-    calendar: Array(154).fill(0).map(() => Math.floor(Math.random() * 5)),
     languagesList: ['Kotlin', 'Java', 'TypeScript', 'JavaScript', 'Python', 'HTML', 'CSS']
   });
 
@@ -82,7 +79,6 @@ export const HistoryPage = () => {
             technologies: data.technologies?.toString() || prev.technologies,
             since: data.since?.toString() || prev.since,
             commits: data.commits && data.commits !== '0' ? data.commits.toString() : '986+',
-            calendar: data.calendar && data.calendar.length > 0 ? data.calendar : prev.calendar,
             languagesList: data.languagesList && data.languagesList.length > 0 ? data.languagesList : prev.languagesList,
           }));
         } else {
