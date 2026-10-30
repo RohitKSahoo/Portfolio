@@ -15,8 +15,8 @@ export interface BadgeData {
 export const generateFrontBadge = async (data: BadgeData): Promise<string> => {
   const isLandscape = data.orientation !== 'portrait'; // default to landscape
   const canvas = document.createElement('canvas');
-  canvas.width = isLandscape ? 1440 : 800;
-  canvas.height = isLandscape ? 1024 : 1125;
+  canvas.width = isLandscape ? 1530 : 800;
+  canvas.height = isLandscape ? 1000 : 1125;
   const ctx = canvas.getContext('2d');
   if (!ctx) return '';
 
@@ -376,8 +376,8 @@ export const generateFrontBadge = async (data: BadgeData): Promise<string> => {
 export const generateBackBadge = (data: BadgeData): string => {
   const isLandscape = data.orientation !== 'portrait';
   const canvas = document.createElement('canvas');
-  canvas.width = isLandscape ? 1440 : 800;
-  canvas.height = isLandscape ? 1024 : 1125;
+  canvas.width = isLandscape ? 1530 : 800;
+  canvas.height = isLandscape ? 1000 : 1125;
   const ctx = canvas.getContext('2d');
   if (!ctx) return '';
 

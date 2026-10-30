@@ -31,7 +31,7 @@ export interface LanyardProps {
 
 const CARD_SIZES: Record<string, [number, number]> = {
   portrait: [1.6, 2.25],
-  landscape: [2.25, 1.6]
+  landscape: [2.45, 1.6]
 };
 const ANCHORS: Record<string, number> = { left: 0.27, center: 0.5, right: 0.73 };
 const THICKNESS = 0.018;
@@ -765,16 +765,16 @@ export const Lanyard: React.FC<LanyardProps> = ({
   orientation = 'portrait',
   finish = 'glossy',
   cornerRadius = 0.3,
-  size = 0.6,
+  size = 0.8,
   anchor = 'center',
-  strapLength = 0.5,
+  strapLength = 1,
   strapImage,
   strapColor = '#111111',
   strapWidth = 0.65,
   metal = 'silver',
   gravity = 1,
   damping = 0.5,
-  elasticity = 0.5,
+  elasticity = 1,
   breeze = 0.5,
   interactive = true,
   intro = true,
@@ -975,7 +975,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
       const s = settingsRef.current;
       const aspect = view.width / view.height;
       let viewHeight = layout.height / clamp(s.size, 0.15, 0.9);
-      const fitFactor = s.orientation === 'landscape' ? 0.52 : 0.68;
+      const fitFactor = s.orientation === 'landscape' ? 0.62 : 0.68;
       const minimumWidth = layout.width / fitFactor;
       if (viewHeight * aspect < minimumWidth) viewHeight = minimumWidth / aspect;
       const viewWidth = viewHeight * aspect;

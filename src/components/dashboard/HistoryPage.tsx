@@ -141,13 +141,13 @@ export const HistoryPage = () => {
   }, [githubStats]);
 
   return (
-    <div className="w-full h-full flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden font-inter" style={{ backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
+    <div className="w-full h-full flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-visible font-inter" style={{ backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
       
       {/* Main Content Grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10">
         
-        {/* Left Column (6/12) - Timeline */}
-        <div className="lg:col-span-6 flex flex-col gap-10 py-2 overflow-y-auto pr-2">
+        {/* Left Column (5/12) - Timeline */}
+        <div className="lg:col-span-5 flex flex-col gap-10 py-2 overflow-y-auto pr-2">
 
           {/* Timeline Item 1 */}
           <div className="flex gap-6 group">
@@ -205,24 +205,24 @@ export const HistoryPage = () => {
           </div>
         </div>
 
-        {/* Right Column (6/12) - 3D Lanyard directly attached to top edge */}
-        <div className="lg:col-span-6 flex flex-col -mt-6 lg:-mt-8 h-[600px] lg:h-[740px] min-h-[520px] relative pointer-events-auto">
+        {/* Right Column (7/12) - 3D Lanyard emerging from behind top header */}
+        <div className="lg:col-span-7 flex flex-col -mt-[95px] lg:-mt-[110px] h-[calc(100vh-20px)] min-h-[760px] lg:min-h-[880px] relative pointer-events-auto">
           {frontTexture ? (
             <Lanyard
               frontImage={frontTexture}
               backImage={backTexture}
               strapImage={strapTexture}
               strapColor="#ef4444"
-              strapWidth={0.8}
+              strapWidth={0.88}
               metal="silver"
               finish="matte"
               orientation="landscape"
               cornerRadius={0.2}
-              size={0.72}
-              strapLength={0.3}
+              size={0.85}
+              strapLength={0.78}
               gravity={1.1}
-              damping={0.55}
-              elasticity={0.65}
+              damping={0.52}
+              elasticity={0.75}
               breeze={0.35}
               interactive={true}
               intro={true}
@@ -235,7 +235,7 @@ export const HistoryPage = () => {
           )}
 
           {/* Minimal floating hint */}
-          <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none z-10">
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none z-10">
             <span className="text-[10px] font-mono text-white/25 tracking-widest uppercase">
               [ Drag to swing • Click to flip ]
             </span>
