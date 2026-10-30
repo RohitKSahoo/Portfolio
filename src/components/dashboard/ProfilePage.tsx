@@ -14,6 +14,7 @@ export const ProfilePage = ({
 }) => {
   const [isMobile, setIsMobile] = React.useState(false);
   const [isCVModalOpen, setIsCVModalOpen] = React.useState(false);
+  const [isAvatarLoaded, setIsAvatarLoaded] = React.useState(false);
 
   const handleViewCV = () => {
     setIsCVModalOpen(true);
@@ -23,6 +24,15 @@ export const ProfilePage = ({
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
     handleResize();
     window.addEventListener('resize', handleResize);
+
+    const img = new Image();
+    img.src = '/avatar.png';
+    if (img.complete) {
+      setIsAvatarLoaded(true);
+    } else {
+      img.onload = () => setIsAvatarLoaded(true);
+    }
+
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -32,9 +42,9 @@ export const ProfilePage = ({
         {/* CENTER AVATAR FIGURE - ANCHORED TO BOTTOM OF SCREEN */}
         <div className="fixed inset-x-0 bottom-0 flex justify-center items-end z-0 pointer-events-none">
            <motion.div 
-             initial={{ opacity: 0, y: 90 }}
-             animate={{ opacity: 1, y: 0 }}
-             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+             initial={{ opacity: 0, y: '80%' }}
+             animate={isAvatarLoaded ? { opacity: 1, y: '0%' } : { opacity: 0, y: '80%' }}
+             transition={{ duration: 1.25, ease: [0.16, 1, 0.3, 1], delay: 0.08 }}
              className="relative w-full max-w-6xl xl:max-w-[1700px] h-[65vh] sm:h-[75vh] lg:h-[85vh] pointer-events-auto flex items-end justify-center z-10"
            >
               <motion.div
@@ -46,6 +56,8 @@ export const ProfilePage = ({
                   src="/avatar.png"
                   fit="contain"
                   align="bottom"
+                  intro={false}
+                  onLoad={() => setIsAvatarLoaded(true)}
                   pattern="atkinson"
                   pixelSize={2}
                   levels={5}

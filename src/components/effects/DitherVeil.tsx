@@ -398,6 +398,8 @@ export interface DitherVeilProps {
   src?: string;
   fit?: 'contain' | 'cover';
   align?: 'center' | 'bottom';
+  intro?: boolean;
+  onLoad?: () => void;
   pattern?: 'bayer' | 'noise' | 'atkinson' | 'floyd' | 'lines';
   pixelSize?: number;
   levels?: number;
@@ -422,6 +424,7 @@ export interface DitherVeilProps {
 interface Settings {
   fit: 'contain' | 'cover';
   align: 'center' | 'bottom';
+  intro: boolean;
   pattern: 'bayer' | 'noise' | 'atkinson' | 'floyd' | 'lines';
   pixelSize: number;
   levels: number;
@@ -445,6 +448,8 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
   src = DEFAULT_SRC,
   fit = 'contain',
   align = 'center',
+  intro = false,
+  onLoad,
   pattern = 'floyd',
   pixelSize = 2,
   levels = 2,
@@ -473,6 +478,7 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
     settingsRef.current = {
       fit,
       align,
+      intro,
       pattern,
       pixelSize,
       levels,
@@ -790,12 +796,12 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       viewUniforms.uReverse.value = s.reverse ? 1 : 0;
       viewUniforms.uTransparentBg.value = s.transparentBg ? 1.0 : 0.0;
       viewUniforms.uAlign.value = s.align === 'bottom' ? 1.0 : 0.0;
-      const intro = image ? Math.min(1, (now - introStart) / INTRO_MS) : 0;
-      viewUniforms.uIntro.value = 1 - Math.pow(1 - intro, 2);
+      const intro = s.intro ? (image ? Math.min(1, (now - introStart) / INTRO_MS) : 0) : 1;
+      viewUniforms.uIntro.value = s.intro ? 1 - Math.pow(1 - intro, 2) : 1.0;
       renderer.render({ scene: viewMesh });
 
       const busy =
-        pointer.inside || wanderOn || presence > 0.002 || bursts.length > 0 || now < trailUntil || (image && intro < 1);
+        pointer.inside || wanderOn || presence > 0.002 || bursts.length > 0 || now < trailUntil || (s.intro && image && intro < 1);
       if (busy && visible) raf = requestAnimationFrame(frame);
     };
 
@@ -820,6 +826,7 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
         }
       } catch { }
       introStart = performance.now();
+      onLoad?.();
       wake();
     };
     img.onerror = () => {
