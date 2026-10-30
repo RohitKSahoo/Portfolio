@@ -3,11 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Github, 
   Terminal, 
-  Zap, 
+  Zap,
   ArrowLeft, 
   ArrowRight, 
-  Shield, 
-  AlertTriangle,
   ExternalLink
 } from 'lucide-react';
 import Folder from '../effects/Folder';
@@ -254,9 +252,9 @@ export const RegistryPage = () => {
             >
               <div className="absolute top-5 right-5 flex items-center gap-2">
                 <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
-                  project.status === 'STABLE' ? 'bg-green-500' : 'bg-red-500'
+                  project.status === 'STABLE' ? 'bg-emerald-400' : 'bg-amber-400'
                 }`} />
-                <span className="text-[0.6rem] font-satoshi font-medium text-white/30 tracking-wider">[{project.status}]</span>
+                <span className="text-[0.6rem] font-satoshi font-medium text-white/40 tracking-wider">[{project.status}]</span>
               </div>
 
               <div className="flex flex-col lg:flex-row items-center gap-6 group-hover:translate-y-[-2px] transition-transform duration-500">
@@ -314,7 +312,7 @@ export const RegistryPage = () => {
               className={`relative z-10 w-full bg-[#202020]/95 backdrop-blur-2xl border border-white/[0.14] rounded-xl shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_1px_rgba(255,255,255,0.2)] flex flex-col overflow-hidden transition-all duration-300 ${
                 isMaximized 
                   ? 'h-[97vh] max-w-[98vw] rounded-none' 
-                  : 'h-[88vh] max-w-6xl'
+                  : 'h-[88vh] sm:h-[90vh] max-w-[94vw] xl:max-w-7xl 2xl:max-w-[1480px]'
               }`}
             >
               {/* Windows 11 Title Bar */}
@@ -427,9 +425,21 @@ export const RegistryPage = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] bg-red-500/10 text-red-400 border border-red-500/20 font-mono">
-                    <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${activeProject.status === 'STABLE' ? 'bg-green-500' : 'bg-red-500'}`} />
-                    <span>{activeProject.status}</span>
+                  <div className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-mono border ${
+                    activeProject.status === 'IN PROGRESS'
+                      ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
+                      : activeProject.status === 'STABLE'
+                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
+                      : 'bg-red-500/10 text-red-400 border-red-500/25'
+                  }`}>
+                    <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                      activeProject.status === 'IN PROGRESS'
+                        ? 'bg-amber-400'
+                        : activeProject.status === 'STABLE'
+                        ? 'bg-emerald-400'
+                        : 'bg-red-500'
+                    }`} />
+                    <span className="font-semibold uppercase tracking-wider">{activeProject.status}</span>
                   </div>
 
                   <a
@@ -475,28 +485,6 @@ export const RegistryPage = () => {
                       <p className="text-base text-white/70 max-w-xl leading-relaxed font-inter">
                         {activeProject.primaryDescription}
                       </p>
-                    </div>
-
-                    {/* Metrics */}
-                    <div className="flex flex-row gap-2 sm:gap-4 w-full">
-                      {Object.entries(activeProject.metrics).map(([k, v]) => {
-                        let Icon = Zap;
-                        if (k === 'LATENCY' || k === 'SYNC_LATENCY' || k === 'UI_LATENCY') Icon = Zap;
-                        if (k === 'RELIABILITY') Icon = Shield;
-                        if (k === 'STABILITY' || k === 'FAILOVER') Icon = AlertTriangle;
-                        
-                        return (
-                          <div key={k} className="p-3 sm:p-4 bg-[#121212] border border-white/5 rounded-xl flex flex-col sm:flex-row items-center gap-2 sm:gap-4 flex-1 min-w-0">
-                            <div className="p-2 bg-red-500/10 text-red-500 rounded-lg shrink-0">
-                              <Icon size={16} className="sm:w-4 sm:h-4" />
-                            </div>
-                            <div className="text-center sm:text-left min-w-0">
-                              <span className="text-[0.6rem] sm:text-[0.65rem] font-satoshi font-medium text-white/30 uppercase block mb-0.5 tracking-wider truncate">{k}</span>
-                              <span className="text-sm sm:text-sm font-bold font-satoshi text-white truncate">{v}</span>
-                            </div>
-                          </div>
-                        );
-                      })}
                     </div>
 
                     {/* Core Capabilities */}

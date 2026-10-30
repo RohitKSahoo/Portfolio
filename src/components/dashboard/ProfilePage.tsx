@@ -96,7 +96,7 @@ export const ProfilePage = ({
             <div className="flex flex-col gap-3 lg:gap-4 max-w-lg text-left pointer-events-auto">
 
               <h2 className="text-5xl lg:text-5xl font-bold font-satoshi text-white leading-tight tracking-tight">
-                CS Student & <br className="sm:hidden" /> Systems Builder <br /> Based in <span className="text-red-500">India.</span>
+                CS Undergrad & <br className="sm:hidden" /> Systems Builder <br /> Based in <span className="text-red-500">India.</span>
               </h2>
             </div>
 
