@@ -830,6 +830,132 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
       if (event.pointerType !== 'mouse') onLeave();
     };
 
+    const surgeTimers: number[] = [];
+
+    const triggerSurge = (intensity = 1.6) => {
+      if (lost || reduced) return;
+      const s = settingsRef.current;
+      const w = size.width || container.clientWidth || window.innerWidth;
+      const h = size.height || container.clientHeight || window.innerHeight;
+      const cx = w * 0.5;
+      const cy = h * 0.12; // bottom center in WebGL coordinates (y: 0 is bottom)
+
+      // Stage 1: Dynamic upward fluid plume matching the avatar's upward slide
+      const plumeSpeed = 2800 * intensity * (s.force / 20);
+      splats.push(
+        {
+          ax: cx,
+          ay: cy,
+          bx: cx,
+          by: cy + 140,
+          vx: 0,
+          vy: plumeSpeed,
+          radius: s.radius * 1.6
+        },
+        {
+          ax: cx - 70,
+          ay: cy,
+          bx: cx - 220,
+          by: cy + 100,
+          vx: -plumeSpeed * 0.7,
+          vy: plumeSpeed * 0.85,
+          radius: s.radius * 1.35
+        },
+        {
+          ax: cx + 70,
+          ay: cy,
+          bx: cx + 220,
+          by: cy + 100,
+          vx: plumeSpeed * 0.7,
+          vy: plumeSpeed * 0.85,
+          radius: s.radius * 1.35
+        }
+      );
+
+      // Radial shockwave ripples expanding from bottom-center
+      const rippleCount = 8;
+      for (let i = 0; i < rippleCount; i++) {
+        const ang = (i / rippleCount) * Math.PI * 2;
+        const speed = 1600 * intensity * (s.force / 20);
+        splats.push({
+          ax: cx,
+          ay: cy + 40,
+          bx: cx + Math.cos(ang) * 90,
+          by: cy + 40 + Math.sin(ang) * 90,
+          vx: Math.cos(ang) * speed,
+          vy: Math.sin(ang) * speed,
+          radius: s.radius * 1.2
+        });
+      }
+
+      // Immediately awaken fluid energy and activate ambient circulation
+      energy = 1;
+      lastInput = -Infinity;
+      auto.ramp = 1;
+      auto.ready = true;
+      auto.x = cx;
+      auto.y = h * 0.35;
+      wake();
+
+      // Stage 2: Staggered secondary pulse as avatar reaches mid-rise
+      const t1 = window.setTimeout(() => {
+        if (lost) return;
+        const midY = h * 0.3;
+        const ringSpeed = 1900 * intensity * (s.force / 20);
+        for (let j = 0; j < 6; j++) {
+          const ang = (j / 6) * Math.PI * 2 + 0.35;
+          splats.push({
+            ax: cx,
+            ay: midY,
+            bx: cx + Math.cos(ang) * 85,
+            by: midY + Math.sin(ang) * 85,
+            vx: Math.cos(ang) * ringSpeed,
+            vy: Math.sin(ang) * ringSpeed,
+            radius: s.radius * 1.3
+          });
+        }
+        energy = 1;
+        wake();
+      }, 200);
+      surgeTimers.push(t1);
+
+      // Stage 3: Wide blooming crest
+      const t2 = window.setTimeout(() => {
+        if (lost) return;
+        const topY = h * 0.45;
+        splats.push(
+          {
+            ax: cx - 140,
+            ay: topY,
+            bx: cx - 280,
+            by: topY + 50,
+            vx: -1500 * intensity,
+            vy: 900 * intensity,
+            radius: s.radius * 1.4
+          },
+          {
+            ax: cx + 140,
+            ay: topY,
+            bx: cx + 280,
+            by: topY + 50,
+            vx: 1500 * intensity,
+            vy: 900 * intensity,
+            radius: s.radius * 1.4
+          }
+        );
+        energy = 1;
+        wake();
+      }, 450);
+      surgeTimers.push(t2);
+    };
+
+    const onSurgeEvent = (event: Event) => {
+      const customEvent = event as CustomEvent<{ origin?: string; intensity?: number }>;
+      const intensity = customEvent.detail?.intensity ?? 1.6;
+      triggerSurge(intensity);
+    };
+
+    window.addEventListener('liquid-ether-surge', onSurgeEvent);
     window.addEventListener('pointermove', onPointerMove, { passive: true });
     window.addEventListener('pointerdown', onPointerDown, { passive: true });
     window.addEventListener('pointerup', onPointerUp, { passive: true });
@@ -872,6 +998,8 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
       wakeRef.current = null;
       resizeObserver.disconnect();
       intersection.disconnect();
+      window.removeEventListener('liquid-ether-surge', onSurgeEvent);
+      surgeTimers.forEach(t => clearTimeout(t));
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointerup', onPointerUp);

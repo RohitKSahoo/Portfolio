@@ -36,6 +36,20 @@ export const ProfilePage = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  React.useEffect(() => {
+    if (isAvatarLoaded) {
+      // Trigger dynamic background ripple and fluid surge synchronized with avatar slide-up
+      const timer = setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent('liquid-ether-surge', {
+            detail: { origin: 'bottom-center', intensity: 1.6 }
+          })
+        );
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAvatarLoaded]);
+
   return (
     <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700 font-inter">
       <div className="relative min-h-[calc(100dvh-180px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
