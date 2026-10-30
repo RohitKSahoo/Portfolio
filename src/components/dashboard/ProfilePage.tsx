@@ -92,7 +92,7 @@ export const ProfilePage = ({
         </div>
 
         <div className="relative z-10 flex flex-col min-h-[inherit] justify-between p-0 pointer-events-none">
-          <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-8 items-start w-full px-0">
+          <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-8 items-start w-full px-0 pt-6 sm:pt-8 lg:pt-6">
             <div className="flex flex-col gap-3 lg:gap-4 max-w-lg text-left pointer-events-auto">
 
               <h2 className="text-5xl lg:text-5xl font-bold font-satoshi text-white leading-tight tracking-tight">
