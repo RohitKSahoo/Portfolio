@@ -42,18 +42,18 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
 
         <div className="flex flex-col gap-0.5">
           <div className="flex items-baseline gap-4">
-             <span className="text-[var(--theme-accent)] font-mono text-lg font-bold tracking-tighter">
-               {currentTab.num}
-             </span>
-             <h1 className="text-2xl md:text-3xl font-semibold tracking-widest text-tier-1 uppercase truncate max-w-[200px] md:max-w-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:relative lg:left-auto lg:top-auto lg:translate-x-0 lg:translate-y-0">
-               {currentTab.title}
-             </h1>
+            <span className="text-[var(--theme-accent)] font-mono text-lg font-bold tracking-tighter">
+              {currentTab.num}
+            </span>
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-widest text-tier-1 uppercase truncate max-w-[200px] md:max-w-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:relative lg:left-auto lg:top-auto lg:translate-x-0 lg:translate-y-0">
+              {currentTab.title}
+            </h1>
           </div>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-4 lg:gap-8">
-        <a 
+        <a
           href="mailto:rohitkumarsahoo37@gmail.com"
           className="hidden md:flex items-center gap-3 px-4 py-2.5 border-2 border-[var(--theme-accent)] bg-[var(--theme-accent)]/10 hover:bg-[var(--theme-accent)] text-[var(--theme-accent)] hover:text-black transition-all rounded-lg font-mono text-[0.65rem] tracking-[0.2em] uppercase font-bold shadow-[0_0_15px_rgba(var(--theme-accent-rgb),0.15)]"
         >

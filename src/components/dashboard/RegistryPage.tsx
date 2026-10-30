@@ -519,16 +519,18 @@ export const RegistryPage = () => {
                   <div className="flex-1 min-h-0 relative flex justify-center w-full">
                     {activeProject.images && activeProject.images.length > 0 ? (
                       ['PAUSIFY', 'SOSAFE', 'SIFER'].some(name => activeProject.name.toUpperCase().includes(name)) ? (
-                        // Android Phone Frame
-                        <div className="relative border-[8px] border-[#1a1a1a] bg-[#0d0d0d] rounded-[1.5rem] h-[640px] w-[290px] sm:w-[300px] shadow-2xl overflow-hidden transform lg:translate-x-4 translate-x-0">
-                          {/* Punch-hole Camera */}
-                          <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-[#0a0a0a] rounded-full z-10 flex items-center justify-center border border-[#222]">
-                            <div className="w-1.5 h-1.5 bg-[#151515] rounded-full"></div>
-                          </div>
-                          
-                          {/* Screen Content */}
+                        // Mobile Phone (Hand-Held Frame)
+                        <div className="relative w-[320px] sm:w-[360px] lg:w-[400px] xl:w-[430px] aspect-[188/299] shrink-0 select-none flex items-center justify-center transform lg:translate-x-2">
+                          {/* Screen Content Window: Sized and positioned to fit inside the phone screen cutout */}
                           <div 
-                            className="w-full h-full overflow-hidden flex items-center justify-center bg-black relative"
+                            className="absolute overflow-hidden flex items-center justify-center bg-black cursor-pointer cursor-target z-0 shadow-inner"
+                            style={{
+                              left: '10.64%',
+                              top: '2.68%',
+                              width: '51.06%',
+                              height: '64.21%',
+                              borderRadius: '1.25rem',
+                            }}
                             onMouseEnter={() => setIsPaused(true)}
                             onMouseLeave={() => setIsPaused(false)}
                           >
@@ -555,7 +557,7 @@ export const RegistryPage = () => {
                                   setFullscreenImageIndex(imageIndex);
                                   setFullscreenPage([imageIndex, 0]);
                                 }}
-                                className="absolute w-full h-full object-cover cursor-pointer cursor-target" 
+                                className="absolute w-full h-full object-cover cursor-pointer cursor-target select-none" 
                                 alt="Preview" 
                               />
                             </AnimatePresence>
@@ -570,7 +572,7 @@ export const RegistryPage = () => {
                                   transition={{ duration: 0.5 }}
                                 >
                                   {/* Android Icon */}
-                                  <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" className="text-[#3DDC84] mb-4">
+                                  <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor" className="text-[#3DDC84] mb-3">
                                     <path d="M12 2C8.7 2 6 4.7 6 8H18C18 5.7 15.3 2 12 2Z" />
                                     <rect x="6" y="9.5" width="12" height="10" rx="1.5" />
                                     <rect x="2.5" y="9.5" width="2.5" height="7.5" rx="1.25" />
@@ -582,8 +584,8 @@ export const RegistryPage = () => {
                                     <circle cx="10" cy="5.5" r="0.75" fill="#0d0d0d" />
                                     <circle cx="14" cy="5.5" r="0.75" fill="#0d0d0d" />
                                   </svg>
-                                  <div className="flex flex-col gap-1 items-start w-48">
-                                    <div className="flex justify-between w-full text-[0.6rem] font-bold tracking-wider">
+                                  <div className="flex flex-col gap-1 items-start w-36 px-2">
+                                    <div className="flex justify-between w-full text-[0.55rem] font-bold tracking-wider">
                                       <span>SYSTEM_BOOTING</span>
                                       <span>{bootProgress}%</span>
                                     </div>
@@ -593,12 +595,19 @@ export const RegistryPage = () => {
                                         style={{ width: `${bootProgress}%` }}
                                       />
                                     </div>
-                                    <span className="text-[0.5rem] text-white/30 truncate w-full">made by rohitksahoo</span>
+                                    <span className="text-[0.45rem] text-white/30 truncate w-full">made by rohitksahoo</span>
                                   </div>
                                 </motion.div>
                               )}
                             </AnimatePresence>
                           </div>
+
+                          {/* Hand Holding Phone Overlay with transparent background and screen window */}
+                          <img 
+                            src="/hand_phone_mockup.png" 
+                            alt="Hand holding mobile device" 
+                            className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.85)] filter contrast-[1.05]"
+                          />
                         </div>
                       ) : (
                         // Laptop Frame
