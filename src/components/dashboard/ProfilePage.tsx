@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Download } from 'lucide-react';
+import { Zap, FileText } from 'lucide-react';
 import { SystemAvatar } from '../SystemAvatar';
 import RippleGrid from '../effects/RippleGrid';
+import { CVViewerModal } from '../CVViewerModal';
 
 export const ProfilePage = ({ 
   onExploreProjects, 
@@ -13,7 +14,12 @@ export const ProfilePage = ({
 }) => {
   const [displayName, setDisplayName] = React.useState("ROHIT K. SAHOO");
   const [isMobile, setIsMobile] = React.useState(false);
+  const [isCVModalOpen, setIsCVModalOpen] = React.useState(false);
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%#!@$*";
+
+  const handleViewCV = () => {
+    setIsCVModalOpen(true);
+  };
 
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -79,14 +85,13 @@ export const ProfilePage = ({
                 <Zap size={14} fill="currentColor" />
               </button>
               
-              <a 
-                href="/cv.pdf" 
-                download="Rohit_Kumar_Sahoo_CV.pdf"
+              <button 
+                onClick={handleViewCV}
                 className="group relative px-4 py-2.5 sm:px-6 sm:py-3 bg-[#0d0d0d] border border-white/10 text-white/80 font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white/10 hover:text-white transition-all flex items-center justify-between gap-4 w-56 sm:w-auto rounded-lg cursor-target"
               >
-                <span>Download CV</span>
-                <Download size={14} />
-              </a>
+                <span>Explore CV</span>
+                <FileText size={14} className="group-hover:text-red-500 transition-colors" />
+              </button>
             </div>
             </div>
           </div>
@@ -105,6 +110,14 @@ export const ProfilePage = ({
           </motion.div>
         </div>
       </div>
+
+      {/* Windows 11 Document Viewer Window */}
+      <CVViewerModal 
+        isOpen={isCVModalOpen} 
+        onClose={() => setIsCVModalOpen(false)} 
+        pdfUrl="/rohitkumarsahoo_cv.pdf"
+        downloadFilename="rohitkumarsahoo_cv.pdf"
+      />
     </div>
   );
 };
