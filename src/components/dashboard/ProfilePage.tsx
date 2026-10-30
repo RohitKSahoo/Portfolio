@@ -4,6 +4,7 @@ import { Zap, FileText } from 'lucide-react';
 import { DitherVeil } from '../effects/DitherVeil';
 import { TechText } from '../effects/TechText';
 import { CVViewerModal } from '../CVViewerModal';
+import GlassSurface from '../effects/GlassSurface';
 
 export const ProfilePage = ({ 
   onExploreProjects, 
@@ -124,21 +125,53 @@ export const ProfilePage = ({
               <p className="text-sm lg:text-base text-white/60 font-medium leading-relaxed max-w-[280px] lg:max-w-sm font-inter">
                 Exploring real-time systems, backend architectures, and unconventional ideas.
               </p>
-            <div className="flex flex-col gap-3 lg:self-end pointer-events-auto">
+            <div className="flex flex-col gap-3 lg:self-end pointer-events-auto w-56 sm:w-auto">
               <button 
                 onClick={onExploreProjects}
-                className="group relative px-4 py-2.5 sm:px-6 sm:py-3 bg-red-500 text-white font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white hover:text-black transition-all overflow-hidden flex items-center justify-between gap-4 w-56 sm:w-auto shadow-[0_0_20px_rgba(239,68,68,0.2)] rounded-lg cursor-target"
+                className="group relative block w-56 sm:w-auto focus:outline-none cursor-pointer rounded-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
-                <span>Explore Projects</span>
-                <Zap size={14} fill="currentColor" />
+                <GlassSurface
+                  width="100%"
+                  height={46}
+                  borderRadius={8}
+                  distortionScale={-100}
+                  displace={0.3}
+                  backgroundOpacity={0.16}
+                  saturation={1.3}
+                  redOffset={20}
+                  greenOffset={5}
+                  blueOffset={10}
+                  className="w-56 sm:w-auto border border-red-500/40 group-hover:border-red-500/80 shadow-[0_0_20px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_28px_rgba(239,68,68,0.45)] transition-all"
+                >
+                  <div className="flex items-center justify-between gap-4 px-4 sm:px-6 w-full text-white font-bold font-satoshi text-xs uppercase tracking-wider">
+                    <span className="group-hover:text-red-400 transition-colors">Explore Projects</span>
+                    <Zap size={14} className="text-red-500 group-hover:scale-110 transition-transform" fill="currentColor" />
+                  </div>
+                </GlassSurface>
               </button>
               
               <button 
                 onClick={handleViewCV}
-                className="group relative px-4 py-2.5 sm:px-6 sm:py-3 bg-[#0d0d0d] border border-white/10 text-white/80 font-bold font-satoshi text-xs uppercase tracking-wider hover:bg-white/10 hover:text-white transition-all flex items-center justify-between gap-4 w-56 sm:w-auto rounded-lg cursor-target"
+                className="group relative block w-56 sm:w-auto focus:outline-none cursor-pointer rounded-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
-                <span>Explore CV</span>
-                <FileText size={14} className="group-hover:text-red-500 transition-colors" />
+                <GlassSurface
+                  width="100%"
+                  height={46}
+                  borderRadius={8}
+                  distortionScale={-60}
+                  displace={0.2}
+                  backgroundOpacity={0.08}
+                  saturation={1.0}
+                  redOffset={5}
+                  greenOffset={5}
+                  blueOffset={15}
+                  className="w-56 sm:w-auto border border-white/10 group-hover:border-white/25 shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-all"
+                >
+                  <div className="flex items-center justify-between gap-4 px-4 sm:px-6 w-full text-white/80 group-hover:text-white font-bold font-satoshi text-xs uppercase tracking-wider transition-colors">
+                    <span>Explore CV</span>
+                    <FileText size={14} className="group-hover:text-red-500 transition-colors" />
+                  </div>
+                </GlassSurface>
               </button>
             </div>
             </div>
