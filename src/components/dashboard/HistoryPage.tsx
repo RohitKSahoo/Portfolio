@@ -112,7 +112,8 @@ export const HistoryPage = () => {
         commits: githubStats.commits,
         avatarUrl: '/avatar.png',
         githubUsername: 'RohitKSahoo',
-        languages: githubStats.languagesList
+        languages: githubStats.languagesList,
+        orientation: 'landscape'
       });
       if (!active) return;
       setFrontTexture(front);
@@ -126,7 +127,8 @@ export const HistoryPage = () => {
         technologies: githubStats.technologies,
         commits: githubStats.commits,
         githubUsername: 'RohitKSahoo',
-        languages: githubStats.languagesList
+        languages: githubStats.languagesList,
+        orientation: 'landscape'
       });
       if (!active) return;
       setBackTexture(back);
@@ -144,8 +146,8 @@ export const HistoryPage = () => {
       {/* Main Content Grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10">
         
-        {/* Left Column (8/12) - Timeline */}
-        <div className="lg:col-span-8 flex flex-col gap-10 py-2 overflow-y-auto pr-2">
+        {/* Left Column (7/12) - Timeline */}
+        <div className="lg:col-span-7 flex flex-col gap-10 py-2 overflow-y-auto pr-2">
 
           {/* Timeline Item 1 */}
           <div className="flex gap-6 group">
@@ -203,65 +205,40 @@ export const HistoryPage = () => {
           </div>
         </div>
 
-        {/* Right Column (4/12) - 3D Lanyard Card */}
-        <div className="lg:col-span-4 flex flex-col py-2 h-[560px] lg:h-full min-h-[480px]">
-          <div className="relative w-full h-full rounded-2xl bg-[#0d0d0d]/60 border border-white/10 backdrop-blur-md overflow-hidden flex flex-col shadow-2xl">
-            {/* Top header bar */}
-            <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-center pointer-events-none">
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#0a0a0c]/85 border border-white/10 backdrop-blur-md">
-                <Github size={13} className="text-red-500" />
-                <span className="text-xs font-bold font-satoshi text-white tracking-wide">Developer Badge</span>
-              </div>
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0a0a0c]/85 border border-white/10 backdrop-blur-md">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]" />
-                <span className="text-[10px] font-mono text-white/70 uppercase">Interactive 3D</span>
-              </div>
+        {/* Right Column (5/12) - 3D Lanyard directly attached to top edge */}
+        <div className="lg:col-span-5 flex flex-col -mt-6 lg:-mt-8 h-[600px] lg:h-[720px] min-h-[520px] relative pointer-events-auto">
+          {frontTexture ? (
+            <Lanyard
+              frontImage={frontTexture}
+              backImage={backTexture}
+              strapImage={strapTexture}
+              strapColor="#ef4444"
+              strapWidth={0.85}
+              metal="silver"
+              finish="matte"
+              orientation="landscape"
+              cornerRadius={0.2}
+              size={0.88}
+              strapLength={0.34}
+              gravity={1.1}
+              damping={0.48}
+              elasticity={0.7}
+              breeze={0.45}
+              interactive={true}
+              intro={true}
+              className="w-full h-full"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
             </div>
+          )}
 
-            {/* 3D Lanyard Canvas */}
-            <div className="w-full flex-1 min-h-0 relative">
-              {frontTexture ? (
-                <Lanyard
-                  frontImage={frontTexture}
-                  backImage={backTexture}
-                  strapImage={strapTexture}
-                  strapColor="#ef4444"
-                  strapWidth={0.7}
-                  metal="silver"
-                  finish="holographic"
-                  orientation="portrait"
-                  cornerRadius={0.22}
-                  size={0.76}
-                  strapLength={0.42}
-                  gravity={1.1}
-                  damping={0.48}
-                  elasticity={0.7}
-                  breeze={0.45}
-                  interactive={true}
-                  intro={true}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-                </div>
-              )}
-            </div>
-
-            {/* Bottom Controls / Interactivity Hint */}
-            <div className="absolute bottom-3 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
-              <span className="text-[10px] font-mono text-white/40 tracking-wider uppercase">
-                [ Drag to swing • Click to flip ]
-              </span>
-              <a
-                href="https://github.com/RohitKSahoo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pointer-events-auto flex items-center gap-1.5 text-[11px] font-satoshi font-semibold text-red-500 hover:text-red-400 transition-colors"
-              >
-                <span>GitHub</span>
-                <ArrowRight size={12} />
-              </a>
-            </div>
+          {/* Minimal floating hint */}
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none z-10">
+            <span className="text-[10px] font-mono text-white/25 tracking-widest uppercase">
+              [ Drag to swing • Click to flip ]
+            </span>
           </div>
         </div>
       </div>
@@ -271,4 +248,5 @@ export const HistoryPage = () => {
 };
 
 export default HistoryPage;
+
 
