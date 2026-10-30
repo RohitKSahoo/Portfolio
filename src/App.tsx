@@ -107,13 +107,17 @@ function App() {
       {/* LIQUID ETHER FLUID SIMULATION BACKGROUND */}
       <LiquidEther
         colors={LIQUID_COLORS}
-        mouseForce={20}
-        cursorSize={130}
-        persistence={0.92}
+        intensity={0.4}
+        mouseForce={12}
+        cursorSize={35}
+        persistence={0.88}
+        viscosity={0.85}
+        bounceEdges = {false}
         autoDemo={true}
-        autoSpeed={0.6}
-        autoIntensity={3.2}
-        className="fixed inset-0 z-0 pointer-events-none"
+        autoSpeed={0.22}
+        autoIntensity={1.0}
+        intro={false}
+        className="fixed inset-0 z-0 pointer-events-none opacity-50"
       />
 
       {/* MAIN SYSTEM VIEWPORT */}
