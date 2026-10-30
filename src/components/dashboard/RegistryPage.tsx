@@ -87,11 +87,11 @@ export const RegistryPage = () => {
       const cardCenterX = rect.left + rect.width / 2;
       const cardCenterY = rect.top + rect.height / 2;
 
-      const startX = cardCenterX - screenCenterX;
-      const startY = cardCenterY - screenCenterY;
-      const startScale = Math.max(0.28, Math.min(0.48, rect.width / 950));
+      // Snappy directional vector from clicked card
+      const startX = Math.round((cardCenterX - screenCenterX) * 0.25);
+      const startY = Math.round((cardCenterY - screenCenterY) * 0.25);
 
-      setClickOrigin({ x: startX, y: startY, scale: startScale });
+      setClickOrigin({ x: startX, y: startY, scale: 0.85 });
     } else {
       setClickOrigin(null);
     }
@@ -324,24 +324,20 @@ export const RegistryPage = () => {
             {/* Windows 11 Window Frame */}
             <motion.div
               initial={clickOrigin ? {
-                opacity: 0.7,
+                opacity: 0,
                 x: clickOrigin.x,
                 y: clickOrigin.y,
-                scale: clickOrigin.scale,
-                filter: 'brightness(1.15)',
-                borderRadius: '16px'
+                scale: clickOrigin.scale
               } : {
                 opacity: 0,
                 scale: 0.92,
-                y: 20,
-                borderRadius: '12px'
+                y: 16
               }}
               animate={{
                 opacity: 1,
                 x: 0,
                 y: 0,
                 scale: 1,
-                filter: 'brightness(1)',
                 borderRadius: isMaximized ? '0px' : '12px'
               }}
               exit={clickOrigin ? {
@@ -349,20 +345,18 @@ export const RegistryPage = () => {
                 x: clickOrigin.x,
                 y: clickOrigin.y,
                 scale: clickOrigin.scale,
-                filter: 'brightness(1.1)',
-                transition: { duration: 0.22, ease: [0.32, 0, 0.67, 0] }
+                transition: { duration: 0.16, ease: [0.4, 0, 1, 1] }
               } : {
                 opacity: 0,
-                scale: 0.92,
-                y: 16
+                scale: 0.94,
+                y: 12,
+                transition: { duration: 0.16, ease: [0.4, 0, 1, 1] }
               }}
               transition={{
-                type: 'spring',
-                damping: 26,
-                stiffness: 280,
-                mass: 0.8
+                duration: 0.24,
+                ease: [0.16, 1, 0.3, 1]
               }}
-              className={`relative z-10 w-full bg-[#202020]/95 backdrop-blur-2xl border border-white/[0.14] rounded-xl shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_1px_rgba(255,255,255,0.2)] flex flex-col overflow-hidden transition-all duration-300 ${
+              className={`relative z-10 w-full bg-[#1e1e1e]/98 backdrop-blur-xl border border-white/[0.14] rounded-xl shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_1px_rgba(255,255,255,0.2)] flex flex-col overflow-hidden will-change-transform transform-gpu ${
                 isMaximized 
                   ? 'h-[97vh] max-w-[98vw] rounded-none' 
                   : 'h-[88vh] sm:h-[90vh] max-w-[94vw] xl:max-w-7xl 2xl:max-w-[1480px]'
@@ -511,9 +505,9 @@ export const RegistryPage = () => {
               {/* Window Body: Scrollable Content & Demo Phone / Laptop */}
               <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 custom-scrollbar bg-[#181818]/80 font-inter">
                 <motion.div 
-                  initial={{ opacity: 0, y: 14, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.32, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
                   className="flex flex-col lg:flex-row gap-8 lg:gap-10 min-h-0 items-start w-full"
                 >
                   {/* Left Column: Project Details */}
