@@ -11,5 +11,24 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  assetsInclude: ['**/*.glb']
+  assetsInclude: ['**/*.glb'],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('three') || id.includes('ogl')) {
+              return 'vendor-three';
+            }
+            if (id.includes('framer-motion') || id.includes('gsap')) {
+              return 'vendor-motion';
+            }
+            if (id.includes('lucide-react')) {
+              return 'vendor-icons';
+            }
+          }
+        }
+      }
+    }
+  }
 })

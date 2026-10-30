@@ -1,11 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Header } from './components/layout/Header';
-import { 
-  ProfilePage, 
-  RegistryPage, 
-  HistoryPage, 
-  ContactPage 
-} from './components/dashboard/DashboardPages';
+import { ProfilePage } from './components/dashboard/ProfilePage';
 import LiquidEther from './components/effects/LiquidEther';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -13,6 +8,10 @@ import './styles/index.css';
 
 import { SystemDock } from './components/layout/SystemDock';
 import { inject } from '@vercel/analytics';
+
+const RegistryPage = lazy(() => import('./components/dashboard/RegistryPage'));
+const HistoryPage = lazy(() => import('./components/dashboard/HistoryPage'));
+const ContactPage = lazy(() => import('./components/dashboard/ContactPage'));
 
 inject();
 
@@ -68,22 +67,28 @@ function App() {
           transition={{ duration: 0.25, ease: "easeOut" }}
           className="w-full"
         >
-          {(() => {
-            switch (activeTab) {
-              case 'profile': return (
-                <ProfilePage 
-                  onExploreProjects={() => handleTabChange('projects')} 
-                  isDockVisible={isDockVisible}
-                  isExiting={isHomeExiting}
-                  onExitComplete={handleHomeExitComplete}
-                />
-              );
-              case 'projects': return <RegistryPage />;
-              case 'experience': return <HistoryPage />;
-              case 'contact': return <ContactPage />;
-              default: return <ProfilePage />;
-            }
-          })()}
+          <Suspense fallback={
+            <div className="w-full min-h-[60vh] flex items-center justify-center">
+              <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          }>
+            {(() => {
+              switch (activeTab) {
+                case 'profile': return (
+                  <ProfilePage 
+                    onExploreProjects={() => handleTabChange('projects')} 
+                    isDockVisible={isDockVisible}
+                    isExiting={isHomeExiting}
+                    onExitComplete={handleHomeExitComplete}
+                  />
+                );
+                case 'projects': return <RegistryPage />;
+                case 'experience': return <HistoryPage />;
+                case 'contact': return <ContactPage />;
+                default: return <ProfilePage />;
+              }
+            })()}
+          </Suspense>
         </motion.div>
       </AnimatePresence>
     );

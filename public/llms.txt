@@ -1,0 +1,15 @@
+# Rohit Kumar Sahoo - Portfolio
+
+> Classified Dashboard Portfolio of Rohit Kumar Sahoo — Systems Architect focused on high-concurrency backend node infrastructure and AI model integration.
+
+## Key Sections
+- [Home Profile](https://rohitksahoo.me/)
+- [Projects Registry](https://rohitksahoo.me/#projects)
+- [Experience & Background](https://rohitksahoo.me/#experience)
+- [Contact Details](https://rohitksahoo.me/#contact)
+- [Curriculum Vitae](https://rohitksahoo.me/rohitkumarsahoo_cv.pdf)
+
+## Technical Architecture & Core Skills
+- **Distributed Backends**: Go, Node.js, TypeScript, PostgreSQL, Redis, Event-driven architecture
+- **Real-Time & Graphics**: WebGL, Three.js, WebSockets, Canvas 2D
+- **AI Integration**: AI Agent workflows, Model Context Protocol (MCP), LangGraph, Vercel AI SDK
