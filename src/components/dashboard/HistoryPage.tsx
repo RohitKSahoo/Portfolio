@@ -1,45 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Github, Smartphone, Code, Clock, Hash, ArrowRight } from 'lucide-react';
-const iconMap: Record<string, string> = {
-  'Kotlin': 'kotlin/kotlin-original',
-  'Java': 'java/java-original',
-  'TypeScript': 'typescript/typescript-original',
-  'JavaScript': 'javascript/javascript-original',
-  'Python': 'python/python-original',
-  'HTML': 'html5/html5-original',
-  'CSS': 'css3/css3-original',
-  'C++': 'cplusplus/cplusplus-original',
-  'C': 'c/c-original',
-  'C#': 'csharp/csharp-original',
-  'Go': 'go/go-original',
-  'Ruby': 'ruby/ruby-original',
-  'PHP': 'php/php-original',
-  'Swift': 'swift/swift-original',
-  'Dart': 'dart/dart-original',
-  'Rust': 'rust/rust-original',
-  'Jupyter Notebook': 'jupyter/jupyter-original',
-  'Shell': 'bash/bash-original',
-};
+import { Lanyard } from '../effects/Lanyard';
+import { generateFrontBadge, generateBackBadge, generateStrapImage } from '../effects/badgeGenerator';
 
 export const HistoryPage = () => {
   const [githubStats, setGithubStats] = useState({
-    projects: '3+',
-    technologies: '5+',
+    projects: '23',
+    technologies: '8+',
     since: '2025',
-    commits: '0',
-    calendar: Array(154).fill(0).map(() => Math.floor(Math.random() * 5)), // 22 weeks * 7 days mock data
+    commits: '986+',
+    calendar: Array(154).fill(0).map(() => Math.floor(Math.random() * 5)),
     languagesList: ['Kotlin', 'Java', 'TypeScript', 'JavaScript', 'Python', 'HTML', 'CSS']
   });
+
+  const [frontTexture, setFrontTexture] = useState<string>('');
+  const [backTexture, setBackTexture] = useState<string>('');
+  const [strapTexture, setStrapTexture] = useState<string>('');
 
   useEffect(() => {
     const fetchPublicGithubData = async () => {
       try {
-        const [userRes, reposRes] = await Promise.all([
+        const [userRes, reposRes, commitsRes] = await Promise.all([
           fetch('https://api.github.com/users/RohitKSahoo'),
-          fetch('https://api.github.com/users/RohitKSahoo/repos?per_page=100&sort=updated')
+          fetch('https://api.github.com/users/RohitKSahoo/repos?per_page=100&sort=updated'),
+          fetch('https://api.github.com/search/commits?q=author:RohitKSahoo')
         ]);
-        if (!userRes.ok || !reposRes.ok) return;
+
+        let commitsCount = '986+';
+        if (commitsRes.ok) {
+          const commitsData = await commitsRes.json();
+          if (commitsData && typeof commitsData.total_count === 'number') {
+            commitsCount = commitsData.total_count.toString();
+          }
+        }
+
+        if (!userRes.ok || !reposRes.ok) {
+          setGithubStats(prev => ({
+            ...prev,
+            commits: commitsCount
+          }));
+          return;
+        }
+
         const userData = await userRes.json();
         const reposData = await reposRes.json();
 
@@ -59,10 +62,11 @@ export const HistoryPage = () => {
           projects: userData.public_repos ? userData.public_repos.toString() : prev.projects,
           technologies: languagesSet.size > 0 ? languagesSet.size.toString() : prev.technologies,
           since: sinceYear,
+          commits: commitsCount,
           languagesList: languagesSet.size > 0 ? Array.from(languagesSet) : prev.languagesList,
         }));
       } catch (e) {
-        // Keep default mock state if public API fails
+        // Keep initial state if public API fails
       }
     };
 
@@ -74,10 +78,10 @@ export const HistoryPage = () => {
       .then(data => {
         if (data && !data.error && !data.errors) {
           setGithubStats(prev => ({
-            projects: data.projects.toString(),
-            technologies: data.technologies.toString(),
-            since: data.since.toString(),
-            commits: data.commits ? data.commits.toString() : '0',
+            projects: data.projects?.toString() || prev.projects,
+            technologies: data.technologies?.toString() || prev.technologies,
+            since: data.since?.toString() || prev.since,
+            commits: data.commits && data.commits !== '0' ? data.commits.toString() : '986+',
             calendar: data.calendar && data.calendar.length > 0 ? data.calendar : prev.calendar,
             languagesList: data.languagesList && data.languagesList.length > 0 ? data.languagesList : prev.languagesList,
           }));
@@ -86,10 +90,53 @@ export const HistoryPage = () => {
         }
       })
       .catch(() => {
-        // Fallback to client-side public GitHub REST API
         fetchPublicGithubData();
       });
   }, []);
+
+  // Generate dynamic 3D badge card textures based on live GitHub stats
+  useEffect(() => {
+    let active = true;
+    const createTextures = async () => {
+      const strap = generateStrapImage();
+      if (!active) return;
+      setStrapTexture(strap);
+
+      const front = await generateFrontBadge({
+        name: 'Rohit K. Sahoo',
+        role: 'Computer Science Student',
+        institution: 'Veer Surendra Sai Univ. of Tech',
+        since: githubStats.since,
+        projects: githubStats.projects,
+        technologies: githubStats.technologies,
+        commits: githubStats.commits,
+        avatarUrl: '/avatar.png',
+        githubUsername: 'RohitKSahoo',
+        languages: githubStats.languagesList
+      });
+      if (!active) return;
+      setFrontTexture(front);
+
+      const back = generateBackBadge({
+        name: 'Rohit K. Sahoo',
+        role: 'Computer Science Student',
+        institution: 'Veer Surendra Sai Univ. of Tech',
+        since: githubStats.since,
+        projects: githubStats.projects,
+        technologies: githubStats.technologies,
+        commits: githubStats.commits,
+        githubUsername: 'RohitKSahoo',
+        languages: githubStats.languagesList
+      });
+      if (!active) return;
+      setBackTexture(back);
+    };
+
+    createTextures();
+    return () => {
+      active = false;
+    };
+  }, [githubStats]);
 
   return (
     <div className="w-full h-full flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden font-inter" style={{ backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
@@ -99,7 +146,6 @@ export const HistoryPage = () => {
         
         {/* Left Column (8/12) - Timeline */}
         <div className="lg:col-span-8 flex flex-col gap-10 py-2 overflow-y-auto pr-2">
-
 
           {/* Timeline Item 1 */}
           <div className="flex gap-6 group">
@@ -157,83 +203,72 @@ export const HistoryPage = () => {
           </div>
         </div>
 
-        {/* Right Column (4/12) - GitHub Card */}
-        <div className="lg:col-span-4 flex flex-col py-2">
-          <div className="p-6 bg-[#0d0d0d] border border-white/5 rounded-xl flex flex-col gap-6 h-full">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <Github size={20} className="text-red-500" />
-                <span className="text-sm font-bold font-satoshi text-white">Student Impact</span>
+        {/* Right Column (4/12) - 3D Lanyard Card */}
+        <div className="lg:col-span-4 flex flex-col py-2 h-[560px] lg:h-full min-h-[480px]">
+          <div className="relative w-full h-full rounded-2xl bg-[#0d0d0d]/60 border border-white/10 backdrop-blur-md overflow-hidden flex flex-col shadow-2xl">
+            {/* Top header bar */}
+            <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-center pointer-events-none">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#0a0a0c]/85 border border-white/10 backdrop-blur-md">
+                <Github size={13} className="text-red-500" />
+                <span className="text-xs font-bold font-satoshi text-white tracking-wide">Developer Badge</span>
               </div>
-              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]" />
-            </div>
-
-            <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">Projects</span>
-                <span className="text-4xl font-bold font-satoshi text-white tracking-tight">{githubStats.projects}</span>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">Technologies</span>
-                <span className="text-4xl font-bold font-satoshi text-white tracking-tight">{githubStats.technologies}</span>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">Since</span>
-                <span className="text-4xl font-bold font-satoshi text-white tracking-tight">{githubStats.since}</span>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[0.65rem] font-satoshi font-medium text-white/30 uppercase tracking-wider">Commits</span>
-                <span className="text-4xl font-bold font-satoshi text-white tracking-tight">{githubStats.commits}</span>
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0a0a0c]/85 border border-white/10 backdrop-blur-md">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]" />
+                <span className="text-[10px] font-mono text-white/70 uppercase">Interactive 3D</span>
               </div>
             </div>
 
-            <div className="mt-auto pt-6 border-t border-white/5">
-              <span className="text-[0.6rem] font-satoshi font-medium text-white/30 uppercase block mb-3 tracking-wider">Tech Space</span>
-              <div className="flex flex-wrap gap-2.5">
-                {githubStats.languagesList.map((lang, i) => {
-                  const iconPath = iconMap[lang];
-                  
-                  return (
-                    <motion.div
-                      key={lang}
-                      className="flex items-center justify-center p-2 rounded-full bg-[#0d0d0d] border border-white/10 shadow-lg cursor-pointer"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ 
-                        opacity: 1,
-                        scale: 1,
-                      }}
-                      whileHover={{
-                        y: -5,
-                        scale: 1.1,
-                        borderColor: 'rgba(239, 68, 68, 0.3)',
-                      }}
-                      transition={{ 
-                        type: "spring",
-                        stiffness: 400,
-                        damping: 15,
-                        delay: i * 0.03
-                      }}
-                      title={lang}
-                    >
-                      {iconPath ? (
-                        <img src={`https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${iconPath}.svg`} alt={lang} className="w-5 h-5 opacity-80" />
-                      ) : (
-                        <div className="w-5 h-5 flex items-center justify-center">
-                          <span className="text-[0.6rem] font-satoshi font-bold text-white/70">{lang.substring(0, 2).toUpperCase()}</span>
-                        </div>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </div>
+            {/* 3D Lanyard Canvas */}
+            <div className="w-full flex-1 min-h-0 relative">
+              {frontTexture ? (
+                <Lanyard
+                  frontImage={frontTexture}
+                  backImage={backTexture}
+                  strapImage={strapTexture}
+                  strapColor="#ef4444"
+                  strapWidth={0.7}
+                  metal="silver"
+                  finish="holographic"
+                  orientation="portrait"
+                  cornerRadius={0.22}
+                  size={0.76}
+                  strapLength={0.42}
+                  gravity={1.1}
+                  damping={0.48}
+                  elasticity={0.7}
+                  breeze={0.45}
+                  interactive={true}
+                  intro={true}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+            </div>
+
+            {/* Bottom Controls / Interactivity Hint */}
+            <div className="absolute bottom-3 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
+              <span className="text-[10px] font-mono text-white/40 tracking-wider uppercase">
+                [ Drag to swing • Click to flip ]
+              </span>
+              <a
+                href="https://github.com/RohitKSahoo"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pointer-events-auto flex items-center gap-1.5 text-[11px] font-satoshi font-semibold text-red-500 hover:text-red-400 transition-colors"
+              >
+                <span>GitHub</span>
+                <ArrowRight size={12} />
+              </a>
             </div>
           </div>
         </div>
       </div>
-
 
     </div>
   );
 };
 
 export default HistoryPage;
+
