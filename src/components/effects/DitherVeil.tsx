@@ -283,6 +283,7 @@ uniform vec4 uBursts[4];
 uniform float uBurstWidth;
 uniform float uTransparentBg;
 uniform float uAlign;
+uniform float uColorIntro;
 
 in vec2 vUv;
 out vec4 fragColor;
@@ -374,10 +375,13 @@ void main() {
   // Strictly constrain the reveal and rim to the figure only - never leak to background
   shown *= isSubject;
 
+  // Imitate cursor hover effect during entrance: fuse smoothly from full-color via Bayer matrix
+  float effectiveShown = max(shown, uColorIntro * isSubject);
+
   float order = bayer(cell.yx);
   float low = order * (1.0 - uRim);
-  float isRim = step(low, shown) * step(0.001, uRim) * isSubject;
-  float isPhoto = step(low + uRim, shown) * isSubject;
+  float isRim = step(low, effectiveShown) * step(0.001, uRim) * isSubject;
+  float isPhoto = step(low + uRim, effectiveShown) * isSubject;
   color = mix(color, uRimColor, isRim);
   color = mix(color, photo, isPhoto);
 
@@ -584,7 +588,8 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       uBursts: { value: Array.from({ length: MAX_BURSTS * 4 }, () => 0) },
       uBurstWidth: { value: 60 },
       uTransparentBg: { value: 1.0 },
-      uAlign: { value: 0.0 }
+      uAlign: { value: 0.0 },
+      uColorIntro: { value: 1.0 }
     };
     const program = (fragment: string, uniforms: any) =>
       new Program(gl, { vertex, fragment, uniforms, depthTest: false, depthWrite: false });
@@ -798,10 +803,24 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       viewUniforms.uAlign.value = s.align === 'bottom' ? 1.0 : 0.0;
       const intro = s.intro ? (image ? Math.min(1, (now - introStart) / INTRO_MS) : 0) : 1;
       viewUniforms.uIntro.value = s.intro ? 1 - Math.pow(1 - intro, 2) : 1.0;
+
+      // Color to black & white Bayer dither-fusion during entrance
+      const colorElapsed = introStart > 0 ? (now - introStart) / 1000 : 0;
+      let colorIntro = 0.0;
+      if (colorElapsed <= 0.6) {
+        colorIntro = 1.0;
+      } else if (colorElapsed <= 2.2) {
+        const k = (colorElapsed - 0.6) / 1.6;
+        colorIntro = 0.5 * (1.0 + Math.cos(k * Math.PI));
+      } else {
+        colorIntro = 0.0;
+      }
+      viewUniforms.uColorIntro.value = colorIntro;
+
       renderer.render({ scene: viewMesh });
 
       const busy =
-        pointer.inside || wanderOn || presence > 0.002 || bursts.length > 0 || now < trailUntil || (s.intro && image && intro < 1);
+        pointer.inside || wanderOn || presence > 0.002 || bursts.length > 0 || now < trailUntil || (s.intro && image && intro < 1) || colorIntro > 0.001;
       if (busy && visible) raf = requestAnimationFrame(frame);
     };
 

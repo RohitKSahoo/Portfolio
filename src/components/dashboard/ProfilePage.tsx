@@ -36,29 +36,15 @@ export const ProfilePage = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  React.useEffect(() => {
-    if (isAvatarLoaded) {
-      // Trigger dynamic background ripple and fluid surge synchronized with avatar slide-up
-      const timer = setTimeout(() => {
-        window.dispatchEvent(
-          new CustomEvent('liquid-ether-surge', {
-            detail: { origin: 'bottom-center', intensity: 1.6 }
-          })
-        );
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isAvatarLoaded]);
-
   return (
     <div className="flex flex-col gap-10 font-inter">
       <div className="relative min-h-[calc(100dvh-180px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
         {/* CENTER AVATAR FIGURE - ANCHORED TO BOTTOM OF SCREEN */}
-        <div className="fixed inset-x-0 bottom-0 flex justify-center items-end z-0 pointer-events-none">
+        <div className="absolute inset-x-0 bottom-0 flex justify-center items-end z-0 pointer-events-none">
            <motion.div 
-             initial={{ opacity: 0, y: '85%' }}
-             animate={isAvatarLoaded ? { opacity: 1, y: '0%' } : { opacity: 0, y: '85%' }}
-             transition={{ duration: 1.05, ease: [0.16, 1, 0.3, 1] }}
+             initial={{ opacity: 0, y: 140 }}
+             animate={isAvatarLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 140 }}
+             transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
              className="relative w-full max-w-6xl xl:max-w-[1700px] h-[65vh] sm:h-[75vh] lg:h-[85vh] pointer-events-auto flex items-end justify-center z-10"
            >
               <motion.div
@@ -86,28 +72,6 @@ export const ProfilePage = ({
                   rim={0}
                   transparentBg={true}
                   className="w-full h-full cursor-crosshair bg-transparent"
-                />
-
-                {/* Color-to-Black-and-White Entrance Transition Overlay */}
-                <motion.img
-                  src="/avatar.png"
-                  alt="Rohit Kumar Sahoo"
-                  initial={{ opacity: 1, filter: 'grayscale(0%)' }}
-                  animate={
-                    isAvatarLoaded
-                      ? {
-                          opacity: [1, 1, 0],
-                          filter: ['grayscale(0%)', 'grayscale(15%)', 'grayscale(100%)']
-                        }
-                      : { opacity: 1, filter: 'grayscale(0%)' }
-                  }
-                  transition={{ 
-                    duration: 1.4, 
-                    times: [0, 0.55, 1],
-                    ease: "easeInOut",
-                    delay: 0.1
-                  }}
-                  className="absolute inset-0 w-full h-full object-contain object-bottom pointer-events-none select-none z-10"
                 />
               </motion.div>
            </motion.div>
