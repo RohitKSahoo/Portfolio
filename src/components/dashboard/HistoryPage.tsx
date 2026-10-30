@@ -214,18 +214,19 @@ export const HistoryPage = () => {
               strapColor="#000000ff"
               strapWidth={0.6}
               metal="silver"
-              finish="matte"
+              finish="metallic"
               orientation="landscape"
               cornerRadius={0.1}
               size={0.85}
               anchor={0.58}
               strapLength={0.5}
               gravity={0.8}
-              damping={0.52}
+              damping={0.3}
               elasticity={0.9}
               breeze={0.35}
               interactive={true}
               intro={true}
+              qrUrl="https://github.com/RohitKSahoo"
               className="w-full h-full"
             />
           ) : (

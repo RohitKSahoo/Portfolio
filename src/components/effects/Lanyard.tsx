@@ -25,6 +25,7 @@ export interface LanyardProps {
   breeze?: number;
   interactive?: boolean;
   intro?: boolean;
+  qrUrl?: string;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -778,6 +779,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
   breeze = 0.5,
   interactive = true,
   intro = true,
+  qrUrl = 'https://github.com/RohitKSahoo',
   className = '',
   style
 }) => {
@@ -805,7 +807,8 @@ export const Lanyard: React.FC<LanyardProps> = ({
     elasticity,
     breeze,
     interactive,
-    intro
+    intro,
+    qrUrl
   };
 
   useEffect(() => {
@@ -1263,7 +1266,11 @@ export const Lanyard: React.FC<LanyardProps> = ({
       };
       press = { x: event.clientX, y: event.clientY, time: performance.now(), point: hit.point.clone() };
       canvas.setPointerCapture?.(event.pointerId);
-      setCursor('grabbing');
+      if (hit.object === backMesh && hit.uv && hit.uv.x < 0.52) {
+        setCursor('pointer');
+      } else {
+        setCursor('grabbing');
+      }
       event.preventDefault();
       start();
     };
@@ -1278,17 +1285,37 @@ export const Lanyard: React.FC<LanyardProps> = ({
         return;
       }
       if (event.pointerType === 'touch') return;
-      hovering = !!pickCard();
-      setCursor(hovering ? 'grab' : '');
+      const hit = pickCard();
+      hovering = !!hit;
+      if (hit && hit.object === backMesh && hit.uv && hit.uv.x < 0.52) {
+        setCursor('pointer');
+      } else {
+        setCursor(hovering ? 'grab' : '');
+      }
     };
 
     const onPointerUp = (event: PointerEvent) => {
       if (!sim.grab) return;
       sim.grab = null;
-      if (press && event.type === 'pointerup' && performance.now() - press.time < 450) flip(press.point);
+      if (press && event.type === 'pointerup' && performance.now() - press.time < 450) {
+        toPointer(event);
+        const hit = pickCard();
+        if (hit && hit.object === backMesh && hit.uv && hit.uv.x < 0.52) {
+          const targetUrl = settingsRef.current.qrUrl || 'https://github.com/RohitKSahoo';
+          window.open(targetUrl, '_blank', 'noopener,noreferrer');
+        } else {
+          flip(press.point);
+        }
+      }
       press = null;
       canvas.releasePointerCapture?.(event.pointerId);
-      setCursor(hovering && event.pointerType !== 'touch' ? 'grab' : '');
+      const hit = pickCard();
+      hovering = !!hit;
+      if (hit && hit.object === backMesh && hit.uv && hit.uv.x < 0.52) {
+        setCursor('pointer');
+      } else {
+        setCursor(hovering && event.pointerType !== 'touch' ? 'grab' : '');
+      }
       start();
     };
 
