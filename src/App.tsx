@@ -111,10 +111,10 @@ function App() {
         colors={LIQUID_COLORS}
         mouseForce={20}
         cursorSize={130}
-        persistence={0.75}
+        persistence={0.92}
         autoDemo={true}
-        autoSpeed={0.5}
-        autoIntensity={2.2}
+        autoSpeed={0.6}
+        autoIntensity={3.2}
         className="fixed inset-0 z-0 pointer-events-none"
       />
 

@@ -324,7 +324,7 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
   clickBurst = true,
   autoDemo = true,
   autoSpeed = 0.6,
-  autoIntensity = 2.5,
+  autoIntensity = 3.2,
   autoResumeDelay = 800,
   intro = true,
   lightMode = false,
@@ -433,7 +433,6 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
     const puffs: Splat[] = [];
     let energy = 1;
     let lastInput = -Infinity;
-    let nextPulseTime = performance.now() + 1200;
     let raf = 0;
     let last = 0;
     let visible = true;
@@ -691,7 +690,7 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
       const dt = clamp((now - last) / 1000 || 0.016, 0.001, 1 / 30);
       last = Math.max(last, now);
       const pace = Math.min(1, dt * 60);
-      const isIdle = (now - lastInput > 1100) || !pointer.inside;
+      const idle = now - lastInput > s.autoResumeDelay;
 
       if (opening.active) {
         const from = sweep(opening.time);
@@ -701,75 +700,21 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
         addStroke(from, to, dt, 0.45 * Math.max(0.1, fade), s.radius * 1.2);
         energy = 1;
         if (opening.time > 1.4) opening.active = false;
-      } else if (s.autoDemo && !reduced) {
-        // Continuous subtle atmospheric drift when idle
-        if (isIdle) {
-          auto.ramp = Math.min(1, auto.ramp + dt / 0.9);
-          auto.phase += dt * s.autoSpeed * 1.3;
-          const spot = wander(auto.phase);
-          if (auto.ready) {
-            const gust = 0.3 + 0.6 * Math.pow(0.5 + 0.5 * Math.sin(auto.phase * 2.4), 2);
-            const scale = (s.force / 20) * 0.48 * s.autoIntensity * auto.ramp * gust * pace;
-            addStroke([auto.x, auto.y], spot, dt, scale, s.radius);
-          }
-          auto.x = spot[0];
-          auto.y = spot[1];
-          auto.ready = true;
-          energy = Math.max(energy, 0.4);
-        } else {
-          // When pointer is actively moving, ease back ambient wander so cursor has spotlight
-          auto.ramp = Math.max(0, auto.ramp - dt * 2.5);
-          auto.ready = false;
+      } else if (s.autoDemo && !reduced && idle) {
+        auto.ramp = Math.min(1, auto.ramp + dt / 0.8);
+        auto.phase += dt * s.autoSpeed * 1.6;
+        const spot = wander(auto.phase);
+        if (auto.ready) {
+          const gust = 0.3 + 0.7 * Math.pow(0.5 + 0.5 * Math.sin(auto.phase * 2.6), 2);
+          const scale = (s.force / 20) * 0.65 * s.autoIntensity * auto.ramp * auto.ramp * gust * pace;
+          addStroke([auto.x, auto.y], spot, dt, scale, s.radius);
         }
+        auto.x = spot[0];
+        auto.y = spot[1];
+        auto.ready = true;
+        energy = 1;
       } else {
         auto.ramp = 0;
-      }
-
-      // Generate random, organic pulses across the background at irregular intervals
-      if (s.autoDemo && !reduced && now >= nextPulseTime) {
-        // Irregular intervals: mix between frequent clusters and spread-out breathing pauses
-        const interval = Math.random() < 0.35 
-          ? 1200 + Math.random() * 900 
-          : 2200 + Math.random() * 2600;
-        nextPulseTime = now + interval;
-
-        // Random organic coordinates across the canvas (avoiding extreme borders)
-        const px = size.width * (0.12 + Math.random() * 0.76);
-        const py = size.height * (0.12 + Math.random() * 0.76);
-
-        // Random angle, gentle stroke velocity and variable radius
-        const angle = Math.random() * Math.PI * 2;
-        const travel = 25 + Math.random() * 60;
-        const pulseForce = (0.2 + Math.random() * 0.4) * (s.force / 20) * 115;
-        const pulseRadius = s.radius * (0.75 + Math.random() * 0.85);
-
-        splats.push({
-          ax: px,
-          ay: py,
-          bx: px + Math.cos(angle) * travel,
-          by: py + Math.sin(angle) * travel,
-          vx: Math.cos(angle) * pulseForce,
-          vy: Math.sin(angle) * pulseForce,
-          radius: pulseRadius
-        });
-
-        // Occasionally spawn an organic companion pulse to create overlapping, dynamic fluid blooms
-        if (Math.random() < 0.4) {
-          const compAngle = angle + (Math.random() - 0.5) * 1.6;
-          const compDist = 35 + Math.random() * 65;
-          const compRadius = s.radius * (0.6 + Math.random() * 0.65);
-          splats.push({
-            ax: px + Math.cos(compAngle) * compDist,
-            ay: py + Math.sin(compAngle) * compDist,
-            bx: px + Math.cos(compAngle) * (compDist + 20),
-            by: py + Math.sin(compAngle) * (compDist + 20),
-            vx: Math.cos(compAngle) * (pulseForce * 0.65),
-            vy: Math.sin(compAngle) * (pulseForce * 0.65),
-            radius: compRadius
-          });
-        }
-
-        energy = Math.max(energy, 0.5);
       }
 
       if (pointer.moved) {
