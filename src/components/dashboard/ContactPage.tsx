@@ -150,8 +150,8 @@ export const ContactPage = () => {
 
             {/* Action Area: Get in Touch + Button */}
             <div className="flex flex-row items-center gap-4 mt-2 flex-wrap">
-              <span className="text-sm font-satoshi font-medium text-red-500 tracking-wider uppercase flex items-center gap-2">
-                <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+              <span className="text-sm font-satoshi font-semibold text-red-500 tracking-wider uppercase flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
                 Get In Touch
               </span>
               
@@ -161,8 +161,8 @@ export const ContactPage = () => {
               >
                 <GlassSurface
                   width="auto"
-                  height={44}
-                  borderRadius={22}
+                  height={50}
+                  borderRadius={25}
                   distortionScale={-90}
                   displace={0.3}
                   backgroundOpacity={0.14}
@@ -172,10 +172,10 @@ export const ContactPage = () => {
                   blueOffset={10}
                   className="border border-red-500/40 group-hover:border-red-500/80 shadow-[0_0_20px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_28px_rgba(239,68,68,0.45)] transition-all"
                 >
-                  <div className="flex items-center justify-between gap-4 px-5 py-1 text-white font-bold font-satoshi text-sm">
+                  <div className="flex items-center justify-between gap-4 px-6 py-1.5 text-white font-bold font-satoshi text-base">
                     <span className="group-hover:text-red-400 transition-colors">Send a Message</span>
-                    <div className="w-6 h-6 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
-                      <ArrowRight size={12} className="text-white/50 group-hover:text-red-500 transition-all" />
+                    <div className="w-7 h-7 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
+                      <ArrowRight size={14} className="text-white/50 group-hover:text-red-500 transition-all" />
                     </div>
                   </div>
                 </GlassSurface>
@@ -232,7 +232,7 @@ export const ContactPage = () => {
                 <GlassSurface
                   width="100%"
                   height="auto"
-                  borderRadius={12}
+                  borderRadius={14}
                   distortionScale={-70}
                   displace={0.2}
                   backgroundOpacity={0.08}
@@ -244,20 +244,20 @@ export const ContactPage = () => {
                 >
                   <div className="p-5 sm:p-6 w-full flex items-center justify-between">
                     <div className="flex items-center gap-5">
-                      <div className="p-3.5 sm:p-4 bg-red-500/10 text-red-500 rounded-lg group-hover:bg-red-500/20 group-hover:scale-105 transition-all">
-                        <Icon size={24} />
+                      <div className="p-4 bg-red-500/10 text-red-500 rounded-xl group-hover:bg-red-500/20 group-hover:scale-105 transition-all">
+                        <Icon size={26} />
                       </div>
                       <div>
-                        <h3 className="text-base font-bold font-satoshi text-white group-hover:text-red-400 transition-colors">
+                        <h3 className="text-lg sm:text-xl font-bold font-satoshi text-white group-hover:text-red-400 transition-colors">
                           {social.name}
                         </h3>
-                        <p className="text-sm text-white/40 font-inter group-hover:text-white/60 transition-colors">
+                        <p className="text-sm sm:text-base text-white/50 font-inter group-hover:text-white/70 transition-colors mt-0.5">
                           {social.handle}
                         </p>
                       </div>
                     </div>
-                    <div className="w-8 h-8 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
-                      <ArrowRight size={14} className="text-white/50 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all" />
+                    <div className="w-9 h-9 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
+                      <ArrowRight size={16} className="text-white/50 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all" />
                     </div>
                   </div>
                 </GlassSurface>
@@ -378,7 +378,7 @@ export const ContactPage = () => {
                 >
                   <GlassSurface
                     width="100%"
-                    height={48}
+                    height={52}
                     borderRadius={10}
                     distortionScale={-110}
                     displace={0.3}
@@ -389,11 +389,11 @@ export const ContactPage = () => {
                     blueOffset={10}
                     className="w-full border border-red-500/50 group-hover:border-red-500/90 shadow-[0_0_25px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_35px_rgba(239,68,68,0.45)] transition-all"
                   >
-                    <div className="flex justify-between items-center w-full px-6 text-white text-sm font-bold font-satoshi tracking-wide">
+                    <div className="flex justify-between items-center w-full px-6 text-white text-base font-bold font-satoshi tracking-wide">
                       <span className="group-hover:text-red-300 transition-colors">
                         {isSending ? 'Sending...' : isSent ? 'Sent!' : 'Submit Message'}
                       </span>
-                      <ArrowRight size={16} className="text-red-500 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight size={18} className="text-red-500 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </GlassSurface>
                 </button>

@@ -132,8 +132,8 @@ export const ProfilePage = ({
               >
                 <GlassSurface
                   width="100%"
-                  height={46}
-                  borderRadius={8}
+                  height={50}
+                  borderRadius={10}
                   distortionScale={-100}
                   displace={0.3}
                   backgroundOpacity={0.16}
@@ -143,9 +143,9 @@ export const ProfilePage = ({
                   blueOffset={10}
                   className="w-56 sm:w-auto border border-red-500/40 group-hover:border-red-500/80 shadow-[0_0_20px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_28px_rgba(239,68,68,0.45)] transition-all"
                 >
-                  <div className="flex items-center justify-between gap-4 px-4 sm:px-6 w-full text-white font-bold font-satoshi text-xs uppercase tracking-wider">
+                  <div className="flex items-center justify-between gap-4 px-5 sm:px-6 w-full text-white font-bold font-satoshi text-sm uppercase tracking-wider">
                     <span className="group-hover:text-red-400 transition-colors">Explore Projects</span>
-                    <Zap size={14} className="text-red-500 group-hover:scale-110 transition-transform" fill="currentColor" />
+                    <Zap size={16} className="text-red-500 group-hover:scale-110 transition-transform" fill="currentColor" />
                   </div>
                 </GlassSurface>
               </button>
@@ -156,8 +156,8 @@ export const ProfilePage = ({
               >
                 <GlassSurface
                   width="100%"
-                  height={46}
-                  borderRadius={8}
+                  height={50}
+                  borderRadius={10}
                   distortionScale={-60}
                   displace={0.2}
                   backgroundOpacity={0.08}
@@ -167,9 +167,9 @@ export const ProfilePage = ({
                   blueOffset={15}
                   className="w-56 sm:w-auto border border-white/10 group-hover:border-white/25 shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-all"
                 >
-                  <div className="flex items-center justify-between gap-4 px-4 sm:px-6 w-full text-white/80 group-hover:text-white font-bold font-satoshi text-xs uppercase tracking-wider transition-colors">
+                  <div className="flex items-center justify-between gap-4 px-5 sm:px-6 w-full text-white/80 group-hover:text-white font-bold font-satoshi text-sm uppercase tracking-wider transition-colors">
                     <span>Explore CV</span>
-                    <FileText size={14} className="group-hover:text-red-500 transition-colors" />
+                    <FileText size={16} className="group-hover:text-red-500 transition-colors" />
                   </div>
                 </GlassSurface>
               </button>
