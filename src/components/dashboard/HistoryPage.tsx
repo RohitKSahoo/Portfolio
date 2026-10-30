@@ -206,23 +206,23 @@ export const HistoryPage = () => {
         </div>
 
         {/* Right Column (7/12) - 3D Lanyard emerging from behind top header */}
-        <div className="lg:col-span-7 flex flex-col -mt-[95px] lg:-mt-[110px] h-[calc(100vh-20px)] min-h-[760px] lg:min-h-[880px] relative pointer-events-auto">
+        <div className="lg:col-span-7 flex flex-col -mt-[95px] lg:-mt-[110px] h-[calc(100vh-20px)] min-h-[760px] lg:min-h-[880px] relative pointer-events-auto lg:translate-x-3">
           {frontTexture ? (
             <Lanyard
               frontImage={frontTexture}
               backImage={backTexture}
-              strapImage={strapTexture}
-              strapColor="#ef4444"
-              strapWidth={0.88}
+              strapColor="#000000ff"
+              strapWidth={0.6}
               metal="silver"
               finish="matte"
               orientation="landscape"
-              cornerRadius={0.2}
+              cornerRadius={0.1}
               size={0.85}
-              strapLength={0.78}
-              gravity={1.1}
+              anchor={0.58}
+              strapLength={0.5}
+              gravity={0.8}
               damping={0.52}
-              elasticity={0.75}
+              elasticity={0.9}
               breeze={0.35}
               interactive={true}
               intro={true}
@@ -233,13 +233,6 @@ export const HistoryPage = () => {
               <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
             </div>
           )}
-
-          {/* Minimal floating hint */}
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none z-10">
-            <span className="text-[10px] font-mono text-white/25 tracking-widest uppercase">
-              [ Drag to swing • Click to flip ]
-            </span>
-          </div>
         </div>
       </div>
 
