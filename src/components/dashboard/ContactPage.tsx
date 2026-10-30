@@ -233,9 +233,9 @@ export const ContactPage = () => {
                   width="100%"
                   height="auto"
                   borderRadius={14}
-                  distortionScale={-70}
+                  distortionScale={-100}
                   displace={0.2}
-                  backgroundOpacity={0.08}
+                  backgroundOpacity={0}
                   saturation={1.1}
                   redOffset={8}
                   greenOffset={4}
