@@ -625,11 +625,15 @@ const placeHanging = (sim: any, layout: any, intro: boolean) => {
   nodes[0].copy(anchor);
   for (let i = 1; i <= JOINTS; i++) {
     nodes[i].copy(nodes[i - 1]);
-    if (intro) nodes[i].x += sim.rest;
-    else nodes[i].y -= sim.rest;
+    if (intro) {
+      nodes[i].x += sim.rest * 0.25;
+      nodes[i].y -= sim.rest * 0.95;
+    } else {
+      nodes[i].y -= sim.rest;
+    }
   }
   body.quaternion.identity();
-  if (intro) body.quaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 2);
+  if (intro) body.quaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), 0.2);
   body.hang.set(0, layout.hangY, 0);
   const offset = scratch.a.copy(body.hang).applyQuaternion(body.quaternion);
   body.position.copy(nodes[JOINTS]).sub(offset);
@@ -971,7 +975,8 @@ export const Lanyard: React.FC<LanyardProps> = ({
       const s = settingsRef.current;
       const aspect = view.width / view.height;
       let viewHeight = layout.height / clamp(s.size, 0.15, 0.9);
-      const minimumWidth = layout.width / 0.72;
+      const fitFactor = s.orientation === 'landscape' ? 0.52 : 0.68;
+      const minimumWidth = layout.width / fitFactor;
       if (viewHeight * aspect < minimumWidth) viewHeight = minimumWidth / aspect;
       const viewWidth = viewHeight * aspect;
       camera.aspect = aspect;

@@ -146,8 +146,8 @@ export const HistoryPage = () => {
       {/* Main Content Grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10">
         
-        {/* Left Column (7/12) - Timeline */}
-        <div className="lg:col-span-7 flex flex-col gap-10 py-2 overflow-y-auto pr-2">
+        {/* Left Column (6/12) - Timeline */}
+        <div className="lg:col-span-6 flex flex-col gap-10 py-2 overflow-y-auto pr-2">
 
           {/* Timeline Item 1 */}
           <div className="flex gap-6 group">
@@ -205,25 +205,25 @@ export const HistoryPage = () => {
           </div>
         </div>
 
-        {/* Right Column (5/12) - 3D Lanyard directly attached to top edge */}
-        <div className="lg:col-span-5 flex flex-col -mt-6 lg:-mt-8 h-[600px] lg:h-[720px] min-h-[520px] relative pointer-events-auto">
+        {/* Right Column (6/12) - 3D Lanyard directly attached to top edge */}
+        <div className="lg:col-span-6 flex flex-col -mt-6 lg:-mt-8 h-[600px] lg:h-[740px] min-h-[520px] relative pointer-events-auto">
           {frontTexture ? (
             <Lanyard
               frontImage={frontTexture}
               backImage={backTexture}
               strapImage={strapTexture}
               strapColor="#ef4444"
-              strapWidth={0.85}
+              strapWidth={0.8}
               metal="silver"
               finish="matte"
               orientation="landscape"
               cornerRadius={0.2}
-              size={0.88}
-              strapLength={0.34}
+              size={0.72}
+              strapLength={0.3}
               gravity={1.1}
-              damping={0.48}
-              elasticity={0.7}
-              breeze={0.45}
+              damping={0.55}
+              elasticity={0.65}
+              breeze={0.35}
               interactive={true}
               intro={true}
               className="w-full h-full"
