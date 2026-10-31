@@ -112,7 +112,7 @@ function App() {
         cursorSize={35}
         persistence={0.88}
         viscosity={0.85}
-        bounceEdges = {false}
+        bounceEdges={false}
         autoDemo={true}
         autoSpeed={0.22}
         autoIntensity={1.0}

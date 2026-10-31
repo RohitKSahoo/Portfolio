@@ -6,11 +6,11 @@ interface HeaderProps {
   onMenuToggle?: () => void;
 }
 
-const TAB_TITLES: Record<string, { title: string; num: string }> = {
-  profile: { title: 'Home', num: '/01' },
-  projects: { title: 'Projects', num: '/02' },
-  experience: { title: 'Experience', num: '/03' },
-  contact: { title: 'Contact', num: '/04' }
+const TAB_TITLES: Record<string, string> = {
+  profile: 'Home',
+  projects: 'Projects',
+  experience: 'Experience',
+  contact: 'Contact'
 };
 
 const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!<>-_\\/[]{}*^?#';
@@ -65,9 +65,8 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
     return `${y}.${m}.${d} | ${hh}:${mm}`;
   };
 
-  const currentTab = TAB_TITLES[activeTab] || TAB_TITLES.profile;
-  const scrambledTitle = useScrambleText(currentTab.title, GLYPHS, 25);
-  const scrambledNum = useScrambleText(currentTab.num, '/0123456789', 30);
+  const title = TAB_TITLES[activeTab] || TAB_TITLES.profile;
+  const scrambledTitle = useScrambleText(title, GLYPHS, 25);
 
   return (
     <header className="fixed top-5 left-5 right-5 h-16 lg:h-20 px-4 lg:px-8 flex justify-between items-center z-[130] transition-all duration-500 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md overflow-hidden">
@@ -76,10 +75,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
 
       <div className="flex items-center gap-4">
         <div className="flex flex-col gap-0.5">
-          <div className="flex items-baseline gap-4">
-            <span className="text-[var(--theme-accent)] font-mono text-lg font-bold tracking-tighter">
-              {scrambledNum}
-            </span>
+          <div className="flex items-baseline">
             <h1 className="text-2xl md:text-3xl font-semibold tracking-widest text-tier-1 uppercase truncate max-w-[200px] md:max-w-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:relative lg:left-auto lg:top-auto lg:translate-x-0 lg:translate-y-0">
               {scrambledTitle}
             </h1>

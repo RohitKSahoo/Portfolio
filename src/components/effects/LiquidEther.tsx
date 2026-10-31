@@ -342,6 +342,7 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
 
   const settings = {
     colors: palette,
+    preset,
     paletteKey: palette.join(','),
     intensity: Math.max(0, intensity),
     force: Math.max(0, mouseForce),

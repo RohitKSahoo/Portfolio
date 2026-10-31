@@ -86,7 +86,7 @@ export const ProfilePage = ({
                   align="bottom"
                   intro={false}
                   colorEntrance={true}
-                  colorEntranceDuration={1500}
+                  colorEntranceDuration={2800}
                   triggerEntrance={isAvatarLoaded ? 1 : 0}
                   onLoad={() => setIsAvatarLoaded(true)}
                   pattern="atkinson"
@@ -96,7 +96,7 @@ export const ProfilePage = ({
                   paperColor="#f4f1ea"
                   revealRadius={140}
                   softness={0.8}
-                  linger={4}
+                  linger={8}
                   wander={false}
                   clickBurst={true}
                   rimColor="#000000"

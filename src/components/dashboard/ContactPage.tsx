@@ -1,72 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Github, Linkedin, Send, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
-import VariableProximity from '../effects/VariableProximity';
+import ScrambledText from '../effects/ScrambledText';
 import GlassSurface from '../effects/GlassSurface';
 
 export const ContactPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const containerRef = useRef(null);
   
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '', honeypot: '' });
   const [isSending, setIsSending] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [error, setError] = useState('');
-
-  const fullText1 = "Let's build";
-  const fullText2 = "something";
-  const fullText3 = "extraordinary.";
-
-  const [text1, setText1] = useState('');
-  const [text2, setText2] = useState('');
-  const [text3, setText3] = useState('');
-
-  useEffect(() => {
-    let currentText = '';
-    let i = 0;
-    const speed = 50;
-
-    const type1 = () => {
-      if (i < fullText1.length) {
-        currentText += fullText1[i];
-        setText1(currentText + '|');
-        i++;
-        setTimeout(type1, speed);
-      } else {
-        setText1(fullText1);
-        currentText = '';
-        i = 0;
-        setTimeout(type2, speed);
-      }
-    };
-
-    const type2 = () => {
-      if (i < fullText2.length) {
-        currentText += fullText2[i];
-        setText2(currentText + '|');
-        i++;
-        setTimeout(type2, speed);
-      } else {
-        setText2(fullText2);
-        currentText = '';
-        i = 0;
-        setTimeout(type3, speed);
-      }
-    };
-
-    const type3 = () => {
-      if (i < fullText3.length) {
-        currentText += fullText3[i];
-        setText3(currentText + '|');
-        i++;
-        setTimeout(type3, speed);
-      } else {
-        setText3(fullText3);
-      }
-    };
-
-    type1();
-  }, []);
 
   const handleSubmit = async () => {
     // Honeypot check
@@ -137,12 +81,45 @@ export const ContactPage = () => {
         <div className="lg:col-span-7 flex flex-col justify-between py-0">
           <div className="relative">
 
-            <h2 ref={containerRef} className="text-[11vw] sm:text-7xl lg:text-[7rem] font-extrabold font-satoshi tracking-tight leading-none mb-3 text-white mt-1 break-words">
-              <VariableProximity label={text1} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
-              <VariableProximity label={text2} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
-              <span className="text-red-500">
-                <VariableProximity label={text3} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
-              </span>
+            <h2 className="text-[11vw] sm:text-7xl lg:text-[7rem] font-extrabold font-satoshi tracking-tight leading-none mb-3 text-white mt-1 break-words">
+              <ScrambledText
+                radius={120}
+                duration={1.2}
+                speed={0.5}
+                scrambleChars=".:/\"
+                effect="scramble"
+                clickBurst
+                intro
+              >
+                LET'S BUILD
+              </ScrambledText>
+              <br />
+              <ScrambledText
+                radius={120}
+                duration={1.2}
+                speed={0.5}
+                scrambleChars=".:/\"
+                effect="scramble"
+                clickBurst
+                intro
+              >
+                SOMETHING
+              </ScrambledText>
+              <br />
+              <ScrambledText
+                radius={120}
+                duration={1.2}
+                speed={0.5}
+                scrambleChars=".:/\"
+                scrambleColor="var(--theme-accent)"
+                color="var(--theme-accent)"
+                effect="scramble"
+                clickBurst
+                intro
+                className="text-red-500"
+              >
+                EXTRAORDINARY.
+              </ScrambledText>
             </h2>
             <p className="text-base text-white/60 max-w-xl font-inter leading-relaxed mb-[28px]">
               I'm always open to collaborations, exciting projects, and impactful ideas.
