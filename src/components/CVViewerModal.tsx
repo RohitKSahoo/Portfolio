@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Download, 
@@ -83,10 +84,12 @@ export const CVViewerModal: React.FC<CVViewerModalProps> = ({
   const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 15, 65));
   const handleResetZoom = () => setZoomLevel(100);
 
-  return (
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center p-2 sm:p-4 lg:p-6 select-none">
+        <div className="fixed inset-0 z-[9999] pointer-events-auto flex items-center justify-center p-2 sm:p-4 lg:p-6 select-none">
           {/* Windows 11 Acrylic Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -94,7 +97,7 @@ export const CVViewerModal: React.FC<CVViewerModalProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm pointer-events-auto cursor-pointer"
           />
 
           {/* Windows 11 Window Frame */}
@@ -103,7 +106,7 @@ export const CVViewerModal: React.FC<CVViewerModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 16 }}
             transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-            className={`relative z-10 w-full bg-[#202020]/95 backdrop-blur-2xl border border-white/[0.14] rounded-xl shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_1px_rgba(255,255,255,0.2)] flex flex-col overflow-hidden transition-all duration-300 font-sans ${
+            className={`relative z-10 w-full pointer-events-auto bg-[#202020]/95 backdrop-blur-2xl border border-white/[0.14] rounded-xl shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_1px_rgba(255,255,255,0.2)] flex flex-col overflow-hidden transition-all duration-300 font-sans ${
               isMaximized 
                 ? 'h-[97vh] max-w-[98vw] rounded-none' 
                 : 'h-[88vh] max-w-5xl'
@@ -142,10 +145,16 @@ export const CVViewerModal: React.FC<CVViewerModalProps> = ({
               <div className="flex items-center h-full">
                 {/* Minimize Button */}
                 <button
-                  onClick={() => setIsMaximized(false)}
+                  onClick={() => {
+                    if (isMaximized) {
+                      setIsMaximized(false);
+                    } else {
+                      onClose();
+                    }
+                  }}
                   aria-label="Minimize"
                   title="Minimize"
-                  className="w-11 sm:w-12 h-full flex items-center justify-center text-white/70 hover:bg-white/[0.08] active:bg-white/[0.05] transition-colors cursor-target"
+                  className="w-11 sm:w-12 h-full flex items-center justify-center text-white/70 hover:bg-white/[0.08] active:bg-white/[0.05] transition-colors cursor-pointer"
                 >
                   <svg width="10" height="1" viewBox="0 0 10 1" fill="currentColor">
                     <rect width="10" height="1" />
@@ -157,7 +166,7 @@ export const CVViewerModal: React.FC<CVViewerModalProps> = ({
                   onClick={() => setIsMaximized(prev => !prev)}
                   aria-label={isMaximized ? "Restore down" : "Maximize"}
                   title={isMaximized ? "Restore down" : "Maximize"}
-                  className="w-11 sm:w-12 h-full flex items-center justify-center text-white/70 hover:bg-white/[0.08] active:bg-white/[0.05] transition-colors cursor-target"
+                  className="w-11 sm:w-12 h-full flex items-center justify-center text-white/70 hover:bg-white/[0.08] active:bg-white/[0.05] transition-colors cursor-pointer"
                 >
                   {isMaximized ? (
                     // Windows 11 Restore Double Square icon
@@ -178,7 +187,7 @@ export const CVViewerModal: React.FC<CVViewerModalProps> = ({
                   onClick={onClose}
                   aria-label="Close"
                   title="Close (Esc)"
-                  className="w-11 sm:w-12 h-full flex items-center justify-center text-white/70 hover:bg-[#c42b1c] hover:text-white active:bg-[#b32617] transition-colors cursor-target"
+                  className="w-11 sm:w-12 h-full flex items-center justify-center text-white/70 hover:bg-[#c42b1c] hover:text-white active:bg-[#b32617] transition-colors cursor-pointer"
                 >
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.2">
                     <path d="M1 1L9 9M9 1L1 9" />
@@ -278,6 +287,7 @@ export const CVViewerModal: React.FC<CVViewerModalProps> = ({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
