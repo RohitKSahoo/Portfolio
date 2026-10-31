@@ -9,9 +9,13 @@ import './styles/index.css';
 import { SystemDock } from './components/layout/SystemDock';
 import { inject } from '@vercel/analytics';
 
-const RegistryPage = lazy(() => import('./components/dashboard/RegistryPage'));
-const HistoryPage = lazy(() => import('./components/dashboard/HistoryPage'));
-const ContactPage = lazy(() => import('./components/dashboard/ContactPage'));
+const loadRegistry = () => import('./components/dashboard/RegistryPage');
+const loadHistory = () => import('./components/dashboard/HistoryPage');
+const loadContact = () => import('./components/dashboard/ContactPage');
+
+const RegistryPage = lazy(loadRegistry);
+const HistoryPage = lazy(loadHistory);
+const ContactPage = lazy(loadContact);
 
 inject();
 
@@ -19,8 +23,6 @@ const LIQUID_COLORS = ['#5227FF', '#FF9FFC', '#B497CF'];
 
 function App() {
   const [activeTab, setActiveTab] = useState('profile');
-  const [pendingTab, setPendingTab] = useState<string | null>(null);
-  const [isHomeExiting, setIsHomeExiting] = useState(false);
   const [isDockVisible, setIsDockVisible] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -30,62 +32,55 @@ function App() {
     if (savedTab) setActiveTab(savedTab);
   }, []);
 
+  // Background prefetch all page chunks during idle time for instantaneous tab switching
+  useEffect(() => {
+    const prefetchPages = () => {
+      loadRegistry();
+      loadHistory();
+      loadContact();
+    };
+
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(prefetchPages);
+    } else {
+      setTimeout(prefetchPages, 200);
+    }
+  }, []);
+
   useEffect(() => {
     localStorage.setItem('active-tab', activeTab);
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
   const handleTabChange = (nextTab: string) => {
-    if (nextTab === activeTab && !pendingTab) return;
-    if (isHomeExiting) return;
-
-    if (activeTab === 'profile' && nextTab !== 'profile') {
-      // Initiate avatar downward exit transition before switching pages
-      setPendingTab(nextTab);
-      setIsHomeExiting(true);
-    } else {
-      setActiveTab(nextTab);
-    }
-  };
-
-  const handleHomeExitComplete = () => {
-    if (pendingTab) {
-      setActiveTab(pendingTab);
-      setPendingTab(null);
-    }
-    setIsHomeExiting(false);
+    if (nextTab === activeTab) return;
+    setActiveTab(nextTab);
   };
 
   const renderContent = () => {
     return (
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={activeTab}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
           className="w-full"
         >
-          <Suspense fallback={
-            <div className="w-full min-h-[60vh] flex items-center justify-center">
-              <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-            </div>
-          }>
+          <Suspense fallback={null}>
             {(() => {
               switch (activeTab) {
                 case 'profile': return (
                   <ProfilePage 
                     onExploreProjects={() => handleTabChange('projects')} 
                     isDockVisible={isDockVisible}
-                    isExiting={isHomeExiting}
-                    onExitComplete={handleHomeExitComplete}
                   />
                 );
                 case 'projects': return <RegistryPage />;
                 case 'experience': return <HistoryPage />;
                 case 'contact': return <ContactPage />;
-                default: return <ProfilePage />;
+                default: return <ProfilePage onExploreProjects={() => handleTabChange('projects')} />;
               }
             })()}
           </Suspense>
@@ -98,7 +93,7 @@ function App() {
     <div className="min-h-screen selection:bg-[var(--theme-accent)] selection:text-white antialiased relative transition-colors">
       {/* MAGNETIC DOCK NAVIGATION */}
       <SystemDock 
-        activeTab={pendingTab || activeTab} 
+        activeTab={activeTab} 
         setActiveTab={handleTabChange} 
         isDockVisible={isDockVisible}
         setIsDockVisible={setIsDockVisible}
