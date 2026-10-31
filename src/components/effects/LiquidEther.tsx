@@ -701,7 +701,7 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
         addStroke(from, to, dt, 0.45 * Math.max(0.1, fade), s.radius * 1.2);
         energy = 1;
         if (opening.time > 1.4) opening.active = false;
-      } else if (s.autoDemo && !reduced && idle) {
+      } else if (s.autoDemo && !reduced) {
         auto.ramp = Math.min(1, auto.ramp + dt / 0.8);
         auto.phase += dt * s.autoSpeed * 1.6;
         const spot = wander(auto.phase);
@@ -721,7 +721,7 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
       if (pointer.moved) {
         pointer.moved = false;
         const span = Math.max(now - pointer.last, 8) / 1000;
-        addStroke([pointer.fromX, pointer.fromY], [pointer.x, pointer.y], span, (s.force / 20) * 0.25 * pace, s.radius);
+        addStroke([pointer.fromX, pointer.fromY], [pointer.x, pointer.y], span, (s.force / 20) * 1.25 * pace, s.radius * 1.1);
         pointer.fromX = pointer.x;
         pointer.fromY = pointer.y;
         pointer.last = now;

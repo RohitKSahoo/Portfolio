@@ -162,10 +162,10 @@ export const HistoryPage = () => {
               finish="metallic"
               orientation="landscape"
               cornerRadius={0.1}
-              size={isMobile ? 0.38 : 0.28}
+              size={isMobile ? 0.38 :0.53}
               anchor={isMobile ? 0.5 : 0.72}
               strapLength={isMobile ? 0.25 : 0.35}
-              gravity={0.8}
+              gravity={0.6}
               damping={0.3}
               elasticity={0.9}
               breeze={0.35}
