@@ -47,7 +47,7 @@ export const ProfilePage = ({
       const timer = setTimeout(() => {
         window.dispatchEvent(
           new CustomEvent('liquid-ether-surge', {
-            detail: { origin: 'bottom-center', intensity: 1.6 }
+            detail: { origin: 'top-left', intensity: 5 }
           })
         );
       }, 100);
@@ -86,7 +86,7 @@ export const ProfilePage = ({
                   align="bottom"
                   intro={false}
                   colorEntrance={true}
-                  colorEntranceDuration={1500}
+                  colorEntranceDuration={2500}
                   triggerEntrance={isAvatarLoaded ? 1 : 0}
                   onLoad={() => setIsAvatarLoaded(true)}
                   pattern="atkinson"
@@ -94,8 +94,8 @@ export const ProfilePage = ({
                   levels={5}
                   inkColor="#000000"
                   paperColor="#f4f1ea"
-                  revealRadius={140}
-                  softness={0.8}
+                  revealRadius={130}
+                  softness={0.7}
                   linger={4}
                   wander={false}
                   clickBurst={true}

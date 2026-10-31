@@ -313,14 +313,14 @@ interface Splat {
 
 export const LiquidEther: React.FC<LiquidEtherProps> = ({
   colors = ['#5227FF', '#FF9FFC', '#B497CF'],
-  preset = 'syrup',
+  preset = 'ether',
   intensity = 1.2,
   mouseForce = 25,
   cursorSize = 130,
   persistence = 1,
   viscosity = 0.8,
   resolution = 0.5,
-  bounceEdges = true,
+  bounceEdges = false,
   clickBurst = true,
   autoDemo = true,
   autoSpeed = 0.6,
@@ -342,6 +342,7 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
 
   const settings = {
     colors: palette,
+    preset,
     paletteKey: palette.join(','),
     intensity: Math.max(0, intensity),
     force: Math.max(0, mouseForce),
