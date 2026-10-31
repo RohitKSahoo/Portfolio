@@ -121,8 +121,8 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Show dock when cursor is near the bottom (within 35px)
-      if (window.innerHeight - e.clientY < 35) {
+      // Show dock when cursor is near the bottom (within 55px)
+      if (window.innerHeight - e.clientY < 55) {
         setIsDockVisible(true);
       } else if (!isHovered) {
         setIsDockVisible(false);
@@ -135,7 +135,7 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 h-32 z-[200] pointer-events-none flex justify-center items-end pb-3 lg:pb-5"
+      className="fixed bottom-0 left-0 right-0 h-38 z-[200] pointer-events-none flex justify-center items-end pb-6 lg:pb-8"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -147,7 +147,7 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
         onMouseLeave={() => mouseX.set(Infinity)}
         initial={{ y: 100, opacity: 0 }}
         animate={{
-          y: isDockVisible || isHovered || isMobile ? 0 : 75,
+          y: isDockVisible || isHovered || isMobile ? 0 : 58,
           opacity: 1,
         }}
         transition={{ type: "spring", stiffness: 260, damping: 25 }}
