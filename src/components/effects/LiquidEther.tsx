@@ -314,17 +314,17 @@ interface Splat {
 export const LiquidEther: React.FC<LiquidEtherProps> = ({
   colors = ['#5227FF', '#FF9FFC', '#B497CF'],
   preset = 'ether',
-  intensity = 1.2,
-  mouseForce = 25,
-  cursorSize = 130,
-  persistence = 0.93,
-  viscosity = 0.8,
+  intensity = 0.75,
+  mouseForce = 12,
+  cursorSize = 85,
+  persistence = 0.85,
+  viscosity = 0.88,
   resolution = 0.5,
   bounceEdges = false,
   clickBurst = true,
   autoDemo = true,
   autoSpeed = 0.22,
-  autoIntensity = 1.0,
+  autoIntensity = 1.2,
   autoResumeDelay = 1200,
   intro = false,
   lightMode = false,
@@ -721,7 +721,7 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
       if (pointer.moved) {
         pointer.moved = false;
         const span = Math.max(now - pointer.last, 8) / 1000;
-        addStroke([pointer.fromX, pointer.fromY], [pointer.x, pointer.y], span, (s.force / 20) * 1.25 * pace, s.radius * 1.1);
+        addStroke([pointer.fromX, pointer.fromY], [pointer.x, pointer.y], span, (s.force / 20) * 0.75 * pace, s.radius);
         pointer.fromX = pointer.x;
         pointer.fromY = pointer.y;
         pointer.last = now;
