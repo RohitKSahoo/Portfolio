@@ -214,7 +214,6 @@ export const HistoryPage = () => {
             breeze={0.35}
             interactive={true}
             intro={true}
-            qrUrl="https://github.com/RohitKSahoo"
             className="w-full h-full"
           />
         </div>,

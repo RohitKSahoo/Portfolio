@@ -1283,11 +1283,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
       };
       press = { x: event.clientX, y: event.clientY, time: performance.now(), point: hit.point.clone() };
       canvas.setPointerCapture?.(event.pointerId);
-      if (hit.object === backMesh && hit.uv && hit.uv.x < 0.52) {
-        setCursor('pointer');
-      } else {
-        setCursor('grabbing');
-      }
+      setCursor('grabbing');
       event.preventDefault();
       start();
     };
@@ -1304,11 +1300,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
       if (event.pointerType === 'touch') return;
       const hit = pickCard();
       hovering = !!hit;
-      if (hit && hit.object === backMesh && hit.uv && hit.uv.x < 0.52) {
-        setCursor('pointer');
-      } else {
-        setCursor(hovering ? 'grab' : '');
-      }
+      setCursor(hovering ? 'grab' : '');
     };
 
     const onPointerUp = (event: PointerEvent) => {
@@ -1317,10 +1309,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
       if (press && event.type === 'pointerup' && performance.now() - press.time < 450) {
         toPointer(event);
         const hit = pickCard();
-        if (hit && hit.object === backMesh && hit.uv && hit.uv.x < 0.52) {
-          const targetUrl = settingsRef.current.qrUrl || 'https://github.com/RohitKSahoo';
-          window.open(targetUrl, '_blank', 'noopener,noreferrer');
-        } else {
+        if (hit) {
           flip(press.point);
         }
       }
@@ -1328,11 +1317,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
       canvas.releasePointerCapture?.(event.pointerId);
       const hit = pickCard();
       hovering = !!hit;
-      if (hit && hit.object === backMesh && hit.uv && hit.uv.x < 0.52) {
-        setCursor('pointer');
-      } else {
-        setCursor(hovering && event.pointerType !== 'touch' ? 'grab' : '');
-      }
+      setCursor(hovering && event.pointerType !== 'touch' ? 'grab' : '');
       start();
     };
 

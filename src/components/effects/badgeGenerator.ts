@@ -385,206 +385,220 @@ export const generateBackBadge = (data: BadgeData): string => {
   ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
   ctx.font = 'bold 12px "SF Mono", monospace, sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('IDENTITY MIRROR // GITHUB PROTOCOL', 90, 56);
+  ctx.fillText('IDENTITY MIRROR // TECH RADAR', 90, 56);
   ctx.textAlign = 'right';
-  ctx.fillText('INTERACTIVE SURFACE // TAP TO ROUTE', W - 90, 56);
+  ctx.fillText('SPECIALIZATIONS & ARCHITECTURE', W - 90, 56);
   ctx.restore();
 
   if (isLandscape) {
     // =========================================================================
-    // MINIMAL BACK: ONLY CLICKABLE QR CODE + LIST OF SKILLS (NO HEADINGS)
+    // 3 EXPANDED BENTO COLUMNS (CORE LANGUAGES, FRAMEWORKS & UI, SYSTEMS & RUNTIME)
     // =========================================================================
 
-    // --- LEFT COLUMN: Frosted Glass Pedestal for QR (X: 135 to 655, Y: 195 to 885) ---
-    const pedW = 520;
-    const pedH = 690;
-    const pedX = 135;
-    const pedY = 195;
-
-    // Draw Outer Glass Pedestal
-    drawGlassCard(ctx, pedX, pedY, pedW, pedH, 24, 'rgba(239, 68, 68, 0.35)', true);
-
-    // Header inside QR Pedestal
+    // Top Section Header
+    ctx.save();
     ctx.fillStyle = '#ef4444';
-    ctx.font = 'bold 14px "SF Mono", monospace, sans-serif';
+    ctx.font = 'bold 15px "SF Mono", monospace, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('// REPO_GATEWAY.QR', pedX + 32, pedY + 42);
+    ctx.fillText('// 02 · TECHNICAL_COMPETENCIES', 130, 112);
 
-    ctx.textAlign = 'right';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-    ctx.fillText('AUTHENTICATED', pedX + pedW - 32, pedY + 42);
-
-    // The White QR Box Container
-    const qrSize = 390;
-    const qrX = pedX + (pedW - qrSize) / 2;
-    const qrY = pedY + 68;
-
-    ctx.save();
     ctx.fillStyle = '#ffffff';
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
-    ctx.shadowBlur = 24;
-    ctx.shadowOffsetY = 6;
+    ctx.font = 'bold 32px "Satoshi", sans-serif, -apple-system';
+    ctx.fillText('PROGRAMMING LANGUAGES & CORE STACK', 130, 150);
+
+    // Right-aligned status beacon
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#22c55e';
     ctx.beginPath();
-    ctx.roundRect(qrX, qrY, qrSize, qrSize, 20);
+    ctx.arc(W - 275, 138, 5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.restore();
-
-    // Procedural QR Pattern
-    const cells = 21;
-    const cellSize = (qrSize - 50) / cells;
-    const startX = qrX + 25;
-    const startY = qrY + 25;
-
-    ctx.fillStyle = '#0a0a0c';
-    const drawCorner = (cx: number, cy: number) => {
-      // Outer black frame
-      ctx.fillStyle = '#0a0a0c';
-      ctx.fillRect(startX + cx * cellSize, startY + cy * cellSize, 7 * cellSize, 7 * cellSize);
-      // White inner ring
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(startX + (cx + 1) * cellSize, startY + (cy + 1) * cellSize, 5 * cellSize, 5 * cellSize);
-      // Crimson glowing center core
-      ctx.fillStyle = '#ef4444';
-      ctx.fillRect(startX + (cx + 2) * cellSize, startY + (cy + 2) * cellSize, 3 * cellSize, 3 * cellSize);
-    };
-
-    drawCorner(0, 0);
-    drawCorner(cells - 7, 0);
-    drawCorner(0, cells - 7);
-
-    let qSeed = 1337;
-    const qRand = () => {
-      qSeed = (qSeed * 16807) % 2147483647;
-      return (qSeed - 1) / 2147483646;
-    };
-
-    ctx.fillStyle = '#0a0a0c';
-    for (let r = 0; r < cells; r++) {
-      for (let c = 0; c < cells; c++) {
-        if ((r < 7 && c < 7) || (r < 7 && c >= cells - 7) || (r >= cells - 7 && c < 7)) continue;
-        if (qRand() > 0.5) {
-          ctx.fillRect(startX + c * cellSize, startY + r * cellSize, cellSize, cellSize);
-        }
-      }
-    }
-
-    // Interactive Floating CTA Action Pill beneath QR
-    const btnW = 450;
-    const btnH = 64;
-    const btnX = pedX + (pedW - btnW) / 2;
-    const btnY = qrY + qrSize + 28;
-
-    ctx.save();
-    const btnGrad = ctx.createLinearGradient(btnX, btnY, btnX, btnY + btnH);
-    btnGrad.addColorStop(0, 'rgba(239, 68, 68, 0.22)');
-    btnGrad.addColorStop(1, 'rgba(239, 68, 68, 0.08)');
-    ctx.fillStyle = btnGrad;
-    ctx.beginPath();
-    ctx.roundRect(btnX, btnY, btnW, btnH, 32);
-    ctx.fill();
-
-    ctx.strokeStyle = 'rgba(239, 68, 68, 0.65)';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(34, 197, 94, 0.4)';
+    ctx.lineWidth = 3;
     ctx.stroke();
 
-    // Pulse indicator dot inside button
-    ctx.fillStyle = '#ef4444';
-    ctx.beginPath();
-    ctx.arc(btnX + 36, btnY + btnH / 2, 6, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 20px "SF Mono", monospace, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('CLICK / SCAN ➔ GITHUB', btnX + 56, btnY + 39);
-
-    ctx.textAlign = 'right';
-    ctx.fillStyle = '#ef4444';
-    ctx.font = 'bold 20px "SF Mono", monospace, sans-serif';
-    ctx.fillText('↗', btnX + btnW - 32, btnY + 39);
-
-    // URL Readout Line
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-    ctx.font = '15px "SF Mono", monospace, sans-serif';
-    ctx.fillText('github.com/' + (data.githubUsername || 'RohitKSahoo'), pedX + pedW / 2, btnY + btnH + 32);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.font = 'bold 14px "SF Mono", monospace, sans-serif';
+    ctx.fillText('VERIFIED ECOSYSTEM', W - 130, 143);
     ctx.restore();
 
-    // --- RIGHT COLUMN: FLOATING ANTIGRAVITY SKILLS PILLS (NO HEADINGS AT ALL) ---
-    const allSkills = [
-      'Kotlin (Android Native)',
-      'Java (Core / SE)',
-      'TypeScript',
-      'JavaScript (ESNext)',
-      'Python',
-      'React 18 / 19',
-      'Three.js (WebGL)',
-      'Tailwind CSS',
-      'Framer Motion',
-      'Node.js & Express',
-      'Git & GitHub Actions',
-      'Linux & Terminal CLI',
-      'Next.js (App Router)',
-      'REST & GraphQL APIs'
+    // 3 Bento Columns:
+    const colW = 390;
+    const colH = 720;
+    const gap = 45;
+    const startX = 130;
+    const startY = 185;
+
+    const categories = [
+      {
+        tag: '// 01',
+        title: 'CORE LANGUAGES',
+        subtitle: 'Systems & Typed Languages',
+        skills: [
+          { name: 'Kotlin', desc: 'Android Native · Coroutines · KMP', tag: 'NATIVE' },
+          { name: 'Java', desc: 'Core SE · OOP · Enterprise Systems', tag: 'CORE' },
+          { name: 'TypeScript', desc: 'Type Systems · Full-Stack ESNext', tag: 'TYPED' },
+          { name: 'JavaScript', desc: 'V8 Engine · DOM · Modern Async', tag: 'WEB' },
+          { name: 'Python', desc: 'Automation · Data Pipelines · ML', tag: 'SCRIPT' },
+          { name: 'C / C++', desc: 'Memory Management · JNI Bridge', tag: 'PERF' },
+        ]
+      },
+      {
+        tag: '// 02',
+        title: 'FRAMEWORKS & UI',
+        subtitle: '3D Graphics & Reactive Apps',
+        skills: [
+          { name: 'React 18 / 19', desc: 'Concurrent Hooks · Component Trees', tag: 'UI' },
+          { name: 'Next.js', desc: 'App Router · Server Components', tag: 'SSR' },
+          { name: 'Three.js', desc: 'WebGL · Shaders · 3D Math Pipeline', tag: '3D/GL' },
+          { name: 'Tailwind CSS', desc: 'Design Tokens · Responsive Layouts', tag: 'CSS' },
+          { name: 'Framer Motion', desc: 'Spring Dynamics · Gesture Physics', tag: 'ANIM' },
+          { name: 'Jetpack Compose', desc: 'Modern Declarative Android UI', tag: 'MOBILE' },
+        ]
+      },
+      {
+        tag: '// 03',
+        title: 'SYSTEMS & TOOLING',
+        subtitle: 'APIs, DevOps & Runtime Infra',
+        skills: [
+          { name: 'Node.js & Express', desc: 'High-Concurrency Backend Endpoints', tag: 'SERVER' },
+          { name: 'Git & GitHub Actions', desc: 'CI/CD Pipelines · Automated Workflows', tag: 'CI/CD' },
+          { name: 'Linux & Bash CLI', desc: 'POSIX Environment · Shell Scripting', tag: 'SYSTEM' },
+          { name: 'REST & GraphQL', desc: 'API Design · Schema Architecture', tag: 'APIS' },
+          { name: 'Firebase & SQLite', desc: 'Cloud Firestore · Local DB Engines', tag: 'DATA' },
+          { name: 'Android NDK / JNI', desc: 'Native C++ Audio & Latency Opt', tag: 'LOW-LVL' },
+        ]
+      }
     ];
 
-    const pillXStart = 715;
-    const pillYStart = 195;
-    const pillH = 58;
-    let currX = pillXStart;
-    let currRow = 0;
+    categories.forEach((cat, colIndex) => {
+      const cx = startX + colIndex * (colW + gap);
+      const cy = startY;
 
-    allSkills.forEach(skill => {
-      ctx.font = 'bold 22px "Satoshi", sans-serif, -apple-system';
-      const textW = ctx.measureText(skill).width;
-      const pillW = textW + 68;
+      // 1. Column Frosted Glass Bento Container
+      drawGlassCard(ctx, cx, cy, colW, colH, 22, colIndex === 0 ? 'rgba(239, 68, 68, 0.38)' : 'rgba(255, 255, 255, 0.12)', colIndex === 0);
 
-      if (currX + pillW > 1465) {
-        currRow++;
-        currX = pillXStart;
-      }
-
-      const py = pillYStart + currRow * 78;
-
-      // Antigravity Glass Pill
+      // 2. Column Header
       ctx.save();
-      const pGrad = ctx.createLinearGradient(currX, py, currX + pillW, py + pillH);
-      pGrad.addColorStop(0, 'rgba(255, 255, 255, 0.055)');
-      pGrad.addColorStop(1, 'rgba(255, 255, 255, 0.020)');
-      ctx.fillStyle = pGrad;
-      ctx.beginPath();
-      ctx.roundRect(currX, py, pillW, pillH, 29);
-      ctx.fill();
-
-      // Dual-layer stroke
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Glowing crimson beacon indicator
-      ctx.fillStyle = '#ef4444';
-      ctx.shadowColor = 'rgba(239, 68, 68, 0.5)';
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
-      ctx.arc(currX + 24, py + pillH / 2, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0; // reset
-
-      // Skill Text
-      ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'left';
-      ctx.fillText(skill, currX + 42, py + 37);
+      ctx.fillStyle = '#ef4444';
+      ctx.font = 'bold 14px "SF Mono", monospace, sans-serif';
+      ctx.fillText(cat.tag, cx + 28, cy + 42);
 
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 22px "Satoshi", sans-serif, -apple-system';
+      ctx.fillText(cat.title, cx + 28, cy + 74);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.40)';
+      ctx.font = '12px "SF Mono", monospace, sans-serif';
+      ctx.fillText(cat.subtitle.toUpperCase(), cx + 28, cy + 96);
+
+      // Subtle divider line
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(cx + 28, cy + 112);
+      ctx.lineTo(cx + colW - 28, cy + 112);
+      ctx.stroke();
       ctx.restore();
 
-      currX += pillW + 18;
+      // 3. Render 6 Enlarged Skill Capsules
+      const rowStartY = cy + 128;
+      const rowH = 80;
+      const rowGap = 13;
+      const rowW = colW - 48;
+      const rowX = cx + 24;
+
+      cat.skills.forEach((skill, rIndex) => {
+        const ry = rowStartY + rIndex * (rowH + rowGap);
+
+        ctx.save();
+        // Capsule Glass background
+        const rowGrad = ctx.createLinearGradient(rowX, ry, rowX + rowW, ry + rowH);
+        rowGrad.addColorStop(0, 'rgba(255, 255, 255, 0.045)');
+        rowGrad.addColorStop(1, 'rgba(10, 10, 14, 0.65)');
+        ctx.fillStyle = rowGrad;
+        ctx.beginPath();
+        ctx.roundRect(rowX, ry, rowW, rowH, 14);
+        ctx.fill();
+
+        // Border with subtle hover accent on col 0
+        ctx.strokeStyle = colIndex === 0 ? 'rgba(239, 68, 68, 0.22)' : 'rgba(255, 255, 255, 0.09)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Glowing Crimson Indicator Beacon
+        ctx.fillStyle = '#ef4444';
+        ctx.shadowColor = 'rgba(239, 68, 68, 0.6)';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(rowX + 22, ry + 30, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0; // reset
+
+        // Skill Name (Enlarged, high-contrast)
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 22px "Satoshi", sans-serif, -apple-system';
+        ctx.textAlign = 'left';
+        ctx.fillText(skill.name, rowX + 38, ry + 36);
+
+        // Category Tag Badge on the right
+        ctx.textAlign = 'right';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+        ctx.font = 'bold 11px "SF Mono", monospace, sans-serif';
+        ctx.fillText(skill.tag, rowX + rowW - 16, ry + 34);
+
+        // Skill Sub-Descriptor Line
+        ctx.textAlign = 'left';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+        ctx.font = '12px "SF Mono", monospace, sans-serif';
+        ctx.fillText(skill.desc, rowX + 22, ry + 62);
+
+        ctx.restore();
+      });
     });
 
   } else {
-    // Portrait fallback
+    // Portrait fallback: 2 stacked cards
+    const cardW = 680;
+    const colX = 60;
+    
+    // Top card: Languages
+    drawGlassCard(ctx, colX, 160, cardW, 430, 22, 'rgba(239, 68, 68, 0.35)', true);
+    ctx.save();
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 16px "SF Mono", monospace, sans-serif';
+    ctx.fillText('// 01 · CORE LANGUAGES', colX + 32, 205);
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 24px "Satoshi", sans-serif';
-    ctx.fillText('SKILLS & GITHUB', 100, 200);
+    ctx.fillText('PROGRAMMING LANGUAGES', colX + 32, 240);
+
+    const portLangs = ['Kotlin', 'Java', 'TypeScript', 'JavaScript', 'Python', 'C / C++'];
+    portLangs.forEach((lang, idx) => {
+      const ly = 270 + idx * 56;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 20px "Satoshi", sans-serif';
+      ctx.fillText(`• ${lang}`, colX + 36, ly);
+    });
+    ctx.restore();
+
+    // Bottom card: Frameworks & Tools
+    drawGlassCard(ctx, colX, 620, cardW, 440, 22, 'rgba(255, 255, 255, 0.12)', false);
+    ctx.save();
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 16px "SF Mono", monospace, sans-serif';
+    ctx.fillText('// 02 · FRAMEWORKS & TOOLS', colX + 32, 665);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 24px "Satoshi", sans-serif';
+    ctx.fillText('DEVELOPMENT STACK', colX + 32, 700);
+
+    const portTools = ['React 18 / 19', 'Next.js', 'Three.js (WebGL)', 'Tailwind CSS', 'Node.js & Express', 'Git & Linux'];
+    portTools.forEach((tool, idx) => {
+      const ty = 730 + idx * 56;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 20px "Satoshi", sans-serif';
+      ctx.fillText(`• ${tool}`, colX + 36, ty);
+    });
+    ctx.restore();
   }
 
   return canvas.toDataURL('image/png');
