@@ -92,7 +92,7 @@ const drawCrosshair = (ctx: CanvasRenderingContext2D, x: number, y: number, size
   ctx.restore();
 };
 
-export const generateFrontBadge = async (data: BadgeData): Promise<string> => {
+export const generateFrontBadge = (data: BadgeData): string => {
   const isLandscape = data.orientation !== 'portrait';
   const canvas = document.createElement('canvas');
   canvas.width = isLandscape ? 1530 : 800;

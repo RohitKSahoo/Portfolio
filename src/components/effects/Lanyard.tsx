@@ -627,26 +627,43 @@ const placeHanging = (sim: any, layout: any, intro: boolean) => {
   for (let i = 1; i <= JOINTS; i++) {
     nodes[i].copy(nodes[i - 1]);
     if (intro) {
-      nodes[i].x += sim.rest * 0.25;
-      nodes[i].y -= sim.rest * 0.95;
+      // Start slack cable bunched high up near the ceiling anchor so it falls freely from above
+      nodes[i].x = anchor.x + i * (sim.rest * 0.05);
+      nodes[i].y = anchor.y - i * (sim.rest * 0.04);
     } else {
       nodes[i].y -= sim.rest;
     }
   }
   body.quaternion.identity();
-  if (intro) body.quaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), 0.2);
+  if (intro) {
+    // Natural subtle rotation as the card drops through the air
+    body.quaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), 0.28);
+  }
   body.hang.set(0, layout.hangY, 0);
   const offset = scratch.a.copy(body.hang).applyQuaternion(body.quaternion);
   body.position.copy(nodes[JOINTS]).sub(offset);
   body.previous.copy(body.position);
   body.previousQuaternion.copy(body.quaternion);
-  body.velocity.set(0, 0, 0);
-  body.angular.set(0, 0, 0);
-  for (let i = 0; i <= JOINTS; i++) {
-    previous[i].copy(nodes[i]);
-    velocities[i].set(0, 0, 0);
+  
+  if (intro) {
+    // Initial downward plunge velocity: gravity pulls it down, cable catches it and snaps taut
+    body.velocity.set(0.4, -4.5, 0.2);
+    body.angular.set(0, 0, 0.5);
+    for (let i = 0; i <= JOINTS; i++) {
+      previous[i].copy(nodes[i]);
+      velocities[i].set(0.1 * i, -2.5, 0);
+    }
+    sim.lengths.fill(sim.rest * 0.06);
+  } else {
+    body.velocity.set(0, 0, 0);
+    body.angular.set(0, 0, 0);
+    for (let i = 0; i <= JOINTS; i++) {
+      previous[i].copy(nodes[i]);
+      velocities[i].set(0, 0, 0);
+    }
+    sim.lengths.fill(sim.rest);
   }
-  sim.lengths.fill(sim.rest);
+  
   sim.turn = 0;
   sim.twist = 0;
   sim.twistRaw = 0;
