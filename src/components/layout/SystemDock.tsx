@@ -70,8 +70,8 @@ const DockItem = ({
         className="absolute bottom-0 rounded-xl transition-colors duration-300 flex items-center justify-center shadow-lg z-10"
       >
         <div className={`absolute inset-0 rounded-xl transition-colors duration-300 bg-[#0a0a0a] ${isActive
-            ? 'border border-[var(--theme-accent)] shadow-[0_0_20px_rgba(var(--theme-accent-rgb),0.25)]'
-            : 'border border-white/10 group-hover:border-white/20'
+          ? 'border border-[var(--theme-accent)] shadow-[0_0_20px_rgba(var(--theme-accent-rgb),0.25)]'
+          : 'border border-white/10 group-hover:border-white/20'
           }`} />
 
         {isActive && (
@@ -122,7 +122,7 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       // Show dock when cursor is near the bottom (within 55px)
-      if (window.innerHeight - e.clientY < 55) {
+      if (window.innerHeight - e.clientY < 65) {
         setIsDockVisible(true);
       } else if (!isHovered) {
         setIsDockVisible(false);
@@ -135,7 +135,7 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 h-38 z-[200] pointer-events-none flex justify-center items-end pb-6 lg:pb-8"
+      className="fixed bottom-0 left-0 right-0 h-36 z-[200] pointer-events-none flex justify-center items-end pb-6 lg:pb-8"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -147,7 +147,7 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
         onMouseLeave={() => mouseX.set(Infinity)}
         initial={{ y: 100, opacity: 0 }}
         animate={{
-          y: isDockVisible || isHovered || isMobile ? 0 : 58,
+          y: isDockVisible || isHovered || isMobile ? 0 : 78,
           opacity: 1,
         }}
         transition={{ type: "spring", stiffness: 260, damping: 25 }}
