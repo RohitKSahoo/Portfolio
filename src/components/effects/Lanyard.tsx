@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import './Lanyard.css';
@@ -26,8 +24,14 @@ export interface LanyardProps {
   interactive?: boolean;
   intro?: boolean;
   qrUrl?: string;
+  githubUrl?: string;
+  companies?: any[];
   className?: string;
   style?: React.CSSProperties;
+  showFoldersOnBack?: boolean;
+  flipRef?: React.MutableRefObject<(() => void) | null>;
+  flipSpin?: number;
+  flipAngle?: number;
 }
 
 const CARD_SIZES: Record<string, [number, number]> = {
@@ -779,7 +783,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
   frontImage,
   backImage,
   imageFit = 'cover',
-  cardColor = '#ffffff',
+  cardColor = '#0d0e10',
   orientation = 'portrait',
   finish = 'glossy',
   cornerRadius = 0.1,
@@ -797,12 +801,19 @@ export const Lanyard: React.FC<LanyardProps> = ({
   interactive = true,
   intro = true,
   qrUrl = 'https://github.com/RohitKSahoo',
+  githubUrl = 'https://github.com/RohitKSahoo',
+  companies,
   className = '',
-  style
+  style,
+  showFoldersOnBack = true,
+  flipRef,
+  flipSpin = 9,
+  flipAngle = Math.PI
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsRef = useRef<any>(null);
   const applyRef = useRef<(() => void) | null>(null);
+  const flipCardRef = useRef<() => void>(() => {});
 
   settingsRef.current = {
     frontImage,
@@ -825,7 +836,12 @@ export const Lanyard: React.FC<LanyardProps> = ({
     breeze,
     interactive,
     intro,
-    qrUrl
+    qrUrl,
+    githubUrl,
+    companies,
+    showFoldersOnBack,
+    flipSpin,
+    flipAngle
   };
 
   useEffect(() => {
@@ -964,7 +980,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
 
     const paintFaces = () => {
       const s = settingsRef.current;
-      const color = parseColor(s.cardColor, [1, 1, 1]);
+      const color = parseColor(s.cardColor, [0.05, 0.055, 0.063]);
       const width = FACE_WIDTH;
       const height = Math.round((FACE_WIDTH * layout.height) / layout.width);
       if (frontCanvas.width !== width || frontCanvas.height !== height) {
@@ -1059,16 +1075,22 @@ export const Lanyard: React.FC<LanyardProps> = ({
           images.front = front;
           images.back = back;
           images.strap = strap;
+          cardGroup.visible = true;
           paintFaces();
           repaintStrap();
         });
+      }
+      if (s.frontImage && !images.front) {
+        cardGroup.visible = false;
+      } else {
+        cardGroup.visible = true;
       }
       const faceKey = `${layoutKey}|${s.cardColor}|${s.imageFit}`;
       if (faceKey !== applied.faceKey) paintFaces();
       if (s.strapColor !== applied.strapColor) repaintStrap();
 
       const finish = FINISHES[s.finish] || FINISHES.glossy;
-      const card = parseColor(s.cardColor, [1, 1, 1]);
+      const card = parseColor(s.cardColor, [0.05, 0.055, 0.063]);
       [frontMaterial, backMaterial].forEach(material => {
         material.roughness = finish.roughness;
         material.metalness = finish.metalness;
@@ -1265,9 +1287,19 @@ export const Lanyard: React.FC<LanyardProps> = ({
         const away = scratch.c.subVectors(point, camera.position).normalize();
         direction = scratch.b.subVectors(point, body.position).cross(away).dot(up) < 0 ? -1 : 1;
       }
-      sim.turn = sim.turn === 0 ? Math.PI * direction : 0;
-      body.angular.addScaledVector(up, FLIP_SPIN * direction);
+      const targetAngle = settingsRef.current?.flipAngle !== undefined ? settingsRef.current.flipAngle : Math.PI;
+      const spinSpeed = settingsRef.current?.flipSpin !== undefined ? settingsRef.current.flipSpin : FLIP_SPIN;
+      sim.turn = sim.turn === 0 ? targetAngle * direction : 0;
+      body.angular.addScaledVector(up, spinSpeed * direction);
     };
+
+    flipCardRef.current = () => {
+      flip(sim.body.position);
+      start();
+    };
+    if (flipRef) {
+      flipRef.current = flipCardRef.current;
+    }
 
     const onPointerDown = (event: PointerEvent) => {
       if (!settingsRef.current.interactive || event.button > 0) return;
@@ -1300,6 +1332,18 @@ export const Lanyard: React.FC<LanyardProps> = ({
       if (event.pointerType === 'touch') return;
       const hit = pickCard();
       hovering = !!hit;
+      if (hovering && hit && hit.object === frontMesh && hit.uv) {
+        const canX = hit.uv.x * 1530;
+        const canY = (1 - hit.uv.y) * 1000;
+        // GitHub row: X in [570, 1480], Y in [120, 265]
+        const isGh = canX >= 570 && canX <= 1480 && canY >= 120 && canY <= 265;
+        // Companies: X in [570, 1480], Y in [355, 855]
+        const isComp = canX >= 570 && canX <= 1480 && canY >= 355 && canY <= 855;
+        if (isGh || isComp) {
+          setCursor('pointer');
+          return;
+        }
+      }
       setCursor(hovering ? 'grab' : '');
     };
 
@@ -1310,6 +1354,46 @@ export const Lanyard: React.FC<LanyardProps> = ({
         toPointer(event);
         const hit = pickCard();
         if (hit) {
+          if (hit.object === frontMesh && hit.uv) {
+            const canX = hit.uv.x * 1530;
+            const canY = (1 - hit.uv.y) * 1000;
+
+            // GitHub Row Redirect
+            if (canX >= 570 && canX <= 1480 && canY >= 120 && canY <= 265) {
+              window.open(settingsRef.current.githubUrl || 'https://github.com/RohitKSahoo', '_blank', 'noopener,noreferrer');
+              press = null;
+              start();
+              return;
+            }
+
+            // Company 1 Redirect (Papercycle)
+            if (canX >= 570 && canX <= 1480 && canY >= 355 && canY <= 520) {
+              const compUrl = settingsRef.current.companies?.[0]?.url || 'https://github.com/RohitKSahoo';
+              window.open(compUrl, '_blank', 'noopener,noreferrer');
+              press = null;
+              start();
+              return;
+            }
+
+            // Company 2 Redirect (Enigma VSSUT)
+            if (canX >= 570 && canX <= 1480 && canY >= 520 && canY <= 685) {
+              const compUrl = settingsRef.current.companies?.[1]?.url || 'https://github.com/RohitKSahoo';
+              window.open(compUrl, '_blank', 'noopener,noreferrer');
+              press = null;
+              start();
+              return;
+            }
+
+            // Company 3 Redirect (Open Source Community)
+            if (canX >= 570 && canX <= 1480 && canY >= 685 && canY <= 855) {
+              const compUrl = settingsRef.current.companies?.[2]?.url || 'https://github.com/RohitKSahoo';
+              window.open(compUrl, '_blank', 'noopener,noreferrer');
+              press = null;
+              start();
+              return;
+            }
+          }
+
           flip(press.point);
         }
       }
@@ -1380,7 +1464,9 @@ export const Lanyard: React.FC<LanyardProps> = ({
     };
   }, []);
 
-  return <div ref={containerRef} className={`lanyard ${className}`.trim()} style={style} />;
+  return (
+    <div ref={containerRef} className={`lanyard ${className}`.trim()} style={{ ...style, position: 'relative' }} />
+  );
 };
 
 export default Lanyard;

@@ -1,13 +1,52 @@
+export interface CompanyExperience {
+  name: string;
+  role: string;
+  period?: string;
+  url: string;
+  logo?: string;
+  logoUrl?: string;
+  logoImage?: HTMLImageElement | null;
+}
+
+export const DEFAULT_COMPANIES: CompanyExperience[] = [
+  {
+    name: 'Papercycle',
+    role: 'Digital Recycling & Waste Platform',
+    period: '2024 — Present',
+    url: 'https://www.papercycle.in/',
+    logo: 'PC',
+    logoUrl: '/papercycle.png'
+  },
+  {
+    name: 'Enigma VSSUT',
+    role: 'Official Coding Club of VSSUT',
+    period: '2025 — Present',
+    url: 'https://www.enigmavssut.in/',
+    logo: 'EN',
+    logoUrl: '/enigma.png'
+  },
+  {
+    name: 'Open Source Community',
+    role: 'Core Contributor & Builder',
+    period: '2024 — Present',
+    url: 'https://github.com/RohitKSahoo',
+    logo: 'OS'
+  }
+];
+
 export interface BadgeData {
   name: string;
   role: string;
-  institution: string;
-  since: string;
-  projects: string;
-  technologies: string;
-  commits: string;
+  institution?: string;
+  since?: string;
+  projects?: string;
+  technologies?: string;
+  commits?: string;
   avatarUrl?: string;
+  avatarImage?: HTMLImageElement | null;
   githubUsername?: string;
+  githubUrl?: string;
+  companies?: CompanyExperience[];
   languages?: string[];
   orientation?: 'portrait' | 'landscape';
 }
@@ -92,6 +131,236 @@ const drawCrosshair = (ctx: CanvasRenderingContext2D, x: number, y: number, size
   ctx.restore();
 };
 
+// 5x7 Dot Matrix Font for LED Badges (OS, AI, CO)
+const LED_GLYPHS: Record<string, number[][]> = {
+  'O': [
+    [0, 1, 1, 1, 0],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [0, 1, 1, 1, 0]
+  ],
+  'S': [
+    [0, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0],
+    [0, 1, 1, 1, 0],
+    [0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 0]
+  ],
+  'A': [
+    [0, 1, 1, 1, 0],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1]
+  ],
+  'I': [
+    [1, 1, 1, 1, 1],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [1, 1, 1, 1, 1]
+  ],
+  'C': [
+    [0, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1]
+  ],
+  'P': [
+    [1, 1, 1, 1, 0],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 0],
+    [1, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0]
+  ],
+  'E': [
+    [1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0],
+    [1, 1, 1, 1, 0],
+    [1, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1]
+  ],
+  'N': [
+    [1, 0, 0, 0, 1],
+    [1, 1, 0, 0, 1],
+    [1, 0, 1, 0, 1],
+    [1, 0, 0, 1, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1]
+  ]
+};
+
+const drawDotMatrixString = (
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  centerX: number,
+  centerY: number,
+  dotRadius = 1.6,
+  pitch = 4.8,
+  color = '#ffffff'
+) => {
+  ctx.save();
+  ctx.fillStyle = color;
+  const chars = text.toUpperCase().split('');
+  const charWidth = 5 * pitch;
+  const charGap = pitch * 1.6;
+  const totalWidth = chars.length * charWidth + (chars.length - 1) * charGap;
+  const totalHeight = 7 * pitch;
+  let currX = centerX - totalWidth / 2;
+  const topY = centerY - totalHeight / 2;
+
+  chars.forEach(char => {
+    const grid = LED_GLYPHS[char];
+    if (grid) {
+      for (let r = 0; r < 7; r++) {
+        for (let c = 0; c < 5; c++) {
+          if (grid[r][c] === 1) {
+            ctx.beginPath();
+            ctx.arc(currX + c * pitch + pitch / 2, topY + r * pitch + pitch / 2, dotRadius, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+    }
+    currX += charWidth + charGap;
+  });
+  ctx.restore();
+};
+
+const drawGithubOctocat = (ctx: CanvasRenderingContext2D, cx: number, cy: number, size = 68) => {
+  ctx.save();
+  ctx.translate(cx, cy);
+  const scale = size / 98;
+  ctx.scale(scale, scale);
+  ctx.translate(-49, -49);
+  ctx.fillStyle = '#ffffff';
+  const path = new Path2D(
+    'M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z'
+  );
+  ctx.fill(path);
+  ctx.restore();
+};
+
+const drawBarcode = (ctx: CanvasRenderingContext2D, x: number, y: number, height = 24) => {
+  ctx.save();
+  ctx.fillStyle = '#6e737e';
+  const pattern = [
+    2, 3, 4, 2, 2, 4, 1, 3, 2, 5, 4, 2, 1, 3, 3, 2, 2, 6,
+    1, 4, 3, 2, 2, 3, 4, 2, 1, 4, 2, 3, 3, 5, 2, 2, 4, 2,
+    1, 3, 2, 4, 3, 2, 2, 6, 3, 2, 4, 2, 1, 3, 2, 3, 4
+  ];
+  let curX = x;
+  pattern.forEach((w, i) => {
+    if (i % 2 === 0) {
+      ctx.fillRect(curX, y, w, height);
+    }
+    curX += w;
+  });
+  ctx.restore();
+};
+
+const drawSignalMatrix = (ctx: CanvasRenderingContext2D, startX: number, bottomY: number) => {
+  ctx.save();
+  ctx.fillStyle = '#b5b9c2';
+  const dotR = 2.2;
+  const colGap = 7;
+  const rowGap = 7;
+  for (let c = 0; c < 4; c++) {
+    const numDots = c + 1;
+    for (let r = 0; r < numDots; r++) {
+      const dx = startX + c * colGap;
+      const dy = bottomY - r * rowGap;
+      ctx.beginPath();
+      ctx.arc(dx, dy, dotR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+};
+
+const drawDottedCorner = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
+  ctx.save();
+  ctx.fillStyle = '#b5b9c2';
+  const dotR = 2.2;
+  const gap = 7.5;
+  const coords = [
+    [0, 0], [1, 0], [2, 0],
+    [0, 1],
+    [0, 2]
+  ];
+  coords.forEach(([cx, cy]) => {
+    ctx.beginPath();
+    ctx.arc(x + cx * gap, y + cy * gap, dotR, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.restore();
+};
+
+const drawContributionHeatmap = (ctx: CanvasRenderingContext2D, startX: number, startY: number) => {
+  ctx.save();
+  const squareSize = 15;
+  const gap = 5.5;
+  const radius = 3.5;
+  const grid = [
+    [0, 2, 1, 2, 0, 1, 0, 2, 0, 1, 2, 2],
+    [0, 1, 0, 1, 0, 1, 2, 0, 0, 2, 0, 0],
+    [0, 1, 2, 0, 0, 1, 1, 0, 0, 0, 1, 2],
+    [0, 1, 0, 2, 0, 2, 0, 2, 0, 2, 0, 1]
+  ];
+  const colors = [
+    '#202227', // level 0 (dim/inactive)
+    '#3e4350', // level 1
+    '#687082', // level 2
+    '#f1f5f9'  // level 3 (bright commit)
+  ];
+
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 12; c++) {
+      const level = grid[r][c];
+      ctx.fillStyle = colors[level];
+      const x = startX + c * (squareSize + gap);
+      const y = startY + r * (squareSize + gap);
+      ctx.beginPath();
+      ctx.roundRect(x, y, squareSize, squareSize, radius);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+};
+
+const drawDiagonalArrow = (ctx: CanvasRenderingContext2D, x: number, y: number, size = 16) => {
+  ctx.save();
+  ctx.strokeStyle = '#9ca3af';
+  ctx.lineWidth = 2.2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x - size / 2, y + size / 2);
+  ctx.lineTo(x + size / 2, y - size / 2);
+  ctx.moveTo(x + size / 2 - size * 0.55, y - size / 2);
+  ctx.lineTo(x + size / 2, y - size / 2);
+  ctx.lineTo(x + size / 2, y - size / 2 + size * 0.55);
+  ctx.stroke();
+  ctx.restore();
+};
+
 export const generateFrontBadge = (data: BadgeData): string => {
   const isLandscape = data.orientation !== 'portrait';
   const canvas = document.createElement('canvas');
@@ -103,225 +372,285 @@ export const generateFrontBadge = (data: BadgeData): string => {
   const W = canvas.width;
   const H = canvas.height;
 
-  // 1. Antigravity Deep Obsidian Radial Lighting
-  const bgGrad = ctx.createRadialGradient(W / 2, 400, 80, W / 2, 500, 950);
-  bgGrad.addColorStop(0, '#131318');
-  bgGrad.addColorStop(0.45, '#0b0b0e');
-  bgGrad.addColorStop(1, '#050507');
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, W, H);
-
-  // 2. Spatial Blueprint Micro-Dot Matrix with Subtle Falloff
-  const gridStep = isLandscape ? 38 : 32;
-  for (let x = 36; x < W; x += gridStep) {
-    for (let y = 36; y < H; y += gridStep) {
-      const distFromCenter = Math.hypot(x - W / 2, y - H / 2);
-      const alpha = Math.max(0.015, 0.045 - (distFromCenter / 1400) * 0.035);
-      ctx.fillStyle = `rgba(255, 255, 255, ${alpha.toFixed(3)})`;
-      ctx.fillRect(x, y, 2.5, 2.5);
-    }
-  }
-
-  // 3. Perimeter Antigravity HUD Framing
-  ctx.save();
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
-  ctx.lineWidth = 1.5;
-  ctx.strokeRect(32, 32, W - 64, H - 64);
-
-  // Corner Accent Brackets
-  const cOff = 32;
-  const cLen = 42;
-  ctx.strokeStyle = '#ef4444';
-  ctx.lineWidth = 3.5;
-  ctx.beginPath();
-  ctx.moveTo(cOff, cOff + cLen); ctx.lineTo(cOff, cOff); ctx.lineTo(cOff + cLen, cOff);
-  ctx.moveTo(W - cOff - cLen, cOff); ctx.lineTo(W - cOff, cOff); ctx.lineTo(W - cOff, cOff + cLen);
-  ctx.moveTo(cOff, H - cOff - cLen); ctx.lineTo(cOff, H - cOff); ctx.lineTo(cOff + cLen, H - cOff);
-  ctx.moveTo(W - cOff - cLen, H - cOff); ctx.lineTo(W - cOff, H - cOff); ctx.lineTo(W - cOff, H - cOff - cLen);
-  ctx.stroke();
-
-  // Subtle Outer Crosshairs
-  drawCrosshair(ctx, cOff + 18, cOff + 18, 8, 'rgba(239, 68, 68, 0.4)');
-  drawCrosshair(ctx, W - cOff - 18, cOff + 18, 8, 'rgba(239, 68, 68, 0.4)');
-  drawCrosshair(ctx, cOff + 18, H - cOff - 18, 8, 'rgba(239, 68, 68, 0.4)');
-  drawCrosshair(ctx, W - cOff - 18, H - cOff - 18, 8, 'rgba(239, 68, 68, 0.4)');
-
-  // Telemetry Micro-Readouts
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-  ctx.font = 'bold 12px "SF Mono", monospace, sans-serif';
-  ctx.textAlign = 'left';
-  ctx.fillText('SYS.CORE // TELEMETRY_v2.0', 90, 56);
-  ctx.textAlign = 'right';
-  ctx.fillText('SECURITY STATUS: ENCRYPTED // ACTIVE', W - 90, 56);
-  ctx.restore();
-
   if (isLandscape) {
     // =========================================================================
-    // 4 FLOATING ANTIGRAVITY BENTO MODULES (COMMITS, PROJECTS, SINCE, TECHNOLOGIES)
+    // EXACT MODERN MINIMAL ID CARD DESIGN
     // =========================================================================
-    const cardW = 600;
-    const cardH = 320;
-    const radius = 22;
 
-    const col1X = 135;
-    const col2X = 795;
-    const row1Y = 195;
-    const row2Y = 565;
+    // 1. Deep Matte Obsidian Canvas Background
+    ctx.fillStyle = '#0d0e10';
+    ctx.fillRect(0, 0, W, H);
 
-    const renderBentoModule = (
-      x: number,
-      y: number,
-      indexTag: string,
-      statusTag: string,
-      label: string,
-      value: string,
-      footerNote: string,
-      isPrimary = false
-    ) => {
-      // 1. Draw Glass Capsule
-      drawGlassCard(
-        ctx,
-        x,
-        y,
-        cardW,
-        cardH,
-        radius,
-        isPrimary ? 'rgba(239, 68, 68, 0.40)' : 'rgba(255, 255, 255, 0.12)',
-        isPrimary
-      );
+    // 2. Top Header Bar (Ultra-Readable)
+    // Dotted Corner Glyphs at top-left
+    drawDottedCorner(ctx, 70, 55);
 
-      // 2. Top Meta Header inside module
+    // "PROFILE" label
+    ctx.save();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.font = 'bold 24px "Doto", "Space Mono", monospace, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('PROFILE', 115, 72);
+
+    // Red dot next to PROFILE
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.arc(235, 65, 7, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 4-Column Signal Dot Matrix
+    drawSignalMatrix(ctx, 1440, 72);
+    ctx.restore();
+
+    // 3. Left Column: Avatar + Details (Moved lower, larger image, no barcode)
+    const avX = 65;
+    const avY = 135;
+    const avW = 460;
+    const avH = 505;
+    const avRadius = 32;
+
+    // Avatar Container Box
+    ctx.save();
+    ctx.fillStyle = '#151619';
+    ctx.beginPath();
+    ctx.roundRect(avX, avY, avW, avH, avRadius);
+    ctx.fill();
+
+    // Clip inner viewport for Avatar Image
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(avX, avY, avW, avH, avRadius);
+    ctx.clip();
+
+    if (data.avatarImage && data.avatarImage.complete && data.avatarImage.naturalWidth > 0) {
+      const img = data.avatarImage;
+      const aspect = img.naturalWidth / img.naturalHeight;
+      const frameAspect = avW / avH;
+      let drawW, drawH, drawX, drawY;
+      if (aspect > frameAspect) {
+        drawH = avH;
+        drawW = avH * aspect;
+        drawX = avX + (avW - drawW) / 2;
+        drawY = avY;
+      } else {
+        drawW = avW;
+        drawH = avW / aspect;
+        drawX = avX;
+        drawY = avY + (avH - drawH) / 2;
+      }
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+    } else {
+      const pGrad = ctx.createLinearGradient(avX, avY, avX + avW, avY + avH);
+      pGrad.addColorStop(0, '#1c1c24');
+      pGrad.addColorStop(1, '#0e0e14');
+      ctx.fillStyle = pGrad;
+      ctx.fillRect(avX, avY, avW, avH);
+
+      ctx.fillStyle = '#ef4444';
+      ctx.font = 'bold 96px "Doto", "Space Mono", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('RS', avX + avW / 2, avY + avH / 2 + 32);
+    }
+    ctx.restore();
+
+    // Subtle stroke around avatar
+    ctx.strokeStyle = '#282b32';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(avX, avY, avW, avH, avRadius);
+    ctx.stroke();
+    ctx.restore();
+
+    // Details Under Avatar (Nothing OS Inspired Typography)
+    ctx.save();
+    const underY = 690;
+
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '22px "Space Mono", monospace, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('SOFTWARE DEVELOPER', 75, underY);
+
+    // Large Name: Rohit K. Sahoo
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 54px "Doto", "Space Mono", sans-serif';
+    ctx.fillText(data.name || 'Rohit K. Sahoo', 75, underY + 80);
+
+    // Subtitle: CS UNDERGRAD · VSSUT
+    ctx.fillStyle = '#a3a8b4';
+    ctx.font = '26px "Space Mono", monospace, sans-serif';
+    ctx.fillText('CS UNDERGRAD  ·  VSSUT', 75, underY + 135);
+    ctx.restore();
+
+    // 4. Clean Vertical Separator Line (Spans full content height)
+    const sepX = 555;
+    const sepTopY = 125;
+    const sepBottomY = 860;
+    ctx.save();
+    ctx.strokeStyle = '#282b32';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(sepX, sepTopY);
+    ctx.lineTo(sepX, sepBottomY);
+    ctx.stroke();
+    ctx.restore();
+
+    // 5. Right Column (Centered Vertically with Badge)
+    const rightX = 590;
+    const rightW = 875;
+
+    // --- Row 1: GitHub Octocat + Divider + Handle + Dynamic Live Stats + Heatmap Grid ---
+    const ghCenterY = 210;
+    drawGithubOctocat(ctx, rightX + 44, ghCenterY, 68);
+
+    // Vertical Divider Line next to Octocat
+    ctx.save();
+    ctx.strokeStyle = '#282b32';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(rightX + 104, ghCenterY - 46);
+    ctx.lineTo(rightX + 104, ghCenterY + 46);
+    ctx.stroke();
+
+    // Handle Text: @RohitKSahoo (Nothing OS Monospace)
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 48px "Space Mono", monospace, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(data.githubUsername ? `@${data.githubUsername}` : '@RohitKSahoo', rightX + 130, ghCenterY - 8);
+
+    // Dynamic Live Stats: Repositories | Commits | Techs
+    const reposCount = data.projects || '23';
+    const commitsCount = data.commits || '1040+';
+    const techsCount = data.technologies || '8+';
+
+    ctx.fillStyle = '#cbd5e1';
+    ctx.font = '22px "Space Mono", monospace, sans-serif';
+    ctx.fillText(
+      `${reposCount} REPOSITORIES   ·   ${commitsCount} COMMITS   ·   ${techsCount} TECHS`,
+      rightX + 130,
+      ghCenterY + 36
+    );
+    ctx.restore();
+
+    // GitHub Contribution Heatmap Grid (Moved to top & enlarged)
+    drawContributionHeatmap(ctx, rightX + rightW - 240, ghCenterY - 90);
+
+    // --- Row 2: WORK & ORGANIZATIONS Section Header ---
+    const secY = 315;
+    // Red vertical accent bar
+    ctx.save();
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.roundRect(rightX, secY - 15, 6, 32, 3);
+    ctx.fill();
+
+    // Text: WORKED AT (Nothing OS Dot Display)
+    ctx.fillStyle = '#f1f5f9';
+    ctx.font = 'bold 28px "Doto", "Space Mono", monospace, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('WORKED AT', rightX + 26, secY + 10);
+    ctx.restore();
+
+    // --- Row 3: Three Experience Cards (Enlarged, no background/border behind website logo) ---
+    const companies = data.companies && data.companies.length > 0 ? data.companies : DEFAULT_COMPANIES;
+    const cardStartY = 365;
+    const itemCardH = 146;
+    const itemCardGap = 18;
+
+    companies.slice(0, 3).forEach((comp, idx) => {
+      const cy = cardStartY + idx * (itemCardH + itemCardGap);
+
+      // Card Background & Border
       ctx.save();
-      ctx.textAlign = 'left';
-      ctx.fillStyle = isPrimary ? '#ef4444' : 'rgba(255, 255, 255, 0.4)';
-      ctx.font = 'bold 15px "SF Mono", monospace, sans-serif';
-      ctx.fillText(indexTag, x + 36, y + 46);
-
-      ctx.textAlign = 'right';
-      if (isPrimary) {
-        // Glowing Green Pulse Beacon for Commits Activity
-        ctx.fillStyle = '#22c55e';
-        ctx.beginPath();
-        ctx.arc(x + cardW - 130, y + 41, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(34, 197, 94, 0.4)';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        ctx.fillStyle = '#22c55e';
-        ctx.font = 'bold 13px "SF Mono", monospace, sans-serif';
-        ctx.fillText('LIVE RECORD', x + cardW - 36, y + 46);
-      } else {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-        ctx.font = 'bold 13px "SF Mono", monospace, sans-serif';
-        ctx.fillText(statusTag, x + cardW - 36, y + 46);
-      }
-
-      // 3. Section Title / Label
-      ctx.textAlign = 'left';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.50)';
-      ctx.font = 'bold 20px "SF Mono", monospace, sans-serif';
-      ctx.fillText(label.toUpperCase(), x + 36, y + 90);
-
-      // 4. Large Stat Numeral
-      ctx.fillStyle = isPrimary ? '#ef4444' : '#ffffff';
-      ctx.font = 'bold 124px "Satoshi", sans-serif, -apple-system';
-
-      if (isPrimary) {
-        ctx.shadowColor = 'rgba(239, 68, 68, 0.35)';
-        ctx.shadowBlur = 18;
-      } else {
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-        ctx.shadowBlur = 10;
-      }
-      ctx.fillText(value, x + 36, y + 215);
-      ctx.shadowBlur = 0; // reset
-
-      // 5. Bottom Descriptor Line
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-      ctx.font = '13px "SF Mono", monospace, sans-serif';
-      ctx.fillText(footerNote, x + 36, y + 276);
-
-      // Decorative corner tick
-      ctx.strokeStyle = isPrimary ? 'rgba(239, 68, 68, 0.6)' : 'rgba(255, 255, 255, 0.2)';
-      ctx.lineWidth = 2;
+      ctx.fillStyle = '#16171a';
       ctx.beginPath();
-      ctx.moveTo(x + cardW - 24, y + cardH - 12);
-      ctx.lineTo(x + cardW - 12, y + cardH - 12);
-      ctx.lineTo(x + cardW - 12, y + cardH - 24);
+      ctx.roundRect(rightX, cy, rightW, itemCardH, 24);
+      ctx.fill();
+      ctx.strokeStyle = '#282b32';
+      ctx.lineWidth = 2;
       ctx.stroke();
 
+      // Website Logo (No background box or border, clean rendering)
+      const logoX = rightX + 28;
+      const logoSize = 90;
+      const logoY = cy + (itemCardH - logoSize) / 2;
+
+      // Draw Logo Image or 5x7 Dot-Matrix Letters fallback directly
+      if (comp.logoImage && comp.logoImage.complete && comp.logoImage.naturalWidth > 0) {
+        ctx.save();
+        ctx.drawImage(comp.logoImage, logoX, logoY, logoSize, logoSize);
+        ctx.restore();
+      } else {
+        const initial = comp.logo || comp.name.replace(/[^a-zA-Z]/g, '').slice(0, 2).toUpperCase() || 'CO';
+        drawDotMatrixString(ctx, initial, logoX + logoSize / 2, logoY + logoSize / 2, 2.6, 7.2, '#ffffff');
+      }
+
+      const textX = logoX + logoSize + 26;
+
+      // Top Row: Company Name (Nothing OS Dot Matrix) + Working Period side-by-side
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 34px "Doto", "Space Mono", monospace, sans-serif';
+      ctx.textAlign = 'left'; 
+      ctx.fillText(comp.name, textX, cy + 56);
+
+      const nameWidth = ctx.measureText(comp.name).width;
+
+      if (comp.period) {
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 22px "Doto", "Space Mono", monospace, sans-serif';
+        ctx.fillText('·', textX + nameWidth + 14, cy + 54);
+
+        ctx.fillStyle = '#8e929b';
+        ctx.font = '20px "Space Mono", monospace, sans-serif';
+        ctx.fillText(comp.period, textX + nameWidth + 30, cy + 54);
+      }
+
+      // Bottom Row: Dedicated Role Text (Clean Nothing OS Monospace)
+      ctx.fillStyle = '#a3a8b4';
+      ctx.font = '22px "Space Mono", monospace, sans-serif';
+      ctx.fillText(comp.role, textX, cy + 100);
+
+      // Right Arrow: ↗ (Bold & Crisp)
+      drawDiagonalArrow(ctx, rightX + rightW - 52, cy + itemCardH / 2, 28);
+
       ctx.restore();
-    };
+    });
 
-    // Render 4 Quadrants
-    renderBentoModule(
-      col1X,
-      row1Y,
-      '// 01',
-      'ACTIVE STREAM',
-      'Commits',
-      data.commits,
-      'PRODUCTION & OSS CONTRIBUTIONS',
-      true
-    );
-
-    renderBentoModule(
-      col2X,
-      row1Y,
-      '// 02',
-      'VERIFIED ARCH',
-      'Projects',
-      data.projects,
-      'PUBLIC REPOSITORIES & PACKAGES',
-      false
-    );
-
-    renderBentoModule(
-      col1X,
-      row2Y,
-      '// 03',
-      'ORIGIN YEAR',
-      'Since',
-      data.since,
-      'CONTINUOUS DEPLOYMENT CYCLE',
-      false
-    );
-
-    renderBentoModule(
-      col2X,
-      row2Y,
-      '// 04',
-      'CORE ECOSYSTEM',
-      'Technologies',
-      data.technologies,
-      'LANGUAGES & FRAMEWORKS IN USE',
-      false
-    );
+    // 6. Straight Line Near Bottom Edge of ID Card
+    ctx.save();
+    ctx.strokeStyle = '#828488ff';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(65, 915);
+    ctx.lineTo(W - 65, 915);
+    ctx.stroke();
+    ctx.restore();
 
   } else {
-    // Portrait Fallback
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-    ctx.font = 'bold 18px "SF Mono", monospace, sans-serif';
-    ctx.fillText('COMMITS', 100, 200);
+    // Portrait Fallback: Compact vertical stack
+    const cardW = 680;
+    const colX = 60;
+
+    // Top: Photo card
+    drawGlassCard(ctx, colX, 160, cardW, 360, 22, 'rgba(255, 255, 255, 0.12)', false);
+    ctx.save();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 28px "Satoshi", sans-serif';
+    ctx.fillText('ROHIT K. SAHOO', colX + 32, 220);
     ctx.fillStyle = '#ef4444';
-    ctx.font = 'bold 80px "Satoshi", sans-serif';
-    ctx.fillText(data.commits, 100, 280);
+    ctx.font = 'bold 16px "Satoshi", monospace';
+    ctx.fillText(data.githubUsername ? `@${data.githubUsername}` : '@RohitKSahoo', colX + 32, 260);
+    ctx.restore();
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-    ctx.fillText('PROJECTS', 100, 420);
+    // Bottom: Experience
+    drawGlassCard(ctx, colX, 550, cardW, 500, 22, 'rgba(255, 255, 255, 0.12)', false);
+    ctx.save();
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 16px "Satoshi", monospace';
+    ctx.fillText('// EXPERIENCE', colX + 32, 600);
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(data.projects, 100, 500);
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-    ctx.fillText('SINCE', 100, 640);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(data.since, 100, 720);
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-    ctx.fillText('TECHNOLOGIES', 100, 860);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(data.technologies, 100, 940);
+    ctx.font = 'bold 22px "Satoshi", sans-serif';
+    ctx.fillText('COMPANIES & WORK', colX + 32, 640);
+    ctx.restore();
   }
 
   return canvas.toDataURL('image/png');
@@ -338,268 +667,32 @@ export const generateBackBadge = (data: BadgeData): string => {
   const W = canvas.width;
   const H = canvas.height;
 
-  // 1. Antigravity Deep Obsidian Radial Lighting
-  const bgGrad = ctx.createRadialGradient(W / 2, 400, 80, W / 2, 500, 950);
-  bgGrad.addColorStop(0, '#131318');
-  bgGrad.addColorStop(0.45, '#0b0b0e');
-  bgGrad.addColorStop(1, '#050507');
-  ctx.fillStyle = bgGrad;
+  // 1. Deep Matte Obsidian Canvas Background matching front
+  ctx.fillStyle = '#0d0e10';
   ctx.fillRect(0, 0, W, H);
 
-  // 2. Spatial Blueprint Micro-Dot Matrix with Subtle Falloff
-  const gridStep = isLandscape ? 38 : 32;
-  for (let x = 36; x < W; x += gridStep) {
-    for (let y = 36; y < H; y += gridStep) {
-      const distFromCenter = Math.hypot(x - W / 2, y - H / 2);
-      const alpha = Math.max(0.015, 0.045 - (distFromCenter / 1400) * 0.035);
-      ctx.fillStyle = `rgba(255, 255, 255, ${alpha.toFixed(3)})`;
-      ctx.fillRect(x, y, 2.5, 2.5);
-    }
-  }
-
-  // 3. Perimeter Antigravity HUD Framing
+  // 2. Subtle Corner Glyphs
   ctx.save();
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
-  ctx.lineWidth = 1.5;
-  ctx.strokeRect(32, 32, W - 64, H - 64);
+  drawDottedCorner(ctx, 70, 55);
+  drawSignalMatrix(ctx, W - 100, 72);
 
-  // Corner Accent Brackets
-  const cOff = 32;
-  const cLen = 42;
-  ctx.strokeStyle = '#ef4444';
-  ctx.lineWidth = 3.5;
+  // 3. Minimal Clean Center Monogram (Faint matte watermark)
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.035)';
+  ctx.font = 'bold 130px "Doto", "Space Mono", monospace, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('RS', W / 2, H / 2 - 10);
+
+  // 4. Bottom Straight Accent Line matching front
+  ctx.strokeStyle = '#828488ff';
+  ctx.lineWidth = 2.5;
   ctx.beginPath();
-  ctx.moveTo(cOff, cOff + cLen); ctx.lineTo(cOff, cOff); ctx.lineTo(cOff + cLen, cOff);
-  ctx.moveTo(W - cOff - cLen, cOff); ctx.lineTo(W - cOff, cOff); ctx.lineTo(W - cOff, cOff + cLen);
-  ctx.moveTo(cOff, H - cOff - cLen); ctx.lineTo(cOff, H - cOff); ctx.lineTo(cOff + cLen, H - cOff);
-  ctx.moveTo(W - cOff - cLen, H - cOff); ctx.lineTo(W - cOff, H - cOff); ctx.lineTo(W - cOff, H - cOff - cLen);
+  const lineY = isLandscape ? 915 : H - 85;
+  ctx.moveTo(65, lineY);
+  ctx.lineTo(W - 65, lineY);
   ctx.stroke();
 
-  // Subtle Outer Crosshairs
-  drawCrosshair(ctx, cOff + 18, cOff + 18, 8, 'rgba(239, 68, 68, 0.4)');
-  drawCrosshair(ctx, W - cOff - 18, cOff + 18, 8, 'rgba(239, 68, 68, 0.4)');
-  drawCrosshair(ctx, cOff + 18, H - cOff - 18, 8, 'rgba(239, 68, 68, 0.4)');
-  drawCrosshair(ctx, W - cOff - 18, H - cOff - 18, 8, 'rgba(239, 68, 68, 0.4)');
-
-  // Telemetry Micro-Readouts
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-  ctx.font = 'bold 12px "SF Mono", monospace, sans-serif';
-  ctx.textAlign = 'left';
-  ctx.fillText('IDENTITY MIRROR // TECH RADAR', 90, 56);
-  ctx.textAlign = 'right';
-  ctx.fillText('SPECIALIZATIONS & ARCHITECTURE', W - 90, 56);
   ctx.restore();
-
-  if (isLandscape) {
-    // =========================================================================
-    // 3 EXPANDED BENTO COLUMNS (CORE LANGUAGES, FRAMEWORKS & UI, SYSTEMS & RUNTIME)
-    // =========================================================================
-
-    // Top Section Header
-    ctx.save();
-    ctx.fillStyle = '#ef4444';
-    ctx.font = 'bold 15px "SF Mono", monospace, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('// 02 · TECHNICAL_COMPETENCIES', 130, 112);
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 32px "Satoshi", sans-serif, -apple-system';
-    ctx.fillText('PROGRAMMING LANGUAGES & CORE STACK', 130, 150);
-
-    // Right-aligned status beacon
-    ctx.textAlign = 'right';
-    ctx.fillStyle = '#22c55e';
-    ctx.beginPath();
-    ctx.arc(W - 275, 138, 5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(34, 197, 94, 0.4)';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-    ctx.font = 'bold 14px "SF Mono", monospace, sans-serif';
-    ctx.fillText('VERIFIED ECOSYSTEM', W - 130, 143);
-    ctx.restore();
-
-    // 3 Bento Columns:
-    const colW = 390;
-    const colH = 720;
-    const gap = 45;
-    const startX = 130;
-    const startY = 185;
-
-    const categories = [
-      {
-        tag: '// 01',
-        title: 'CORE LANGUAGES',
-        subtitle: 'Systems & Typed Languages',
-        skills: [
-          { name: 'Kotlin', desc: 'Android Native · Coroutines · KMP', tag: 'NATIVE' },
-          { name: 'Java', desc: 'Core SE · OOP · Enterprise Systems', tag: 'CORE' },
-          { name: 'TypeScript', desc: 'Type Systems · Full-Stack ESNext', tag: 'TYPED' },
-          { name: 'JavaScript', desc: 'V8 Engine · DOM · Modern Async', tag: 'WEB' },
-          { name: 'Python', desc: 'Automation · Data Pipelines · ML', tag: 'SCRIPT' },
-          { name: 'C / C++', desc: 'Memory Management · JNI Bridge', tag: 'PERF' },
-        ]
-      },
-      {
-        tag: '// 02',
-        title: 'FRAMEWORKS & UI',
-        subtitle: '3D Graphics & Reactive Apps',
-        skills: [
-          { name: 'React 18 / 19', desc: 'Concurrent Hooks · Component Trees', tag: 'UI' },
-          { name: 'Next.js', desc: 'App Router · Server Components', tag: 'SSR' },
-          { name: 'Three.js', desc: 'WebGL · Shaders · 3D Math Pipeline', tag: '3D/GL' },
-          { name: 'Tailwind CSS', desc: 'Design Tokens · Responsive Layouts', tag: 'CSS' },
-          { name: 'Framer Motion', desc: 'Spring Dynamics · Gesture Physics', tag: 'ANIM' },
-          { name: 'Jetpack Compose', desc: 'Modern Declarative Android UI', tag: 'MOBILE' },
-        ]
-      },
-      {
-        tag: '// 03',
-        title: 'SYSTEMS & TOOLING',
-        subtitle: 'APIs, DevOps & Runtime Infra',
-        skills: [
-          { name: 'Node.js & Express', desc: 'High-Concurrency Backend Endpoints', tag: 'SERVER' },
-          { name: 'Git & GitHub Actions', desc: 'CI/CD Pipelines · Automated Workflows', tag: 'CI/CD' },
-          { name: 'Linux & Bash CLI', desc: 'POSIX Environment · Shell Scripting', tag: 'SYSTEM' },
-          { name: 'REST & GraphQL', desc: 'API Design · Schema Architecture', tag: 'APIS' },
-          { name: 'Firebase & SQLite', desc: 'Cloud Firestore · Local DB Engines', tag: 'DATA' },
-          { name: 'Android NDK / JNI', desc: 'Native C++ Audio & Latency Opt', tag: 'LOW-LVL' },
-        ]
-      }
-    ];
-
-    categories.forEach((cat, colIndex) => {
-      const cx = startX + colIndex * (colW + gap);
-      const cy = startY;
-
-      // 1. Column Frosted Glass Bento Container
-      drawGlassCard(ctx, cx, cy, colW, colH, 22, colIndex === 0 ? 'rgba(239, 68, 68, 0.38)' : 'rgba(255, 255, 255, 0.12)', colIndex === 0);
-
-      // 2. Column Header
-      ctx.save();
-      ctx.textAlign = 'left';
-      ctx.fillStyle = '#ef4444';
-      ctx.font = 'bold 14px "SF Mono", monospace, sans-serif';
-      ctx.fillText(cat.tag, cx + 28, cy + 42);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 22px "Satoshi", sans-serif, -apple-system';
-      ctx.fillText(cat.title, cx + 28, cy + 74);
-
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.40)';
-      ctx.font = '12px "SF Mono", monospace, sans-serif';
-      ctx.fillText(cat.subtitle.toUpperCase(), cx + 28, cy + 96);
-
-      // Subtle divider line
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(cx + 28, cy + 112);
-      ctx.lineTo(cx + colW - 28, cy + 112);
-      ctx.stroke();
-      ctx.restore();
-
-      // 3. Render 6 Enlarged Skill Capsules
-      const rowStartY = cy + 128;
-      const rowH = 80;
-      const rowGap = 13;
-      const rowW = colW - 48;
-      const rowX = cx + 24;
-
-      cat.skills.forEach((skill, rIndex) => {
-        const ry = rowStartY + rIndex * (rowH + rowGap);
-
-        ctx.save();
-        // Capsule Glass background
-        const rowGrad = ctx.createLinearGradient(rowX, ry, rowX + rowW, ry + rowH);
-        rowGrad.addColorStop(0, 'rgba(255, 255, 255, 0.045)');
-        rowGrad.addColorStop(1, 'rgba(10, 10, 14, 0.65)');
-        ctx.fillStyle = rowGrad;
-        ctx.beginPath();
-        ctx.roundRect(rowX, ry, rowW, rowH, 14);
-        ctx.fill();
-
-        // Border with subtle hover accent on col 0
-        ctx.strokeStyle = colIndex === 0 ? 'rgba(239, 68, 68, 0.22)' : 'rgba(255, 255, 255, 0.09)';
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-
-        // Glowing Crimson Indicator Beacon
-        ctx.fillStyle = '#ef4444';
-        ctx.shadowColor = 'rgba(239, 68, 68, 0.6)';
-        ctx.shadowBlur = 8;
-        ctx.beginPath();
-        ctx.arc(rowX + 22, ry + 30, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0; // reset
-
-        // Skill Name (Enlarged, high-contrast)
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 22px "Satoshi", sans-serif, -apple-system';
-        ctx.textAlign = 'left';
-        ctx.fillText(skill.name, rowX + 38, ry + 36);
-
-        // Category Tag Badge on the right
-        ctx.textAlign = 'right';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-        ctx.font = 'bold 11px "SF Mono", monospace, sans-serif';
-        ctx.fillText(skill.tag, rowX + rowW - 16, ry + 34);
-
-        // Skill Sub-Descriptor Line
-        ctx.textAlign = 'left';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-        ctx.font = '12px "SF Mono", monospace, sans-serif';
-        ctx.fillText(skill.desc, rowX + 22, ry + 62);
-
-        ctx.restore();
-      });
-    });
-
-  } else {
-    // Portrait fallback: 2 stacked cards
-    const cardW = 680;
-    const colX = 60;
-    
-    // Top card: Languages
-    drawGlassCard(ctx, colX, 160, cardW, 430, 22, 'rgba(239, 68, 68, 0.35)', true);
-    ctx.save();
-    ctx.fillStyle = '#ef4444';
-    ctx.font = 'bold 16px "SF Mono", monospace, sans-serif';
-    ctx.fillText('// 01 · CORE LANGUAGES', colX + 32, 205);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 24px "Satoshi", sans-serif';
-    ctx.fillText('PROGRAMMING LANGUAGES', colX + 32, 240);
-
-    const portLangs = ['Kotlin', 'Java', 'TypeScript', 'JavaScript', 'Python', 'C / C++'];
-    portLangs.forEach((lang, idx) => {
-      const ly = 270 + idx * 56;
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 20px "Satoshi", sans-serif';
-      ctx.fillText(`• ${lang}`, colX + 36, ly);
-    });
-    ctx.restore();
-
-    // Bottom card: Frameworks & Tools
-    drawGlassCard(ctx, colX, 620, cardW, 440, 22, 'rgba(255, 255, 255, 0.12)', false);
-    ctx.save();
-    ctx.fillStyle = '#ef4444';
-    ctx.font = 'bold 16px "SF Mono", monospace, sans-serif';
-    ctx.fillText('// 02 · FRAMEWORKS & TOOLS', colX + 32, 665);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 24px "Satoshi", sans-serif';
-    ctx.fillText('DEVELOPMENT STACK', colX + 32, 700);
-
-    const portTools = ['React 18 / 19', 'Next.js', 'Three.js (WebGL)', 'Tailwind CSS', 'Node.js & Express', 'Git & Linux'];
-    portTools.forEach((tool, idx) => {
-      const ty = 730 + idx * 56;
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 20px "Satoshi", sans-serif';
-      ctx.fillText(`• ${tool}`, colX + 36, ty);
-    });
-    ctx.restore();
-  }
 
   return canvas.toDataURL('image/png');
 };

@@ -112,65 +112,31 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>((p
     }
   };
 
-  const letterPositionsRef = useRef<{ x: number; y: number }[]>([]);
-  const dirtyPositionsRef = useRef(true);
-
-  // Mark positions dirty whenever label changes
-  useEffect(() => {
-    dirtyPositionsRef.current = true;
-  }, [label]);
-
-  // Mark positions dirty on window resize
-  useEffect(() => {
-    const handleResize = () => {
-      dirtyPositionsRef.current = true;
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const updatePositions = () => {
-    if (!containerRef?.current) return;
-    const containerRect = containerRef.current.getBoundingClientRect();
-    letterPositionsRef.current = letterRefs.current.map((letterRef) => {
-      if (!letterRef) return { x: 0, y: 0 };
-      const rect = letterRef.getBoundingClientRect();
-      return {
-        x: rect.left + rect.width / 2 - containerRect.left,
-        y: rect.top + rect.height / 2 - containerRect.top
-      };
-    });
-    dirtyPositionsRef.current = false;
-  };
-
   useAnimationFrame(() => {
     if (!containerRef?.current) return;
-
-    if (dirtyPositionsRef.current) {
-      updatePositions();
-    }
-
+    const containerRect = containerRef.current.getBoundingClientRect();
     const { x, y } = mousePositionRef.current;
     if (lastPositionRef.current.x === x && lastPositionRef.current.y === y) {
       return;
     }
     lastPositionRef.current = { x, y };
 
-    const positions = letterPositionsRef.current;
-    if (positions.length === 0) return;
-
     letterRefs.current.forEach((letterRef, index) => {
       if (!letterRef) return;
-      const pos = positions[index];
-      if (!pos) return;
 
-      const distance = calculateDistance(x, y, pos.x, pos.y);
+      const rect = letterRef.getBoundingClientRect();
+      const letterCenterX = rect.left + rect.width / 2 - containerRect.left;
+      const letterCenterY = rect.top + rect.height / 2 - containerRect.top;
+
+      const distance = calculateDistance(
+        mousePositionRef.current.x,
+        mousePositionRef.current.y,
+        letterCenterX,
+        letterCenterY
+      );
 
       if (distance >= radius) {
-        if (interpolatedSettingsRef.current[index] !== fromFontVariationSettings) {
-          interpolatedSettingsRef.current[index] = fromFontVariationSettings;
-          letterRef.style.fontVariationSettings = fromFontVariationSettings;
-        }
+        letterRef.style.fontVariationSettings = fromFontVariationSettings;
         return;
       }
 
@@ -182,10 +148,8 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>((p
         })
         .join(', ');
 
-      if (interpolatedSettingsRef.current[index] !== newSettings) {
-        interpolatedSettingsRef.current[index] = newSettings;
-        letterRef.style.fontVariationSettings = newSettings;
-      }
+      interpolatedSettingsRef.current[index] = newSettings;
+      letterRef.style.fontVariationSettings = newSettings;
     });
   });
 

@@ -160,12 +160,16 @@ export const ContactPage = () => {
                 className="group relative block focus:outline-none cursor-pointer rounded-full overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
                 <GlassSurface
-                  refraction={false}
                   width="auto"
                   height={50}
                   borderRadius={25}
-                  backgroundOpacity={0}
+                  distortionScale={-90}
+                  displace={0.3}
+                  backgroundOpacity={0.14}
                   saturation={1.2}
+                  redOffset={18}
+                  greenOffset={5}
+                  blueOffset={10}
                   className="border border-red-500/40 group-hover:border-red-500/80 shadow-[0_0_20px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_28px_rgba(239,68,68,0.45)] transition-all"
                 >
                   <div className="flex items-center justify-between gap-4 px-6 py-1.5 text-white font-bold font-satoshi text-base">
@@ -226,12 +230,16 @@ export const ContactPage = () => {
                 className="group relative block focus:outline-none cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
               >
                 <GlassSurface
-                  refraction={false}
                   width="100%"
                   height="auto"
                   borderRadius={14}
+                  distortionScale={-100}
+                  displace={0.2}
                   backgroundOpacity={0}
                   saturation={1.1}
+                  redOffset={8}
+                  greenOffset={4}
+                  blueOffset={12}
                   className="w-full border border-white/10 group-hover:border-red-500/40 shadow-[0_4px_20px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(239,68,68,0.15)] transition-all"
                 >
                   <div className="p-5 sm:p-6 w-full flex items-center justify-between">

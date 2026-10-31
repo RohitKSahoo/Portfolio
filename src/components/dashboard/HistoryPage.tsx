@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { Lanyard } from '../effects/Lanyard';
-import { generateFrontBadge, generateBackBadge, generateStrapImage } from '../effects/badgeGenerator';
+import { generateFrontBadge, generateBackBadge, generateStrapImage, DEFAULT_COMPANIES } from '../effects/badgeGenerator';
 
 const DEFAULT_GITHUB_STATS = {
   projects: '23',
@@ -30,6 +30,8 @@ const getInitialTextures = () => {
       commits: DEFAULT_GITHUB_STATS.commits,
       avatarUrl: '/avatar.png',
       githubUsername: 'RohitKSahoo',
+      githubUrl: 'https://github.com/RohitKSahoo',
+      companies: DEFAULT_COMPANIES,
       languages: DEFAULT_GITHUB_STATS.languagesList,
       orientation: 'landscape'
     });
@@ -60,6 +62,40 @@ export const HistoryPage = () => {
   }, []);
 
   const [githubStats, setGithubStats] = useState(DEFAULT_GITHUB_STATS);
+  const [avatarImg, setAvatarImg] = useState<HTMLImageElement | null>(null);
+  const [companyLogos, setCompanyLogos] = useState<Record<string, HTMLImageElement>>({});
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  useEffect(() => {
+    if (typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(() => {
+        setFontsLoaded(true);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = '/avatar.png';
+    img.onload = () => {
+      setAvatarImg(img);
+    };
+
+    const logosToLoad = [
+      { key: '/papercycle.png', src: '/papercycle.png' },
+      { key: '/enigma.png', src: '/enigma.png' }
+    ];
+    logosToLoad.forEach(({ key, src }) => {
+      const logoImg = new Image();
+      logoImg.crossOrigin = 'anonymous';
+      logoImg.src = src;
+      logoImg.onload = () => {
+        setCompanyLogos(prev => ({ ...prev, [key]: logoImg }));
+      };
+    });
+  }, []);
 
   const initial = getInitialTextures();
   const [frontTexture, setFrontTexture] = useState<string>(initial.front);
@@ -150,6 +186,11 @@ export const HistoryPage = () => {
       cachedStrapTexture = strap;
       setStrapTexture(strap);
 
+      const enrichedCompanies = DEFAULT_COMPANIES.map(comp => ({
+        ...comp,
+        logoImage: comp.logoUrl && companyLogos[comp.logoUrl] ? companyLogos[comp.logoUrl] : null
+      }));
+
       const front = generateFrontBadge({
         name: 'Rohit K. Sahoo',
         role: 'Computer Science Student',
@@ -159,7 +200,10 @@ export const HistoryPage = () => {
         technologies: githubStats.technologies,
         commits: githubStats.commits,
         avatarUrl: '/avatar.png',
+        avatarImage: avatarImg,
         githubUsername: 'RohitKSahoo',
+        githubUrl: 'https://github.com/RohitKSahoo',
+        companies: enrichedCompanies,
         languages: githubStats.languagesList,
         orientation: 'landscape'
       });
@@ -188,7 +232,7 @@ export const HistoryPage = () => {
     return () => {
       active = false;
     };
-  }, [githubStats]);
+  }, [githubStats, avatarImg, companyLogos, fontsLoaded]);
 
   return (
     <div className="w-full min-h-[calc(100vh-160px)] lg:min-h-[750px] flex flex-col gap-6 relative overflow-visible font-inter">
@@ -199,21 +243,24 @@ export const HistoryPage = () => {
           <Lanyard
             frontImage={frontTexture}
             backImage={backTexture}
+            cardColor="#0d0e10"
             strapColor="#0a0a0c"
             strapWidth={0.55}
             metal="silver"
             finish="metallic"
             orientation="landscape"
             cornerRadius={0.1}
-            size={isMobile ? 0.38 : 0.52}
-            anchor={isMobile ? 0.5 : 0.72}
+            size={isMobile ? 0.46 : 0.60}
+            anchor={isMobile ? 0.5 : 0.7}
             strapLength={isMobile ? 0.25 : 0.35}
             gravity={0.65}
-            damping={0.28}
+            damping={0.2}
             elasticity={0.92}
-            breeze={0.35}
+            breeze={0.62}
             interactive={true}
             intro={true}
+            githubUrl="https://github.com/RohitKSahoo"
+            companies={DEFAULT_COMPANIES}
             className="w-full h-full"
           />
         </div>,
@@ -297,7 +344,7 @@ export const HistoryPage = () => {
           </motion.div>
         </motion.div>
 
-        {/* Right Spacer (7/12) - Transparent to allow clicking & interacting with the 3D Lanyard */}
+        {/* Right Column (7/12) - Transparent to allow clicking & interacting with the 3D Lanyard */}
         <div className="hidden lg:block lg:col-span-7 pointer-events-none" />
       </div>
 
