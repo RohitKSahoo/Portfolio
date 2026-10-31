@@ -3,6 +3,15 @@ import { Lanyard } from '../effects/Lanyard';
 import { generateFrontBadge, generateBackBadge, generateStrapImage } from '../effects/badgeGenerator';
 
 export const HistoryPage = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [githubStats, setGithubStats] = useState({
     projects: '23',
     technologies: '8+',
@@ -137,16 +146,47 @@ export const HistoryPage = () => {
   }, [githubStats]);
 
   return (
-    <div className="w-full h-full flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-visible font-inter">
+    <div className="w-full min-h-[calc(100vh-160px)] lg:min-h-[750px] flex flex-col gap-6 animate-in fade-in duration-700 relative overflow-visible font-inter">
       
+      {/* FULL-PAGE 3D LANYARD (Spans entire width and height behind content, no boundary clipping) */}
+      <div className="absolute inset-0 -top-6 -bottom-6 w-full h-[calc(100%+48px)] z-0 pointer-events-auto">
+        {frontTexture ? (
+          <Lanyard
+            frontImage={frontTexture}
+            backImage={backTexture}
+            strapColor="#0a0a0c"
+            strapWidth={0.55}
+            metal="silver"
+            finish="metallic"
+            orientation="landscape"
+            cornerRadius={0.1}
+            size={isMobile ? 0.6 : 0.45}
+            anchor={isMobile ? 0.5 : 0.72}
+            strapLength={0.45}
+            gravity={0.8}
+            damping={0.3}
+            elasticity={0.9}
+            breeze={0.35}
+            interactive={true}
+            intro={true}
+            qrUrl="https://github.com/RohitKSahoo"
+            className="w-full h-full"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+      </div>
+
       {/* Main Content Grid */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10 pointer-events-none">
         
         {/* Left Column (5/12) - Timeline */}
-        <div className="lg:col-span-5 flex flex-col gap-10 py-2 overflow-y-auto pr-2">
+        <div className="lg:col-span-5 flex flex-col gap-10 py-2 overflow-y-auto pr-2 pointer-events-none">
 
           {/* Timeline Item 1 */}
-          <div className="flex gap-6 group">
+          <div className="flex gap-6 group pointer-events-auto select-text">
             <div className="flex flex-col items-center mt-1 shrink-0">
               <div className="w-5 h-5 rounded-sm border border-red-500 bg-[#0d0d0d] flex items-center justify-center">
                 <div className="w-2 h-2 bg-red-500 rounded-sm" />
@@ -172,7 +212,7 @@ export const HistoryPage = () => {
           </div>
 
           {/* Timeline Item 2 */}
-          <div className="flex gap-6 group">
+          <div className="flex gap-6 group pointer-events-auto select-text">
             <div className="flex flex-col items-center mt-1 shrink-0">
               <div className="w-5 h-5 rounded-sm border border-white/20 bg-[#0d0d0d] flex items-center justify-center">
                 <div className="w-2 h-2 bg-white/20 rounded-sm" />
@@ -201,36 +241,8 @@ export const HistoryPage = () => {
           </div>
         </div>
 
-        {/* Right Column (7/12) - 3D Lanyard emerging from behind top header */}
-        <div className="lg:col-span-7 flex flex-col -mt-[95px] lg:-mt-[110px] h-[calc(100vh-20px)] min-h-[760px] lg:min-h-[880px] relative pointer-events-auto lg:translate-x-3">
-          {frontTexture ? (
-            <Lanyard
-              frontImage={frontTexture}
-              backImage={backTexture}
-              strapColor="#0a0a0c"
-              strapWidth={0.55}
-              metal="silver"
-              finish="metallic"
-              orientation="landscape"
-              cornerRadius={0.1}
-              size={0.85}
-              anchor={0.58}
-              strapLength={0.5}
-              gravity={0.8}
-              damping={0.3}
-              elasticity={0.9}
-              breeze={0.35}
-              interactive={true}
-              intro={true}
-              qrUrl="https://github.com/RohitKSahoo"
-              className="w-full h-full"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-            </div>
-          )}
-        </div>
+        {/* Right Spacer (7/12) - Transparent to allow clicking & interacting with the 3D Lanyard */}
+        <div className="hidden lg:block lg:col-span-7 pointer-events-none" />
       </div>
 
     </div>
