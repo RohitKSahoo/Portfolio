@@ -73,7 +73,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
   const scrambledTitle = useScrambleText(currentTitle, GLYPHS, 25);
 
   return (
-    <header className="fixed top-5 left-5 right-5 h-16 lg:h-20 px-4 lg:px-8 flex justify-between items-center z-[130] transition-all duration-500 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md overflow-hidden">
+    <header className="fixed top-5 left-5 right-5 h-16 lg:h-20 px-4 lg:px-8 flex justify-between items-center z-[130] transition-all duration-500 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md overflow-hidden pointer-events-auto">
       {/* Subtle accent line on top */}
       <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/20 to-transparent" />
 

@@ -112,7 +112,7 @@ function App() {
       />
 
       {/* MAIN SYSTEM VIEWPORT */}
-      <main className="flex flex-col relative z-10 transition-all duration-500">
+      <main className={`flex flex-col relative z-10 transition-all duration-500 ${activeTab === 'experience' ? 'pointer-events-none' : ''}`}>
         {/* TOP TELEMETRY HEADER */}
         <Header 
           activeTab={activeTab}

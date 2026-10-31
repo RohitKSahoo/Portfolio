@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Lanyard } from '../effects/Lanyard';
 import { generateFrontBadge, generateBackBadge, generateStrapImage } from '../effects/badgeGenerator';
 
@@ -148,36 +149,39 @@ export const HistoryPage = () => {
   return (
     <div className="w-full min-h-[calc(100vh-160px)] lg:min-h-[750px] flex flex-col gap-6 animate-in fade-in duration-700 relative overflow-visible font-inter">
       
-      {/* FULL-PAGE 3D LANYARD (Spans entire width and height behind content, no boundary clipping) */}
-      <div className="absolute inset-0 -top-6 -bottom-6 w-full h-[calc(100%+48px)] z-0 pointer-events-auto">
-        {frontTexture ? (
-          <Lanyard
-            frontImage={frontTexture}
-            backImage={backTexture}
-            strapColor="#0a0a0c"
-            strapWidth={0.55}
-            metal="silver"
-            finish="metallic"
-            orientation="landscape"
-            cornerRadius={0.1}
-            size={isMobile ? 0.6 : 0.45}
-            anchor={isMobile ? 0.5 : 0.72}
-            strapLength={0.45}
-            gravity={0.8}
-            damping={0.3}
-            elasticity={0.9}
-            breeze={0.35}
-            interactive={true}
-            intro={true}
-            qrUrl="https://github.com/RohitKSahoo"
-            className="w-full h-full"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-          </div>
-        )}
-      </div>
+      {/* FULL-VIEWPORT 3D LANYARD (Attached to top edge, spans entire viewport, no edge clipping) */}
+      {typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 w-screen h-screen z-[1] pointer-events-auto overflow-hidden">
+          {frontTexture ? (
+            <Lanyard
+              frontImage={frontTexture}
+              backImage={backTexture}
+              strapColor="#0a0a0c"
+              strapWidth={0.55}
+              metal="silver"
+              finish="metallic"
+              orientation="landscape"
+              cornerRadius={0.1}
+              size={isMobile ? 0.38 : 0.28}
+              anchor={isMobile ? 0.5 : 0.72}
+              strapLength={isMobile ? 0.25 : 0.35}
+              gravity={0.8}
+              damping={0.3}
+              elasticity={0.9}
+              breeze={0.35}
+              interactive={true}
+              intro={true}
+              qrUrl="https://github.com/RohitKSahoo"
+              className="w-full h-full"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+        </div>,
+        document.body
+      )}
 
       {/* Main Content Grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10 pointer-events-none">
