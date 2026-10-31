@@ -147,7 +147,7 @@ export const SystemDock: React.FC<DockProps> = ({ activeTab, setActiveTab, isDoc
         onMouseLeave={() => mouseX.set(Infinity)}
         initial={{ y: 100, opacity: 0 }}
         animate={{
-          y: isDockVisible || isHovered || isMobile ? 0 : 78,
+          y: isDockVisible || isHovered || isMobile ? (isMobile ? 12 : 18) : 78,
           opacity: 1,
         }}
         transition={{ type: "spring", stiffness: 260, damping: 25 }}
