@@ -313,20 +313,20 @@ interface Splat {
 
 export const LiquidEther: React.FC<LiquidEtherProps> = ({
   colors = ['#5227FF', '#FF9FFC', '#B497CF'],
-  preset = 'syrup',
-  intensity = 1.2,
-  mouseForce = 25,
-  cursorSize = 130,
-  persistence = 1,
-  viscosity = 0.8,
+  preset = 'ether',
+  intensity = 0.75,
+  mouseForce = 12,
+  cursorSize = 85,
+  persistence = 0.85,
+  viscosity = 0.88,
   resolution = 0.5,
-  bounceEdges = true,
+  bounceEdges = false,
   clickBurst = true,
   autoDemo = true,
-  autoSpeed = 0.6,
-  autoIntensity = 3.2,
-  autoResumeDelay = 800,
-  intro = true,
+  autoSpeed = 0.22,
+  autoIntensity = 1.2,
+  autoResumeDelay = 1200,
+  intro = false,
   lightMode = false,
   backgroundColor = 'transparent',
   maxDevicePixelRatio = 2,
@@ -342,6 +342,7 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
 
   const settings = {
     colors: palette,
+    preset,
     paletteKey: palette.join(','),
     intensity: Math.max(0, intensity),
     force: Math.max(0, mouseForce),
@@ -700,7 +701,7 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
         addStroke(from, to, dt, 0.45 * Math.max(0.1, fade), s.radius * 1.2);
         energy = 1;
         if (opening.time > 1.4) opening.active = false;
-      } else if (s.autoDemo && !reduced && idle) {
+      } else if (s.autoDemo && !reduced) {
         auto.ramp = Math.min(1, auto.ramp + dt / 0.8);
         auto.phase += dt * s.autoSpeed * 1.6;
         const spot = wander(auto.phase);
@@ -720,7 +721,7 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
       if (pointer.moved) {
         pointer.moved = false;
         const span = Math.max(now - pointer.last, 8) / 1000;
-        addStroke([pointer.fromX, pointer.fromY], [pointer.x, pointer.y], span, (s.force / 20) * 0.25 * pace, s.radius);
+        addStroke([pointer.fromX, pointer.fromY], [pointer.x, pointer.y], span, (s.force / 20) * 0.75 * pace, s.radius);
         pointer.fromX = pointer.x;
         pointer.fromY = pointer.y;
         pointer.last = now;

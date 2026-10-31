@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { Zap, FileText } from 'lucide-react';
 import { DitherVeil } from '../effects/DitherVeil';
@@ -47,7 +48,7 @@ export const ProfilePage = ({
       const timer = setTimeout(() => {
         window.dispatchEvent(
           new CustomEvent('liquid-ether-surge', {
-            detail: { origin: 'bottom-center', intensity: 1.6 }
+            detail: { origin: 'top-left', intensity: 5 }
           })
         );
       }, 100);
@@ -56,57 +57,62 @@ export const ProfilePage = ({
   }, [isAvatarLoaded]);
 
   return (
-    <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700 font-inter">
+    <div className="flex flex-col gap-10 animate-in fade-in duration-500 font-inter">
       <div className="relative min-h-[calc(100dvh-180px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
-        {/* CENTER AVATAR FIGURE - ANCHORED TO BOTTOM OF SCREEN */}
-        <div className="fixed inset-x-0 bottom-0 flex justify-center items-end z-0 pointer-events-none">
-           <motion.div 
-             initial={{ opacity: 0, y: '85%' }}
-             animate={isExiting ? { opacity: 0, y: '95%' } : isAvatarLoaded ? { opacity: 1, y: '0%' } : { opacity: 0, y: '85%' }}
-             transition={
-               isExiting
-                 ? { duration: 1.1, ease: [0.16, 1, 0.3, 1] }
-                 : { duration: 1.25, ease: [0.16, 1, 0.3, 1], delay: 0.08 }
-             }
-             onAnimationComplete={() => {
-               if (isExiting) {
-                 onExitComplete?.();
+        {/* CENTER AVATAR FIGURE - ANCHORED FIRMLY TO BOTTOM OF SCREEN */}
+        {typeof document !== 'undefined' && createPortal(
+          <div className="fixed inset-x-0 bottom-0 flex justify-center items-end z-[5] pointer-events-none" style={{ bottom: 0 }}>
+             <motion.div 
+               initial={{ opacity: 0, y: '85%' }}
+               animate={isExiting ? { opacity: 0, y: '95%' } : isAvatarLoaded ? { opacity: 1, y: '0%' } : { opacity: 0, y: '85%' }}
+               transition={
+                 isExiting
+                   ? { duration: 0.3, ease: [0.16, 1, 0.3, 1] }
+                   : { duration: 1.25, ease: [0.16, 1, 0.3, 1], delay: 0.08 }
                }
-             }}
-             className="relative w-full max-w-6xl xl:max-w-[1700px] h-[65vh] sm:h-[75vh] lg:h-[85vh] pointer-events-auto flex items-end justify-center z-10"
-           >
-              <motion.div
-                animate={isMobile ? { y: [0, -8, 0] } : {}}
-                transition={isMobile ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
-                className="relative w-full h-full flex items-end justify-center bg-transparent scale-110 sm:scale-120 lg:scale-135 origin-bottom"
-              >
-                <DitherVeil 
-                  src="/avatar.png"
-                  fit="contain"
-                  align="bottom"
-                  intro={false}
-                  colorEntrance={true}
-                  colorEntranceDuration={1500}
-                  triggerEntrance={isAvatarLoaded ? 1 : 0}
-                  onLoad={() => setIsAvatarLoaded(true)}
-                  pattern="atkinson"
-                  pixelSize={2}
-                  levels={5}
-                  inkColor="#000000"
-                  paperColor="#f4f1ea"
-                  revealRadius={140}
-                  softness={0.8}
-                  linger={4}
-                  wander={false}
-                  clickBurst={true}
-                  rimColor="#000000"
-                  rim={0}
-                  transparentBg={true}
-                  className="w-full h-full cursor-crosshair bg-transparent"
-                />
-              </motion.div>
-           </motion.div>
-        </div>
+               onAnimationComplete={() => {
+                 if (isExiting) {
+                   onExitComplete?.();
+                 }
+               }}
+               className="relative w-full max-w-6xl xl:max-w-[1700px] h-[65vh] sm:h-[75vh] lg:h-[85vh] pointer-events-auto flex items-end justify-center"
+               style={{ bottom: 0 }}
+             >
+                <motion.div
+                  animate={isMobile ? { y: [0, -8, 0] } : {}}
+                  transition={isMobile ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
+                  className="relative w-full h-full flex items-end justify-center bg-transparent scale-110 sm:scale-120 lg:scale-135 origin-bottom"
+                  style={{ bottom: 0 }}
+                >
+                  <DitherVeil 
+                    src="/avatar.png"
+                    fit="contain"
+                    align="bottom"
+                    intro={false}
+                    colorEntrance={true}
+                    colorEntranceDuration={2500}
+                    triggerEntrance={isAvatarLoaded ? 1 : 0}
+                    onLoad={() => setIsAvatarLoaded(true)}
+                    pattern="atkinson"
+                    pixelSize={2}
+                    levels={5}
+                    inkColor="#000000"
+                    paperColor="#f4f1ea"
+                    revealRadius={130}
+                    softness={0.7}
+                    linger={4}
+                    wander={false}
+                    clickBurst={true}
+                    rimColor="#000000"
+                    rim={0}
+                    transparentBg={true}
+                    className="w-full h-full cursor-crosshair bg-transparent"
+                  />
+                </motion.div>
+             </motion.div>
+          </div>,
+          document.body
+        )}
 
         <motion.div 
           animate={{ opacity: isExiting ? 0 : 1, y: isExiting ? 20 : 0 }}

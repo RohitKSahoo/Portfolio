@@ -1,19 +1,70 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { motion } from 'framer-motion';
 import { Lanyard } from '../effects/Lanyard';
 import { generateFrontBadge, generateBackBadge, generateStrapImage } from '../effects/badgeGenerator';
 
-export const HistoryPage = () => {
-  const [githubStats, setGithubStats] = useState({
-    projects: '23',
-    technologies: '8+',
-    since: '2025',
-    commits: '986+',
-    languagesList: ['Kotlin', 'Java', 'TypeScript', 'JavaScript', 'Python', 'HTML', 'CSS']
-  });
+const DEFAULT_GITHUB_STATS = {
+  projects: '23',
+  technologies: '8+',
+  since: '2025',
+  commits: '986+',
+  languagesList: ['Kotlin', 'Java', 'TypeScript', 'JavaScript', 'Python', 'HTML', 'CSS']
+};
 
-  const [frontTexture, setFrontTexture] = useState<string>('');
-  const [backTexture, setBackTexture] = useState<string>('');
-  const [strapTexture, setStrapTexture] = useState<string>('');
+let cachedFrontTexture = '';
+let cachedBackTexture = '';
+let cachedStrapTexture = '';
+
+const getInitialTextures = () => {
+  if (typeof window === 'undefined') return { front: '', back: '', strap: '' };
+  if (!cachedFrontTexture) {
+    cachedStrapTexture = generateStrapImage();
+    cachedFrontTexture = generateFrontBadge({
+      name: 'Rohit K. Sahoo',
+      role: 'Computer Science Student',
+      institution: 'Veer Surendra Sai Univ. of Tech',
+      since: DEFAULT_GITHUB_STATS.since,
+      projects: DEFAULT_GITHUB_STATS.projects,
+      technologies: DEFAULT_GITHUB_STATS.technologies,
+      commits: DEFAULT_GITHUB_STATS.commits,
+      avatarUrl: '/avatar.png',
+      githubUsername: 'RohitKSahoo',
+      languages: DEFAULT_GITHUB_STATS.languagesList,
+      orientation: 'landscape'
+    });
+    cachedBackTexture = generateBackBadge({
+      name: 'Rohit K. Sahoo',
+      role: 'Computer Science Student',
+      institution: 'Veer Surendra Sai Univ. of Tech',
+      since: DEFAULT_GITHUB_STATS.since,
+      projects: DEFAULT_GITHUB_STATS.projects,
+      technologies: DEFAULT_GITHUB_STATS.technologies,
+      commits: DEFAULT_GITHUB_STATS.commits,
+      githubUsername: 'RohitKSahoo',
+      languages: DEFAULT_GITHUB_STATS.languagesList,
+      orientation: 'landscape'
+    });
+  }
+  return { front: cachedFrontTexture, back: cachedBackTexture, strap: cachedStrapTexture };
+};
+
+export const HistoryPage = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const [githubStats, setGithubStats] = useState(DEFAULT_GITHUB_STATS);
+
+  const initial = getInitialTextures();
+  const [frontTexture, setFrontTexture] = useState<string>(initial.front);
+  const [backTexture, setBackTexture] = useState<string>(initial.back);
+  const [strapTexture, setStrapTexture] = useState<string>(initial.strap);
 
   useEffect(() => {
     const fetchPublicGithubData = async () => {
@@ -96,9 +147,10 @@ export const HistoryPage = () => {
     const createTextures = async () => {
       const strap = generateStrapImage();
       if (!active) return;
+      cachedStrapTexture = strap;
       setStrapTexture(strap);
 
-      const front = await generateFrontBadge({
+      const front = generateFrontBadge({
         name: 'Rohit K. Sahoo',
         role: 'Computer Science Student',
         institution: 'Veer Surendra Sai Univ. of Tech',
@@ -112,6 +164,7 @@ export const HistoryPage = () => {
         orientation: 'landscape'
       });
       if (!active) return;
+      cachedFrontTexture = front;
       setFrontTexture(front);
 
       const back = generateBackBadge({
@@ -127,6 +180,7 @@ export const HistoryPage = () => {
         orientation: 'landscape'
       });
       if (!active) return;
+      cachedBackTexture = back;
       setBackTexture(back);
     };
 
@@ -137,16 +191,54 @@ export const HistoryPage = () => {
   }, [githubStats]);
 
   return (
-    <div className="w-full h-full flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-visible font-inter">
+    <div className="w-full min-h-[calc(100vh-160px)] lg:min-h-[750px] flex flex-col gap-6 relative overflow-visible font-inter">
       
+      {/* FULL-VIEWPORT 3D LANYARD (Attached to top edge, spans entire viewport, zero loader delay) */}
+      {typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 w-screen h-screen z-[5] pointer-events-auto overflow-hidden">
+          <Lanyard
+            frontImage={frontTexture}
+            backImage={backTexture}
+            strapColor="#0a0a0c"
+            strapWidth={0.55}
+            metal="silver"
+            finish="metallic"
+            orientation="landscape"
+            cornerRadius={0.1}
+            size={isMobile ? 0.38 : 0.52}
+            anchor={isMobile ? 0.5 : 0.72}
+            strapLength={isMobile ? 0.25 : 0.35}
+            gravity={0.65}
+            damping={0.28}
+            elasticity={0.92}
+            breeze={0.35}
+            interactive={true}
+            intro={true}
+            qrUrl="https://github.com/RohitKSahoo"
+            className="w-full h-full"
+          />
+        </div>,
+        document.body
+      )}
+
       {/* Main Content Grid */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10 pointer-events-none">
         
-        {/* Left Column (5/12) - Timeline */}
-        <div className="lg:col-span-5 flex flex-col gap-10 py-2 overflow-y-auto pr-2">
+        {/* Left Column (5/12) - Timeline sliding smoothly up from bottom edge */}
+        <motion.div 
+          initial={{ opacity: 0, y: 70 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 220, damping: 26, mass: 0.9, delay: 0.05 }}
+          className="lg:col-span-5 flex flex-col gap-10 py-2 overflow-y-auto pr-2 pointer-events-none"
+        >
 
           {/* Timeline Item 1 */}
-          <div className="flex gap-6 group">
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 220, damping: 26, delay: 0.12 }}
+            className="flex gap-6 group pointer-events-auto select-text"
+          >
             <div className="flex flex-col items-center mt-1 shrink-0">
               <div className="w-5 h-5 rounded-sm border border-red-500 bg-[#0d0d0d] flex items-center justify-center">
                 <div className="w-2 h-2 bg-red-500 rounded-sm" />
@@ -169,10 +261,15 @@ export const HistoryPage = () => {
                 <li>Focusing on mastering core CS fundamentals while building practical software solutions.</li>
               </ul>
             </div>
-          </div>
+          </motion.div>
 
           {/* Timeline Item 2 */}
-          <div className="flex gap-6 group">
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 220, damping: 26, delay: 0.22 }}
+            className="flex gap-6 group pointer-events-auto select-text"
+          >
             <div className="flex flex-col items-center mt-1 shrink-0">
               <div className="w-5 h-5 rounded-sm border border-white/20 bg-[#0d0d0d] flex items-center justify-center">
                 <div className="w-2 h-2 bg-white/20 rounded-sm" />
@@ -198,39 +295,11 @@ export const HistoryPage = () => {
                 <li><strong className="text-white font-medium">Location-Based Services:</strong> Explored geofencing APIs to automate system settings based on location.</li>
               </ul>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        {/* Right Column (7/12) - 3D Lanyard emerging from behind top header */}
-        <div className="lg:col-span-7 flex flex-col -mt-[95px] lg:-mt-[110px] h-[calc(100vh-20px)] min-h-[760px] lg:min-h-[880px] relative pointer-events-auto lg:translate-x-3">
-          {frontTexture ? (
-            <Lanyard
-              frontImage={frontTexture}
-              backImage={backTexture}
-              strapColor="#0a0a0c"
-              strapWidth={0.55}
-              metal="silver"
-              finish="metallic"
-              orientation="landscape"
-              cornerRadius={0.1}
-              size={0.85}
-              anchor={0.58}
-              strapLength={0.5}
-              gravity={0.8}
-              damping={0.3}
-              elasticity={0.9}
-              breeze={0.35}
-              interactive={true}
-              intro={true}
-              qrUrl="https://github.com/RohitKSahoo"
-              className="w-full h-full"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-            </div>
-          )}
-        </div>
+        {/* Right Spacer (7/12) - Transparent to allow clicking & interacting with the 3D Lanyard */}
+        <div className="hidden lg:block lg:col-span-7 pointer-events-none" />
       </div>
 
     </div>
@@ -238,5 +307,3 @@ export const HistoryPage = () => {
 };
 
 export default HistoryPage;
-
-
