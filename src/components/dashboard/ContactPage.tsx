@@ -128,7 +128,7 @@ export const ContactPage = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden font-inter">
+    <div className="w-full h-full flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden font-inter pointer-events-auto">
       
 
       {/* Main Content Grid */}

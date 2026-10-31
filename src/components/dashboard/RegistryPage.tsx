@@ -248,7 +248,7 @@ export const RegistryPage = () => {
   ];
 
   return (
-    <div className="relative font-inter">
+    <div className="relative font-inter pointer-events-auto">
       {/* PROJECTS GRID */}
       <div className="flex flex-col gap-4 pb-8 pt-0 bento-section">
         <div className="flex flex-col gap-4 pt-0 relative">

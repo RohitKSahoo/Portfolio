@@ -102,9 +102,10 @@ function App() {
       {/* LIQUID ETHER FLUID SIMULATION BACKGROUND */}
       <LiquidEther
         colors={LIQUID_COLORS}
-        mouseForce={22}
+        mouseForce={25}
+        intensity={1.2}
         cursorSize={130}
-        persistence={0.94}
+        persistence={0.93}
         autoDemo={true}
         autoSpeed={0.6}
         autoIntensity={3.2}
@@ -112,15 +113,15 @@ function App() {
       />
 
       {/* MAIN SYSTEM VIEWPORT */}
-      <main className={`flex flex-col relative z-10 transition-all duration-500 ${activeTab === 'experience' ? 'pointer-events-none' : ''}`}>
+      <main className="flex flex-col relative z-10 transition-all duration-500 pointer-events-none">
         {/* TOP TELEMETRY HEADER */}
         <Header 
           activeTab={activeTab}
         />
 
         {/* ACTIVE MODULE VIEWPORT */}
-        <div ref={scrollContainerRef} className="px-5 pt-[95px] lg:pt-[110px] pb-24 lg:pb-24" style={{ WebkitOverflowScrolling: 'touch' }}>
-          <div className="max-w-[1600px] w-full mx-auto">
+        <div ref={scrollContainerRef} className="px-5 pt-[95px] lg:pt-[110px] pb-24 lg:pb-24 pointer-events-none" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div className="max-w-[1600px] w-full mx-auto pointer-events-none">
              {renderContent()}
           </div>
         </div>

@@ -151,7 +151,7 @@ export const HistoryPage = () => {
       
       {/* FULL-VIEWPORT 3D LANYARD (Attached to top edge, spans entire viewport, no edge clipping) */}
       {typeof document !== 'undefined' && createPortal(
-        <div className="fixed inset-0 w-screen h-screen z-[1] pointer-events-auto overflow-hidden">
+        <div className="fixed inset-0 w-screen h-screen z-[5] pointer-events-auto overflow-hidden">
           {frontTexture ? (
             <Lanyard
               frontImage={frontTexture}
@@ -162,7 +162,7 @@ export const HistoryPage = () => {
               finish="metallic"
               orientation="landscape"
               cornerRadius={0.1}
-              size={isMobile ? 0.38 :0.53}
+              size={isMobile ? 0.38 : 0.52}
               anchor={isMobile ? 0.5 : 0.72}
               strapLength={isMobile ? 0.25 : 0.35}
               gravity={0.6}
