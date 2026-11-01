@@ -56,6 +56,16 @@ export const ProfilePage = ({
     }
   }, [isAvatarLoaded]);
 
+  React.useEffect(() => {
+    if (isExiting) {
+      window.dispatchEvent(
+        new CustomEvent('liquid-ether-surge', {
+          detail: { origin: 'bottom-center', intensity: 1 }
+        })
+      );
+    }
+  }, [isExiting]);
+
   return (
     <div className="flex flex-col gap-10 animate-in fade-in duration-500 font-inter">
       <div className="relative min-h-[calc(100dvh-180px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
@@ -64,10 +74,10 @@ export const ProfilePage = ({
           <div className="fixed inset-x-0 bottom-0 flex justify-center items-end z-[5] pointer-events-none" style={{ bottom: 0 }}>
              <motion.div 
                initial={{ opacity: 0, y: '85%' }}
-               animate={isExiting ? { opacity: 0, y: '95%' } : isAvatarLoaded ? { opacity: 1, y: '0%' } : { opacity: 0, y: '85%' }}
+               animate={isExiting ? { opacity: 0, y: '85%' } : isAvatarLoaded ? { opacity: 1, y: '0%' } : { opacity: 0, y: '85%' }}
                transition={
                  isExiting
-                   ? { duration: 0.3, ease: [0.16, 1, 0.3, 1] }
+                   ? { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
                    : { duration: 1.25, ease: [0.16, 1, 0.3, 1], delay: 0.08 }
                }
                onAnimationComplete={() => {
@@ -79,8 +89,8 @@ export const ProfilePage = ({
                style={{ bottom: 0 }}
              >
                 <motion.div
-                  animate={isMobile ? { y: [0, -8, 0] } : {}}
-                  transition={isMobile ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
+                  animate={isExiting ? { y: 0 } : isMobile ? { y: [0, -8, 0] } : {}}
+                  transition={isExiting ? { duration: 0.3 } : isMobile ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
                   className="relative w-full h-full flex items-end justify-center bg-transparent scale-110 sm:scale-120 lg:scale-135 origin-bottom"
                   style={{ bottom: 0 }}
                 >

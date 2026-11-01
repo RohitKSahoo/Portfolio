@@ -43,3 +43,4 @@ backups/
 .vercel
 .env*.local
 .agents/
+scratch/
