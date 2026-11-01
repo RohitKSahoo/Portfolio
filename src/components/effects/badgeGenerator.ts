@@ -1,3 +1,5 @@
+import { EXACT_GITHUB_CONTRIBUTIONS, PEAK_MILESTONE_CELLS } from '../../data/githubContributions';
+
 export interface CompanyExperience {
   name: string;
   role: string;
@@ -12,7 +14,7 @@ export const DEFAULT_COMPANIES: CompanyExperience[] = [
   {
     name: 'Papercycle',
     role: 'Digital Recycling & Waste Platform',
-    period: '2024 — Present',
+    period: '2024 - Present',
     url: 'https://www.papercycle.in/',
     logo: 'PC',
     logoUrl: '/papercycle.png'
@@ -20,17 +22,10 @@ export const DEFAULT_COMPANIES: CompanyExperience[] = [
   {
     name: 'Enigma VSSUT',
     role: 'Official Coding Club of VSSUT',
-    period: '2025 — Present',
+    period: '2025 - Present',
     url: 'https://www.enigmavssut.in/',
     logo: 'EN',
     logoUrl: '/enigma.png'
-  },
-  {
-    name: 'Open Source Community',
-    role: 'Core Contributor & Builder',
-    period: '2024 — Present',
-    url: 'https://github.com/RohitKSahoo',
-    logo: 'OS'
   }
 ];
 
@@ -361,6 +356,31 @@ const drawDiagonalArrow = (ctx: CanvasRenderingContext2D, x: number, y: number, 
   ctx.restore();
 };
 
+const drawMinimalRedirectArrow = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size = 12,
+  color = '#0e1014',
+  lineWidth = 1.8
+) => {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  const half = size / 2;
+  const wing = size * 0.44;
+  ctx.beginPath();
+  ctx.moveTo(x - half, y + half);
+  ctx.lineTo(x + half, y - half);
+  ctx.moveTo(x + half - wing, y - half);
+  ctx.lineTo(x + half, y - half);
+  ctx.lineTo(x + half, y - half + wing);
+  ctx.stroke();
+  ctx.restore();
+};
+
 export const generateFrontBadge = (data: BadgeData): string => {
   const isLandscape = data.orientation !== 'portrait';
   const canvas = document.createElement('canvas');
@@ -473,7 +493,7 @@ export const generateFrontBadge = (data: BadgeData): string => {
     // Large Name: Rohit K. Sahoo
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 54px "Doto", "Space Mono", sans-serif';
-    ctx.fillText(data.name || 'Rohit K. Sahoo', 75, underY + 80);
+    ctx.fillText('ROHIT K. SAHOO', 75, underY + 80);
 
     // Subtitle: CS UNDERGRAD · VSSUT
     ctx.fillStyle = '#a3a8b4';
@@ -635,7 +655,7 @@ export const generateFrontBadge = (data: BadgeData): string => {
     ctx.save();
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 28px "Satoshi", sans-serif';
-    ctx.fillText('ROHIT K. SAHOO', colX + 32, 220);
+    ctx.fillText('ROHIT K SAHOO', colX + 32, 220);
     ctx.fillStyle = '#ef4444';
     ctx.font = 'bold 16px "Satoshi", monospace';
     ctx.fillText(data.githubUsername ? `@${data.githubUsername}` : '@RohitKSahoo', colX + 32, 260);
@@ -671,28 +691,441 @@ export const generateBackBadge = (data: BadgeData): string => {
   ctx.fillStyle = '#0d0e10';
   ctx.fillRect(0, 0, W, H);
 
-  // 2. Subtle Corner Glyphs
-  ctx.save();
-  drawDottedCorner(ctx, 70, 55);
-  drawSignalMatrix(ctx, W - 100, 72);
+  const reposCount = data.projects || '23';
+  const commitsCount = data.commits || '1,047';
+  const handle = data.githubUsername ? `@${data.githubUsername.toUpperCase()}` : '@ROHITKSAHOO';
 
-  // 3. Minimal Clean Center Monogram (Faint matte watermark)
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.035)';
-  ctx.font = 'bold 130px "Doto", "Space Mono", monospace, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('RS', W / 2, H / 2 - 10);
+  if (isLandscape) {
+    // 2. Top Header Bar (Matching user image & front badge scale)
+    drawDottedCorner(ctx, 70, 55);
 
-  // 4. Bottom Straight Accent Line matching front
-  ctx.strokeStyle = '#828488ff';
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  const lineY = isLandscape ? 915 : H - 85;
-  ctx.moveTo(65, lineY);
-  ctx.lineTo(W - 65, lineY);
-  ctx.stroke();
+    ctx.save();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.font = 'bold 24px "Doto", "Space Mono", monospace, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('CONTRIBUTIONS', 115, 72);
 
-  ctx.restore();
+    // Red dot next to CONTRIBUTIONS
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.arc(335, 65, 7, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 4-Column Signal Dot Matrix at top-right
+    drawSignalMatrix(ctx, 1440, 72);
+    ctx.restore();
+
+    // 3. Top Profile / Stats (NO BACKGROUND BOX - completely removed as requested)
+    const topCardX = 65;
+    const topCardY = 115;
+    const topCardW = 1400;
+    const topCardH = 120;
+
+    // Octocat Icon + Divider (No enclosing box background)
+    const octoCenterY = topCardY + topCardH / 2;
+    drawGithubOctocat(ctx, topCardX + 50, octoCenterY, 68);
+
+    ctx.save();
+    ctx.strokeStyle = '#282b32';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(topCardX + 115, topCardY + 16);
+    ctx.lineTo(topCardX + 115, topCardY + topCardH - 16);
+    ctx.stroke();
+
+    // Handle Text: @ROHITKSAHOO (Nothing OS Dot-Matrix font - large, ultra-readable & vertically centered)
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 48px "Doto", "Space Mono", monospace, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(handle, topCardX + 145, topCardY + 74);
+
+    // Right Bento Pills: COMMITS and REPOS
+    const pill1W = 190;
+    const pill2W = 165;
+    const pillH = 92;
+    const pillY = topCardY + Math.round((topCardH - pillH) / 2);
+    const pill2X = topCardX + topCardW - pill2W - 10;
+    const pill1X = pill2X - pill1W - 18;
+
+    // Pill 1: COMMITS
+    ctx.fillStyle = '#141519';
+    ctx.beginPath();
+    ctx.roundRect(pill1X, pillY, pill1W, pillH, 18);
+    ctx.fill();
+    ctx.strokeStyle = '#282b32';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = '#8e929b';
+    ctx.font = '15px "Space Mono", monospace';
+    ctx.fillText('COMMITS', pill1X + 24, pillY + 32);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 40px "Doto", "Space Mono", monospace';
+    ctx.fillText(commitsCount, pill1X + 24, pillY + 74);
+
+    // Pill 2: REPOS
+    ctx.fillStyle = '#141519';
+    ctx.beginPath();
+    ctx.roundRect(pill2X, pillY, pill2W, pillH, 18);
+    ctx.fill();
+    ctx.strokeStyle = '#282b32';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = '#8e929b';
+    ctx.font = '15px "Space Mono", monospace';
+    ctx.fillText('REPOS', pill2X + 24, pillY + 32);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 40px "Doto", "Space Mono", monospace';
+    ctx.fillText(reposCount, pill2X + 24, pillY + 74);
+    ctx.restore();
+
+    // 4. Center Main GitHub Contribution Graph Solid Matte Bento Card (Last 6 Months)
+    const graphCardX = 65;
+    const graphCardY = 230;
+    const graphCardW = 1400;
+    const graphCardH = 345;
+
+    ctx.save();
+    ctx.fillStyle = '#16171a';
+    ctx.beginPath();
+    ctx.roundRect(graphCardX, graphCardY, graphCardW, graphCardH, 24);
+    ctx.fill();
+    ctx.strokeStyle = '#282b32';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Card Header: Red bar + CONTRIBUTION ACTIVITY
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.roundRect(graphCardX + 34, graphCardY + 24, 6, 28, 3);
+    ctx.fill();
+
+    // Text: CONTRIBUTION ACTIVITY (LAST 6 MONTHS)
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 24px "Doto", "Space Mono", monospace, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('CONTRIBUTION ACTIVITY', graphCardX + 54, graphCardY + 46);
+
+    // Legend on the Right: Monochromatic shades of white
+    const legX = graphCardX + graphCardW - 290;
+    const legY = graphCardY + 30;
+    ctx.fillStyle = '#8a919e';
+    ctx.font = '15px "Space Mono", monospace, sans-serif';
+    ctx.fillText('LESS', legX, legY + 13);
+
+    // Shades of white: dark matte to radiant pure white for peak
+    const legendColors = ['#17191f', '#3b404d', '#707787', '#b6bcc7', '#ffffff'];
+    legendColors.forEach((color, idx) => {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.roundRect(legX + 54 + idx * 22, legY, 16, 16, 3.5);
+      ctx.fill();
+      if (idx === 0) {
+        ctx.strokeStyle = '#282b32';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    });
+
+    ctx.fillStyle = '#8a919e';
+    ctx.fillText('MORE', legX + 54 + 5 * 22 + 10, legY + 13);
+    ctx.restore();
+
+    // --- Last 6 Months (26 Weeks) GitHub Contribution Matrix ---
+    const totalWeeks = EXACT_GITHUB_CONTRIBUTIONS.weeksCount || 53;
+    const numWeeks = 26;
+    const startWeek = totalWeeks - numWeeks; // Week 27 to 52 (last 6 months)
+    const days = 7;
+    const squareSize = 25;
+    const gap = 7;
+    const step = squareSize + gap; // 32px
+    const gridW = numWeeks * step - gap; // 26 * 32 - 7 = 825px
+    const gridStartX = graphCardX + Math.round((graphCardW - gridW) / 2) + 20;
+    const gridStartY = graphCardY + 104;
+
+    // Months along top (Last 6 Months: JUN - NOV)
+    ctx.save();
+    ctx.fillStyle = '#a3a8b4';
+    ctx.font = 'bold 16px "Space Mono", monospace, sans-serif';
+    ctx.textAlign = 'left';
+
+    const monthColumns = [
+      { name: 'JUN', col: 0 },
+      { name: 'JUL', col: 4 },
+      { name: 'AUG', col: 8 },
+      { name: 'SEP', col: 13 },
+      { name: 'OCT', col: 17 },
+      { name: 'NOV', col: 21 }
+    ];
+
+    monthColumns.forEach(({ name, col }) => {
+      ctx.fillText(name, gridStartX + col * step, graphCardY + 84);
+    });
+
+    // Weekday labels on Left (MON, WED, FRI)
+    ctx.fillStyle = '#a3a8b4';
+    ctx.font = '15px "Space Mono", monospace, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('MON', gridStartX - 18, gridStartY + 1 * step + 18);
+    ctx.fillText('WED', gridStartX - 18, gridStartY + 3 * step + 18);
+    ctx.fillText('FRI', gridStartX - 18, gridStartY + 5 * step + 18);
+    ctx.restore();
+
+    // Render 6-Month Contribution Data with Monochromatic Shades of White
+    const matrix = EXACT_GITHUB_CONTRIBUTIONS.matrix;
+    for (let c = 0; c < numWeeks; c++) {
+      const origCol = startWeek + c;
+      for (let r = 0; r < days; r++) {
+        const level = matrix[r] && matrix[r][origCol] !== undefined ? matrix[r][origCol] : 0;
+        const coordKey = `${r}-${origCol}`;
+        const isMilestone = PEAK_MILESTONE_CELLS.has(coordKey);
+
+        const x = gridStartX + c * step;
+        const y = gridStartY + r * step;
+
+        const isMax = isMilestone || level === 4;
+        const cellColor = isMax ? '#ffffff' : legendColors[level];
+
+        ctx.fillStyle = cellColor;
+        ctx.beginPath();
+        ctx.roundRect(x, y, squareSize, squareSize, 4.5);
+        ctx.fill();
+
+        // Subtle stroke on empty cells for crisp definition
+        if (level === 0 && !isMilestone) {
+          ctx.strokeStyle = '#23262e';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // 5. TOP REPOSITORIES: Nothing OS Off-White Themed Standalone Pills with Black Text
+    const topRepos = [
+      {
+        name: 'auto-commit-bot',
+        lang: 'Python',
+        langColor: '#3572A5',
+        url: 'https://github.com/RohitKSahoo/auto-commit-bot'
+      },
+      {
+        name: 'Pausify',
+        lang: 'Kotlin',
+        langColor: '#A97BFF',
+        url: 'https://github.com/RohitKSahoo/Pausify'
+      },
+      {
+        name: 'sosafe',
+        lang: 'Kotlin',
+        langColor: '#A97BFF',
+        url: 'https://github.com/RohitKSahoo/sosafe'
+      }
+    ];
+
+    const repoPillX = 65;
+    const repoPillW = 1400;
+    const repoPillH = 72;
+    const repoPillR = 36; // Exact true pill / capsule radius (height / 2)
+    const pillStartY = 605;
+    const pillGap = 18;
+
+    topRepos.forEach((repo, idx) => {
+      const py = pillStartY + idx * (repoPillH + pillGap);
+
+      ctx.save();
+      // Nothing OS Off-White Pill Body
+      ctx.fillStyle = '#e6e8ed';
+      ctx.beginPath();
+      ctx.roundRect(repoPillX, py, repoPillW, repoPillH, repoPillR);
+      ctx.fill();
+      ctx.strokeStyle = '#d0d4dc';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Left Accent: Red indicator dot
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.arc(repoPillX + 36, py + repoPillH / 2, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Repo Name in Bold Black Text (Nothing OS Mono font)
+      ctx.fillStyle = '#0e1014';
+      ctx.font = 'bold 23px "Space Mono", monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(repo.name, repoPillX + 54, py + repoPillH / 2 + 7);
+
+      // Language Pill
+      const langW = 120;
+      const langH = 36;
+      const langX = repoPillX + repoPillW - 145 - langW;
+      const langY = py + (repoPillH - langH) / 2;
+
+      ctx.fillStyle = '#dadde4';
+      ctx.beginPath();
+      ctx.roundRect(langX, langY, langW, langH, 18);
+      ctx.fill();
+      ctx.strokeStyle = '#c6cbd5';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Language dot & text
+      ctx.fillStyle = repo.langColor;
+      ctx.beginPath();
+      ctx.arc(langX + 22, langY + langH / 2, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#1f242d';
+      ctx.font = 'bold 15px "Space Mono", monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(repo.lang, langX + 36, langY + langH / 2 + 5);
+
+      // Right Minimal Redirect Button: Small clean circular button with minimal ↗ arrow
+      const btnSize = 42;
+      const btnX = repoPillX + repoPillW - 28 - btnSize;
+      const btnY = py + (repoPillH - btnSize) / 2;
+
+      ctx.fillStyle = '#f3f4f6';
+      ctx.beginPath();
+      ctx.arc(btnX + btnSize / 2, btnY + btnSize / 2, btnSize / 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#c5c9d2';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Small minimal ↗ icon
+      drawMinimalRedirectArrow(ctx, btnX + btnSize / 2, btnY + btnSize / 2, 12, '#0e1014', 1.8);
+
+      ctx.restore();
+    });
+
+    // 6. Straight Line Near Bottom Edge of ID Card (Same color #828488ff and position Y: 915 as front badge)
+    ctx.save();
+    ctx.strokeStyle = '#828488ff';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(65, 915);
+    ctx.lineTo(W - 65, 915);
+    ctx.stroke();
+
+    // Footer Signoff: GITHUB ACTIVITY — ROHIT K. SAHOO (Large & right-aligned)
+    ctx.fillStyle = '#a3a8b4';
+    ctx.font = '20px "Space Mono", monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText('GITHUB ACTIVITY  —  ROHIT K. SAHOO', W - 65, 955);
+    ctx.restore();
+
+  } else {
+    // Portrait Fallback using exact matrix data
+    drawDottedCorner(ctx, 60, 50);
+
+    ctx.save();
+    ctx.fillStyle = '#cbd5e1';
+    ctx.font = 'bold 24px "Space Mono", monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('CONTRIBUTIONS', 105, 65);
+
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.arc(300, 58, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Top Profile Card (Solid matte)
+    ctx.save();
+    ctx.fillStyle = '#16171a';
+    ctx.beginPath();
+    ctx.roundRect(50, 100, 700, 150, 20);
+    ctx.fill();
+    ctx.strokeStyle = '#282b32';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    drawGithubOctocat(ctx, 95, 175, 58);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 36px "Doto", "Space Mono", monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(handle, 145, 158);
+    ctx.fillStyle = '#8e929b';
+    ctx.font = '18px "Space Mono", monospace';
+    ctx.fillText(`${commitsCount} COMMITS · ${reposCount} REPOSITORIES`, 145, 195);
+    ctx.restore();
+
+    // Main Graph Card (Portrait: last 26 weeks of exact data, solid matte)
+    ctx.save();
+    ctx.fillStyle = '#16171a';
+    ctx.beginPath();
+    ctx.roundRect(50, 275, 700, 480, 20);
+    ctx.fill();
+    ctx.strokeStyle = '#282b32';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.roundRect(80, 305, 5, 24, 2.5);
+    ctx.fill();
+
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 22px "Doto", "Space Mono", monospace';
+    ctx.fillText('CONTRIBUTION ACTIVITY', 98, 324);
+
+    const pWeeks = 26;
+    const pSquare = 18;
+    const pGap = 5;
+    const pStep = pSquare + pGap;
+    const pStartX = 80;
+    const pStartY = 355;
+    const pLegendColors = ['#1a1c22', '#2f3542', '#525c6e', '#a1aab8', '#ffffff'];
+
+    const fullMatrix = EXACT_GITHUB_CONTRIBUTIONS.matrix;
+    const startCol = Math.max(0, (EXACT_GITHUB_CONTRIBUTIONS.weeksCount || 53) - pWeeks);
+
+    for (let c = 0; c < pWeeks; c++) {
+      for (let r = 0; r < 7; r++) {
+        const actualCol = startCol + c;
+        const lvl = fullMatrix[r] && fullMatrix[r][actualCol] !== undefined ? fullMatrix[r][actualCol] : 0;
+        const isMilestone = PEAK_MILESTONE_CELLS.has(`${r}-${actualCol}`);
+        ctx.fillStyle = isMilestone ? '#ef4444' : pLegendColors[lvl];
+        ctx.beginPath();
+        ctx.roundRect(pStartX + c * pStep, pStartY + r * pStep, pSquare, pSquare, 3.5);
+        ctx.fill();
+      }
+    }
+
+    // Stats
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.arc(85, 590, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 22px "Space Mono", monospace';
+    ctx.fillText(`${commitsCount} COMMITS · 48 DAYS STREAK`, 105, 598);
+
+    ctx.fillStyle = '#a3a8b4';
+    ctx.font = '18px "Space Mono", monospace';
+    ctx.fillText(`Peak cadence: ${EXACT_GITHUB_CONTRIBUTIONS.peakDay || 'WED'} · Across all repositories`, 80, 634);
+    ctx.restore();
+
+    // Bottom Line & Footer
+    ctx.save();
+    ctx.strokeStyle = '#828488ff';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(50, H - 85);
+    ctx.lineTo(W - 50, H - 85);
+    ctx.stroke();
+
+    ctx.fillStyle = '#a3a8b4';
+    ctx.font = '18px "Space Mono", monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText('GITHUB ACTIVITY  —  ROHIT K. SAHOO', W - 50, H - 45);
+    ctx.restore();
+  }
 
   return canvas.toDataURL('image/png');
 };

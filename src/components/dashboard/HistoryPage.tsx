@@ -8,7 +8,7 @@ const DEFAULT_GITHUB_STATS = {
   projects: '23',
   technologies: '8+',
   since: '2025',
-  commits: '986+',
+  commits: '1,047',
   languagesList: ['Kotlin', 'Java', 'TypeScript', 'JavaScript', 'Python', 'HTML', 'CSS']
 };
 
@@ -111,11 +111,11 @@ export const HistoryPage = () => {
           fetch('https://api.github.com/search/commits?q=author:RohitKSahoo')
         ]);
 
-        let commitsCount = '986+';
+        let commitsCount = '1,047';
         if (commitsRes.ok) {
           const commitsData = await commitsRes.json();
-          if (commitsData && typeof commitsData.total_count === 'number') {
-            commitsCount = commitsData.total_count.toString();
+          if (commitsData && typeof commitsData.total_count === 'number' && commitsData.total_count > 0) {
+            commitsCount = commitsData.total_count.toLocaleString();
           }
         }
 
@@ -165,7 +165,7 @@ export const HistoryPage = () => {
             projects: data.projects?.toString() || prev.projects,
             technologies: data.technologies?.toString() || prev.technologies,
             since: data.since?.toString() || prev.since,
-            commits: data.commits && data.commits !== '0' ? data.commits.toString() : '986+',
+            commits: data.commits && data.commits !== '0' ? (isNaN(Number(data.commits)) ? data.commits : Number(data.commits).toLocaleString()) : '1,047',
             languagesList: data.languagesList && data.languagesList.length > 0 ? data.languagesList : prev.languagesList,
           }));
         } else {

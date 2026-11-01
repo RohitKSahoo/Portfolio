@@ -22,15 +22,16 @@ inject();
 const LIQUID_COLORS = ['#5227FF', '#FF9FFC', '#B497CF'];
 
 function App() {
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('active-tab') || 'profile';
+    }
+    return 'profile';
+  });
+  const [pendingTab, setPendingTab] = useState<string | null>(null);
+  const [isProfileExiting, setIsProfileExiting] = useState(false);
   const [isDockVisible, setIsDockVisible] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  // Load persistence logic
-  useEffect(() => {
-    const savedTab = localStorage.getItem('active-tab');
-    if (savedTab) setActiveTab(savedTab);
-  }, []);
 
   // Background prefetch all page chunks during idle time for instantaneous tab switching
   useEffect(() => {
@@ -52,10 +53,40 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
-  const handleTabChange = (nextTab: string) => {
-    if (nextTab === activeTab) return;
-    setActiveTab(nextTab);
+  const handleProfileExitComplete = () => {
+    if (pendingTab) {
+      setActiveTab(pendingTab);
+      setPendingTab(null);
+    }
+    setIsProfileExiting(false);
   };
+
+  const handleTabChange = (nextTab: string) => {
+    if (nextTab === (pendingTab || activeTab)) return;
+
+    if (isProfileExiting) {
+      setPendingTab(nextTab);
+      return;
+    }
+
+    if (activeTab === 'profile' && nextTab !== 'profile') {
+      // Trigger avatar reverse slide-down exit animation before transitioning
+      setPendingTab(nextTab);
+      setIsProfileExiting(true);
+    } else {
+      setActiveTab(nextTab);
+    }
+  };
+
+  // Safety fallback in case animation completion event is dropped
+  useEffect(() => {
+    if (isProfileExiting) {
+      const fallbackTimer = setTimeout(() => {
+        handleProfileExitComplete();
+      }, 750);
+      return () => clearTimeout(fallbackTimer);
+    }
+  }, [isProfileExiting, pendingTab]);
 
   const renderContent = () => {
     return (
@@ -75,12 +106,21 @@ function App() {
                   <ProfilePage 
                     onExploreProjects={() => handleTabChange('projects')} 
                     isDockVisible={isDockVisible}
+                    isExiting={isProfileExiting}
+                    onExitComplete={handleProfileExitComplete}
                   />
                 );
                 case 'projects': return <RegistryPage />;
                 case 'experience': return <HistoryPage />;
                 case 'contact': return <ContactPage />;
-                default: return <ProfilePage onExploreProjects={() => handleTabChange('projects')} />;
+                default: return (
+                  <ProfilePage 
+                    onExploreProjects={() => handleTabChange('projects')} 
+                    isDockVisible={isDockVisible}
+                    isExiting={isProfileExiting}
+                    onExitComplete={handleProfileExitComplete}
+                  />
+                );
               }
             })()}
           </Suspense>
@@ -93,7 +133,7 @@ function App() {
     <div className="min-h-screen selection:bg-[var(--theme-accent)] selection:text-white antialiased relative transition-colors">
       {/* MAGNETIC DOCK NAVIGATION */}
       <SystemDock 
-        activeTab={activeTab} 
+        activeTab={pendingTab || activeTab} 
         setActiveTab={handleTabChange} 
         isDockVisible={isDockVisible}
         setIsDockVisible={setIsDockVisible}

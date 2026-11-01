@@ -1335,11 +1335,23 @@ export const Lanyard: React.FC<LanyardProps> = ({
       if (hovering && hit && hit.object === frontMesh && hit.uv) {
         const canX = hit.uv.x * 1530;
         const canY = (1 - hit.uv.y) * 1000;
-        // GitHub row: X in [570, 1480], Y in [120, 265]
-        const isGh = canX >= 570 && canX <= 1480 && canY >= 120 && canY <= 265;
-        // Companies: X in [570, 1480], Y in [355, 855]
-        const isComp = canX >= 570 && canX <= 1480 && canY >= 355 && canY <= 855;
-        if (isGh || isComp) {
+        // ONLY GitHub ID row is clickable to redirect: X in [570, 1480], Y in [120, 275]
+        const isGh = canX >= 570 && canX <= 1480 && canY >= 120 && canY <= 275;
+        if (isGh) {
+          setCursor('pointer');
+          return;
+        }
+      }
+      if (hovering && hit && hit.object === backMesh && hit.uv) {
+        const canX = hit.uv.x * 1530;
+        const canY = (1 - hit.uv.y) * 1000;
+        // Top profile row on back
+        const isGhBack = canX >= 65 && canX <= 1465 && canY >= 115 && canY <= 240;
+        // Top 3 Repo Nothing OS Pills on back (full width horizontal pills):
+        const isRepo1 = canX >= 65 && canX <= 1465 && canY >= 600 && canY <= 682;
+        const isRepo2 = canX >= 65 && canX <= 1465 && canY >= 688 && canY <= 772;
+        const isRepo3 = canX >= 65 && canX <= 1465 && canY >= 778 && canY <= 862;
+        if (isGhBack || isRepo1 || isRepo2 || isRepo3) {
           setCursor('pointer');
           return;
         }
@@ -1358,42 +1370,50 @@ export const Lanyard: React.FC<LanyardProps> = ({
             const canX = hit.uv.x * 1530;
             const canY = (1 - hit.uv.y) * 1000;
 
-            // GitHub Row Redirect
-            if (canX >= 570 && canX <= 1480 && canY >= 120 && canY <= 265) {
+            // ONLY GitHub Row Redirects to GitHub Profile
+            if (canX >= 570 && canX <= 1480 && canY >= 120 && canY <= 275) {
               window.open(settingsRef.current.githubUrl || 'https://github.com/RohitKSahoo', '_blank', 'noopener,noreferrer');
-              press = null;
-              start();
-              return;
-            }
-
-            // Company 1 Redirect (Papercycle)
-            if (canX >= 570 && canX <= 1480 && canY >= 355 && canY <= 520) {
-              const compUrl = settingsRef.current.companies?.[0]?.url || 'https://github.com/RohitKSahoo';
-              window.open(compUrl, '_blank', 'noopener,noreferrer');
-              press = null;
-              start();
-              return;
-            }
-
-            // Company 2 Redirect (Enigma VSSUT)
-            if (canX >= 570 && canX <= 1480 && canY >= 520 && canY <= 685) {
-              const compUrl = settingsRef.current.companies?.[1]?.url || 'https://github.com/RohitKSahoo';
-              window.open(compUrl, '_blank', 'noopener,noreferrer');
-              press = null;
-              start();
-              return;
-            }
-
-            // Company 3 Redirect (Open Source Community)
-            if (canX >= 570 && canX <= 1480 && canY >= 685 && canY <= 855) {
-              const compUrl = settingsRef.current.companies?.[2]?.url || 'https://github.com/RohitKSahoo';
-              window.open(compUrl, '_blank', 'noopener,noreferrer');
               press = null;
               start();
               return;
             }
           }
 
+          if (hit.object === backMesh && hit.uv) {
+            const canX = hit.uv.x * 1530;
+            const canY = (1 - hit.uv.y) * 1000;
+
+            // Repo Pill 1: auto-commit-bot
+            if (canX >= 65 && canX <= 1465 && canY >= 600 && canY <= 682) {
+              window.open('https://github.com/RohitKSahoo/auto-commit-bot', '_blank', 'noopener,noreferrer');
+              press = null;
+              start();
+              return;
+            }
+            // Repo Pill 2: Pausify
+            if (canX >= 65 && canX <= 1465 && canY >= 688 && canY <= 772) {
+              window.open('https://github.com/RohitKSahoo/Pausify', '_blank', 'noopener,noreferrer');
+              press = null;
+              start();
+              return;
+            }
+            // Repo Pill 3: sosafe
+            if (canX >= 65 && canX <= 1465 && canY >= 778 && canY <= 862) {
+              window.open('https://github.com/RohitKSahoo/sosafe', '_blank', 'noopener,noreferrer');
+              press = null;
+              start();
+              return;
+            }
+            // Top GitHub Profile row on back
+            if (canX >= 65 && canX <= 1465 && canY >= 115 && canY <= 240) {
+              window.open(settingsRef.current.githubUrl || 'https://github.com/RohitKSahoo', '_blank', 'noopener,noreferrer');
+              press = null;
+              start();
+              return;
+            }
+          }
+
+          // All other space in the card flips the card
           flip(press.point);
         }
       }
