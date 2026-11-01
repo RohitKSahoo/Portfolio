@@ -1400,22 +1400,22 @@ export const Lanyard: React.FC<LanyardProps> = ({
             const canX = hit.uv.x * 1530;
             const canY = (1 - hit.uv.y) * 1000;
 
-            // Repo Pill 1: auto-commit-bot
-            if (canX >= 65 && canX <= 1465 && canY >= 600 && canY <= 682) {
+            // Repo Pill 1: auto-commit-bot (Exact bounds)
+            if (canX >= 65 && canX <= 515 && canY >= 708 && canY <= 782) {
               window.open('https://github.com/RohitKSahoo/auto-commit-bot', '_blank', 'noopener,noreferrer');
               press = null;
               start();
               return;
             }
-            // Repo Pill 2: Pausify
-            if (canX >= 65 && canX <= 1465 && canY >= 688 && canY <= 772) {
+            // Repo Pill 2: Pausify (Exact bounds)
+            if (canX >= 540 && canX <= 990 && canY >= 708 && canY <= 782) {
               window.open('https://github.com/RohitKSahoo/Pausify', '_blank', 'noopener,noreferrer');
               press = null;
               start();
               return;
             }
-            // Repo Pill 3: sosafe
-            if (canX >= 65 && canX <= 1465 && canY >= 778 && canY <= 862) {
+            // Repo Pill 3: sosafe (Exact bounds)
+            if (canX >= 1015 && canX <= 1465 && canY >= 708 && canY <= 782) {
               window.open('https://github.com/RohitKSahoo/sosafe', '_blank', 'noopener,noreferrer');
               press = null;
               start();

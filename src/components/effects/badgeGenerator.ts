@@ -782,11 +782,11 @@ export const generateBackBadge = (data: BadgeData): string => {
     ctx.fillText(reposCount, pill2X + 24, pillY + 74);
     ctx.restore();
 
-    // 4. Center Main GitHub Contribution Graph Solid Matte Bento Card (Last 6 Months)
+    // 4. Center Main GitHub Contribution Graph Solid Matte Bento Card (Last 6 Months - Lowered & Centered)
     const graphCardX = 65;
-    const graphCardY = 230;
+    const graphCardY = 280;
     const graphCardW = 1400;
-    const graphCardH = 345;
+    const graphCardH = 350;
 
     ctx.save();
     ctx.fillStyle = '#16171a';
@@ -843,8 +843,8 @@ export const generateBackBadge = (data: BadgeData): string => {
     const gap = 7;
     const step = squareSize + gap; // 32px
     const gridW = numWeeks * step - gap; // 26 * 32 - 7 = 825px
-    const gridStartX = graphCardX + Math.round((graphCardW - gridW) / 2) + 20;
-    const gridStartY = graphCardY + 104;
+    const gridStartX = graphCardX + Math.round((graphCardW - gridW) / 2) + 16;
+    const gridStartY = graphCardY + 102;
 
     // Months along top (Last 6 Months: JUN - NOV)
     ctx.save();
@@ -862,7 +862,7 @@ export const generateBackBadge = (data: BadgeData): string => {
     ];
 
     monthColumns.forEach(({ name, col }) => {
-      ctx.fillText(name, gridStartX + col * step, graphCardY + 84);
+      ctx.fillText(name, gridStartX + col * step, graphCardY + 82);
     });
 
     // Weekday labels on Left (MON, WED, FRI)
@@ -903,7 +903,7 @@ export const generateBackBadge = (data: BadgeData): string => {
       }
     }
 
-    // 5. TOP REPOSITORIES: Nothing OS Off-White Themed Standalone Pills with Black Text
+    // 5. TOP REPOSITORIES: Larger Side-by-Side Clean Pills (Repo Name Only)
     const topRepos = [
       {
         name: 'auto-commit-bot',
@@ -925,78 +925,50 @@ export const generateBackBadge = (data: BadgeData): string => {
       }
     ];
 
-    const repoPillX = 65;
-    const repoPillW = 1400;
-    const repoPillH = 72;
-    const repoPillR = 36; // Exact true pill / capsule radius (height / 2)
-    const pillStartY = 605;
-    const pillGap = 18;
+    const totalPillAreaW = 1400;
+    const pillStartX = 65;
+    const pillGap = 25;
+    const pillCount = topRepos.length;
+    const repoPillW = Math.floor((totalPillAreaW - (pillCount - 1) * pillGap) / pillCount); // (1400 - 50) / 3 = 450px
+    const repoPillH = 74;
+    const repoPillR = repoPillH / 2; // 37px true capsule pill radius
+    const repoPillY = 708;
+
+    // Larger Section Header
+    ctx.save();
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'bold 22px "Space Mono", monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('FEATURED REPOSITORIES', pillStartX, 672);
+
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.arc(pillStartX + 305, 665, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
 
     topRepos.forEach((repo, idx) => {
-      const py = pillStartY + idx * (repoPillH + pillGap);
+      const px = pillStartX + idx * (repoPillW + pillGap);
+      const py = repoPillY;
 
       ctx.save();
-      // Nothing OS Off-White Pill Body
-      ctx.fillStyle = '#e6e8ed';
+      // Grayish Pill Background
+      ctx.fillStyle = '#252832';
       ctx.beginPath();
-      ctx.roundRect(repoPillX, py, repoPillW, repoPillH, repoPillR);
+      ctx.roundRect(px, py, repoPillW, repoPillH, repoPillR);
       ctx.fill();
-      ctx.strokeStyle = '#d0d4dc';
-      ctx.lineWidth = 1.5;
+
+      // Crisp White Border
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Left Accent: Red indicator dot
-      ctx.fillStyle = '#ef4444';
-      ctx.beginPath();
-      ctx.arc(repoPillX + 36, py + repoPillH / 2, 5.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Repo Name in Bold Black Text (Nothing OS Mono font)
-      ctx.fillStyle = '#0e1014';
-      ctx.font = 'bold 23px "Space Mono", monospace';
-      ctx.textAlign = 'left';
-      ctx.fillText(repo.name, repoPillX + 54, py + repoPillH / 2 + 7);
-
-      // Language Pill
-      const langW = 120;
-      const langH = 36;
-      const langX = repoPillX + repoPillW - 145 - langW;
-      const langY = py + (repoPillH - langH) / 2;
-
-      ctx.fillStyle = '#dadde4';
-      ctx.beginPath();
-      ctx.roundRect(langX, langY, langW, langH, 18);
-      ctx.fill();
-      ctx.strokeStyle = '#c6cbd5';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Language dot & text
-      ctx.fillStyle = repo.langColor;
-      ctx.beginPath();
-      ctx.arc(langX + 22, langY + langH / 2, 5, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#1f242d';
-      ctx.font = 'bold 15px "Space Mono", monospace';
-      ctx.textAlign = 'left';
-      ctx.fillText(repo.lang, langX + 36, langY + langH / 2 + 5);
-
-      // Right Minimal Redirect Button: Small clean circular button with minimal ↗ arrow
-      const btnSize = 42;
-      const btnX = repoPillX + repoPillW - 28 - btnSize;
-      const btnY = py + (repoPillH - btnSize) / 2;
-
-      ctx.fillStyle = '#f3f4f6';
-      ctx.beginPath();
-      ctx.arc(btnX + btnSize / 2, btnY + btnSize / 2, btnSize / 2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#c5c9d2';
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-
-      // Small minimal ↗ icon
-      drawMinimalRedirectArrow(ctx, btnX + btnSize / 2, btnY + btnSize / 2, 12, '#0e1014', 1.8);
+      // Repo Name Only — Large, Centered, Crisp White
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 24px "Space Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(repo.name, px + repoPillW / 2, py + repoPillH / 2);
 
       ctx.restore();
     });
