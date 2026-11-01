@@ -5,6 +5,7 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: dark;
   --bg-black: #0f0f0f;
   --bg-black-rgb: 15, 15, 15;
   --border-muted: #1a1a1a;

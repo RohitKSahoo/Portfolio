@@ -60,7 +60,7 @@ export const ProfilePage = ({
     if (isExiting) {
       window.dispatchEvent(
         new CustomEvent('liquid-ether-surge', {
-          detail: { origin: 'bottom-center', intensity: 2.8 }
+          detail: { origin: 'bottom-center', intensity: 1 }
         })
       );
     }

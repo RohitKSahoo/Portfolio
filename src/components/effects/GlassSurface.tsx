@@ -350,6 +350,24 @@ const bendShape = (trace: ShapeTrace, edge: number, softness: number, calm: numb
   });
 };
 
+let cachedSVGSupport: boolean | null = null;
+const checkSVGFiltersSupport = () => {
+  if (cachedSVGSupport !== null) return cachedSVGSupport;
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return false;
+  }
+  const isWebkit = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+  const isFirefox = /Firefox/.test(navigator.userAgent);
+  if (isWebkit || isFirefox) {
+    cachedSVGSupport = false;
+    return false;
+  }
+  const div = document.createElement('div');
+  div.style.backdropFilter = 'url(#test)';
+  cachedSVGSupport = div.style.backdropFilter !== '';
+  return cachedSVGSupport;
+};
+
 const GlassSurface = ({
   children,
   width = 200,
@@ -382,8 +400,8 @@ const GlassSurface = ({
   const blueGradId = `blue-grad-${uniqueId}`;
   const softId = `soft-${uniqueId}`;
 
-  const [svgSupported, setSvgSupported] = useState<boolean>(false);
-  const [checked, setChecked] = useState(false);
+  const [svgSupported, setSvgSupported] = useState<boolean>(() => checkSVGFiltersSupport());
+  const [checked, setChecked] = useState<boolean>(() => typeof window !== 'undefined');
   const [webglFailed, setWebglFailed] = useState(false);
   const [boxSize, setBoxSize] = useState<string>('');
   const [loaded, setLoaded] = useState<{ src: string; image: HTMLImageElement | null }>({ src: '', image: null });
@@ -540,7 +558,7 @@ const GlassSurface = ({
   }, [shape, loaded, boxSize, borderWidth, blur, opacity, brightness]);
 
   useEffect(() => {
-    setSvgSupported(supportsSVGFilters());
+    setSvgSupported(checkSVGFiltersSupport());
     setChecked(true);
   }, []);
 

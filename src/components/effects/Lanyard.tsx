@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import './Lanyard.css';
 
+const globalImageCache = new Map<string, Promise<HTMLImageElement | null>>();
+
 export interface LanyardProps {
   frontImage?: string;
   backImage?: string;
@@ -23,6 +25,7 @@ export interface LanyardProps {
   breeze?: number;
   interactive?: boolean;
   intro?: boolean;
+  introDirection?: 'left' | 'right' | 'top';
   qrUrl?: string;
   githubUrl?: string;
   companies?: any[];
@@ -625,39 +628,58 @@ const solvePin = (body: any, grab: any, target: THREE.Vector3) => {
   pushBody(body, r, normal.multiplyScalar(lambda));
 };
 
-const placeHanging = (sim: any, layout: any, intro: boolean) => {
+const placeHanging = (sim: any, layout: any, intro: boolean, introDir: 'left' | 'right' | 'top' = 'left') => {
   const { nodes, previous, velocities, body, anchor } = sim;
   nodes[0].copy(anchor);
   for (let i = 1; i <= JOINTS; i++) {
     nodes[i].copy(nodes[i - 1]);
     if (intro) {
-      // Start slack cable bunched high up near the ceiling anchor so it falls freely from above
-      nodes[i].x = anchor.x + i * (sim.rest * 0.05);
-      nodes[i].y = anchor.y - i * (sim.rest * 0.04);
+      if (introDir === 'left') {
+        nodes[i].x -= sim.rest;
+      } else if (introDir === 'top') {
+        const frac = i / JOINTS;
+        nodes[i].y += sim.rest * (0.68 + 0.12 * Math.cos(frac * Math.PI));
+        nodes[i].x += Math.sin(frac * Math.PI * 1.8) * (sim.rest * 0.42);
+        nodes[i].z += Math.cos(frac * Math.PI * 1.4) * (sim.rest * 0.28);
+      } else {
+        nodes[i].x += sim.rest;
+      }
     } else {
       nodes[i].y -= sim.rest;
     }
   }
   body.quaternion.identity();
   if (intro) {
-    // Natural subtle rotation as the card drops through the air
-    body.quaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), 0.28);
+    if (introDir === 'left') {
+      body.quaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2);
+    } else if (introDir === 'top') {
+      body.quaternion.setFromEuler(new THREE.Euler(0.4, 0.75, -0.35, 'XYZ'));
+    } else {
+      body.quaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 2);
+    }
   }
   body.hang.set(0, layout.hangY, 0);
   const offset = scratch.a.copy(body.hang).applyQuaternion(body.quaternion);
   body.position.copy(nodes[JOINTS]).sub(offset);
   body.previous.copy(body.position);
   body.previousQuaternion.copy(body.quaternion);
-  
-  if (intro) {
-    // Initial downward plunge velocity: gravity pulls it down, cable catches it and snaps taut
-    body.velocity.set(0.4, -4.5, 0.2);
-    body.angular.set(0, 0, 0.5);
+
+  if (intro && introDir === 'top') {
+    body.velocity.set(0.38, -0.75, 0.24);
+    body.angular.set(0.35, 1.45, -0.4);
     for (let i = 0; i <= JOINTS; i++) {
       previous[i].copy(nodes[i]);
-      velocities[i].set(0.1 * i, -2.5, 0);
+      if (i > 0) {
+        velocities[i].set(0.2 * Math.sin(i * 1.4), -0.5, 0.14 * Math.cos(i * 1.4));
+      } else {
+        velocities[i].set(0, 0, 0);
+      }
     }
-    sim.lengths.fill(sim.rest * 0.06);
+    sim.lengths.fill(sim.rest);
+    sim.turn = 0;
+    sim.twist = 0.85;
+    sim.twistRaw = 0.85;
+    sim.calm = 0;
   } else {
     body.velocity.set(0, 0, 0);
     body.angular.set(0, 0, 0);
@@ -666,12 +688,11 @@ const placeHanging = (sim: any, layout: any, intro: boolean) => {
       velocities[i].set(0, 0, 0);
     }
     sim.lengths.fill(sim.rest);
+    sim.turn = 0;
+    sim.twist = 0;
+    sim.twistRaw = 0;
+    sim.calm = 0;
   }
-  
-  sim.turn = 0;
-  sim.twist = 0;
-  sim.twistRaw = 0;
-  sim.calm = 0;
 };
 
 const configureSimulation = (sim: any, layout: any, length: number) => {
@@ -800,6 +821,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
   breeze = 0.5,
   interactive = true,
   intro = true,
+  introDirection = 'top',
   qrUrl = 'https://github.com/RohitKSahoo',
   githubUrl = 'https://github.com/RohitKSahoo',
   companies,
@@ -836,6 +858,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
     breeze,
     interactive,
     intro,
+    introDirection,
     qrUrl,
     githubUrl,
     companies,
@@ -878,7 +901,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
     fillLight.position.set(3, -1, 4);
     scene.add(keyLight, fillLight);
 
-    const imageCache = new Map<string, Promise<HTMLImageElement | null>>();
+    const imageCache = globalImageCache;
     const images: { front: HTMLImageElement | null; back: HTMLImageElement | null; strap: HTMLImageElement | null } = {
       front: null,
       back: null,
@@ -1056,10 +1079,10 @@ export const Lanyard: React.FC<LanyardProps> = ({
       if (framingKey !== applied.framingKey) {
         frameView();
         if (!placed) {
-          placeHanging(sim, layout, s.intro && !reducedMotion);
+          placeHanging(sim, layout, s.intro && !reducedMotion, s.introDirection);
           placed = true;
         } else if (layoutKey !== applied.layoutKey) {
-          placeHanging(sim, layout, false);
+          placeHanging(sim, layout, false, s.introDirection);
         }
       }
 
@@ -1075,15 +1098,9 @@ export const Lanyard: React.FC<LanyardProps> = ({
           images.front = front;
           images.back = back;
           images.strap = strap;
-          cardGroup.visible = true;
           paintFaces();
           repaintStrap();
         });
-      }
-      if (s.frontImage && !images.front) {
-        cardGroup.visible = false;
-      } else {
-        cardGroup.visible = true;
       }
       const faceKey = `${layoutKey}|${s.cardColor}|${s.imageFit}`;
       if (faceKey !== applied.faceKey) paintFaces();

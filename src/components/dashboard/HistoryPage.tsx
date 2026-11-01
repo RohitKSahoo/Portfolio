@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { Lanyard } from '../effects/Lanyard';
@@ -15,6 +15,26 @@ const DEFAULT_GITHUB_STATS = {
 let cachedFrontTexture = '';
 let cachedBackTexture = '';
 let cachedStrapTexture = '';
+let preloadedAvatar: HTMLImageElement | null = null;
+const preloadedLogos: Record<string, HTMLImageElement> = {};
+
+if (typeof window !== 'undefined') {
+  const av = new Image();
+  av.crossOrigin = 'anonymous';
+  av.src = '/avatar.png';
+  av.onload = () => {
+    preloadedAvatar = av;
+  };
+
+  ['/papercycle.png', '/enigma.png'].forEach(src => {
+    const lg = new Image();
+    lg.crossOrigin = 'anonymous';
+    lg.src = src;
+    lg.onload = () => {
+      preloadedLogos[src] = lg;
+    };
+  });
+}
 
 const getInitialTextures = () => {
   if (typeof window === 'undefined') return { front: '', back: '', strap: '' };
@@ -29,9 +49,13 @@ const getInitialTextures = () => {
       technologies: DEFAULT_GITHUB_STATS.technologies,
       commits: DEFAULT_GITHUB_STATS.commits,
       avatarUrl: '/avatar.png',
+      avatarImage: preloadedAvatar,
       githubUsername: 'RohitKSahoo',
       githubUrl: 'https://github.com/RohitKSahoo',
-      companies: DEFAULT_COMPANIES,
+      companies: DEFAULT_COMPANIES.map(comp => ({
+        ...comp,
+        logoImage: comp.logoUrl && preloadedLogos[comp.logoUrl] ? preloadedLogos[comp.logoUrl] : null
+      })),
       languages: DEFAULT_GITHUB_STATS.languagesList,
       orientation: 'landscape'
     });
@@ -62,38 +86,41 @@ export const HistoryPage = () => {
   }, []);
 
   const [githubStats, setGithubStats] = useState(DEFAULT_GITHUB_STATS);
-  const [avatarImg, setAvatarImg] = useState<HTMLImageElement | null>(null);
-  const [companyLogos, setCompanyLogos] = useState<Record<string, HTMLImageElement>>({});
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-
-  useEffect(() => {
-    if (typeof document !== 'undefined' && document.fonts) {
-      document.fonts.ready.then(() => {
-        setFontsLoaded(true);
-      });
-    }
-  }, []);
+  const [assetsReady, setAssetsReady] = useState(false);
+  const lastGeneratedKeyRef = useRef<string>('');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = '/avatar.png';
-    img.onload = () => {
-      setAvatarImg(img);
-    };
+    const fontPromise = document.fonts ? document.fonts.ready : Promise.resolve();
+    const avatarPromise = preloadedAvatar && preloadedAvatar.complete
+      ? Promise.resolve(preloadedAvatar)
+      : new Promise<HTMLImageElement | null>(res => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.src = '/avatar.png';
+          img.onload = () => {
+            preloadedAvatar = img;
+            res(img);
+          };
+          img.onerror = () => res(null);
+        });
 
-    const logosToLoad = [
-      { key: '/papercycle.png', src: '/papercycle.png' },
-      { key: '/enigma.png', src: '/enigma.png' }
-    ];
-    logosToLoad.forEach(({ key, src }) => {
-      const logoImg = new Image();
-      logoImg.crossOrigin = 'anonymous';
-      logoImg.src = src;
-      logoImg.onload = () => {
-        setCompanyLogos(prev => ({ ...prev, [key]: logoImg }));
-      };
+    const logosPromises = ['/papercycle.png', '/enigma.png'].map(src => {
+      if (preloadedLogos[src] && preloadedLogos[src].complete) return Promise.resolve();
+      return new Promise<void>(res => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.src = src;
+        img.onload = () => {
+          preloadedLogos[src] = img;
+          res();
+        };
+        img.onerror = () => res();
+      });
+    });
+
+    Promise.all([fontPromise, avatarPromise, ...logosPromises]).then(() => {
+      setAssetsReady(true);
     });
   }, []);
 
@@ -161,13 +188,23 @@ export const HistoryPage = () => {
       })
       .then(data => {
         if (data && !data.error && !data.errors) {
-          setGithubStats(prev => ({
-            projects: data.projects?.toString() || prev.projects,
-            technologies: data.technologies?.toString() || prev.technologies,
-            since: data.since?.toString() || prev.since,
-            commits: data.commits && data.commits !== '0' ? (isNaN(Number(data.commits)) ? data.commits : Number(data.commits).toLocaleString()) : '1,047',
-            languagesList: data.languagesList && data.languagesList.length > 0 ? data.languagesList : prev.languagesList,
-          }));
+          setGithubStats(prev => {
+            const projects = data.projects?.toString() || prev.projects;
+            const technologies = data.technologies?.toString() || prev.technologies;
+            const since = data.since?.toString() || prev.since;
+            const commits = data.commits && data.commits !== '0' ? (isNaN(Number(data.commits)) ? data.commits : Number(data.commits).toLocaleString()) : '1,047';
+            if (projects === prev.projects && technologies === prev.technologies && since === prev.since && commits === prev.commits) {
+              return prev;
+            }
+            return {
+              ...prev,
+              projects,
+              technologies,
+              since,
+              commits,
+              languagesList: data.languagesList && data.languagesList.length > 0 ? data.languagesList : prev.languagesList,
+            };
+          });
         } else {
           fetchPublicGithubData();
         }
@@ -177,18 +214,20 @@ export const HistoryPage = () => {
       });
   }, []);
 
-  // Generate dynamic 3D badge card textures based on live GitHub stats
+  // Generate dynamic 3D badge card textures based on live GitHub stats (debounced so frame 0 intro is 100% fluid)
   useEffect(() => {
-    let active = true;
-    const createTextures = async () => {
+    const currentKey = `${githubStats.since}|${githubStats.projects}|${githubStats.technologies}|${githubStats.commits}|${githubStats.languagesList.join(',')}|${assetsReady ? '1' : '0'}`;
+    if (lastGeneratedKeyRef.current === currentKey) return;
+
+    const timer = setTimeout(() => {
+      lastGeneratedKeyRef.current = currentKey;
       const strap = generateStrapImage();
-      if (!active) return;
       cachedStrapTexture = strap;
       setStrapTexture(strap);
 
       const enrichedCompanies = DEFAULT_COMPANIES.map(comp => ({
         ...comp,
-        logoImage: comp.logoUrl && companyLogos[comp.logoUrl] ? companyLogos[comp.logoUrl] : null
+        logoImage: comp.logoUrl && preloadedLogos[comp.logoUrl] ? preloadedLogos[comp.logoUrl] : null
       }));
 
       const front = generateFrontBadge({
@@ -200,14 +239,13 @@ export const HistoryPage = () => {
         technologies: githubStats.technologies,
         commits: githubStats.commits,
         avatarUrl: '/avatar.png',
-        avatarImage: avatarImg,
+        avatarImage: preloadedAvatar,
         githubUsername: 'RohitKSahoo',
         githubUrl: 'https://github.com/RohitKSahoo',
         companies: enrichedCompanies,
         languages: githubStats.languagesList,
         orientation: 'landscape'
       });
-      if (!active) return;
       cachedFrontTexture = front;
       setFrontTexture(front);
 
@@ -223,16 +261,12 @@ export const HistoryPage = () => {
         languages: githubStats.languagesList,
         orientation: 'landscape'
       });
-      if (!active) return;
       cachedBackTexture = back;
       setBackTexture(back);
-    };
+    }, 120);
 
-    createTextures();
-    return () => {
-      active = false;
-    };
-  }, [githubStats, avatarImg, companyLogos, fontsLoaded]);
+    return () => clearTimeout(timer);
+  }, [githubStats, assetsReady]);
 
   return (
     <div className="w-full min-h-[calc(100vh-160px)] lg:min-h-[750px] flex flex-col gap-6 relative overflow-visible font-inter">
@@ -252,13 +286,14 @@ export const HistoryPage = () => {
             cornerRadius={0.1}
             size={isMobile ? 0.46 : 0.60}
             anchor={isMobile ? 0.5 : 0.7}
-            strapLength={isMobile ? 0.25 : 0.35}
+            strapLength={isMobile ? 0.25 : 0.27}
             gravity={0.65}
             damping={0.2}
-            elasticity={0.92}
-            breeze={0.62}
+            elasticity={0.9}
+            breeze={0.92}
             interactive={true}
             intro={true}
+            introDirection="top"
             githubUrl="https://github.com/RohitKSahoo"
             companies={DEFAULT_COMPANIES}
             className="w-full h-full"
