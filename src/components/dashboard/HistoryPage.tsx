@@ -34,9 +34,16 @@ if (typeof window !== 'undefined') {
       preloadedLogos[src] = lg;
     };
   });
+
+  // Pre-generate textures once in background idle time so tab switch is 100% instant
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(getInitialTextures);
+  } else {
+    setTimeout(getInitialTextures, 100);
+  }
 }
 
-const getInitialTextures = () => {
+function getInitialTextures() {
   if (typeof window === 'undefined') return { front: '', back: '', strap: '' };
   if (!cachedFrontTexture) {
     cachedStrapTexture = generateStrapImage();
@@ -75,7 +82,15 @@ const getInitialTextures = () => {
   return { front: cachedFrontTexture, back: cachedBackTexture, strap: cachedStrapTexture };
 };
 
-export const HistoryPage = () => {
+interface HistoryPageProps {
+  isExiting?: boolean;
+  onExitComplete?: () => void;
+}
+
+export const HistoryPage: React.FC<HistoryPageProps> = ({
+  isExiting = false,
+  onExitComplete
+}) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -87,7 +102,14 @@ export const HistoryPage = () => {
 
   const [githubStats, setGithubStats] = useState(DEFAULT_GITHUB_STATS);
   const [assetsReady, setAssetsReady] = useState(false);
-  const lastGeneratedKeyRef = useRef<string>('');
+
+  const initial = getInitialTextures();
+  const [frontTexture, setFrontTexture] = useState<string>(initial.front);
+  const [backTexture, setBackTexture] = useState<string>(initial.back);
+  const [strapTexture, setStrapTexture] = useState<string>(initial.strap);
+
+  const initialKey = `${DEFAULT_GITHUB_STATS.since}|${DEFAULT_GITHUB_STATS.projects}|${DEFAULT_GITHUB_STATS.technologies}|${DEFAULT_GITHUB_STATS.commits}|${DEFAULT_GITHUB_STATS.languagesList.join(',')}|${preloadedAvatar ? '1' : '0'}`;
+  const lastGeneratedKeyRef = useRef<string>(cachedFrontTexture ? initialKey : '');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -124,11 +146,6 @@ export const HistoryPage = () => {
     });
   }, []);
 
-  const initial = getInitialTextures();
-  const [frontTexture, setFrontTexture] = useState<string>(initial.front);
-  const [backTexture, setBackTexture] = useState<string>(initial.back);
-  const [strapTexture, setStrapTexture] = useState<string>(initial.strap);
-
   useEffect(() => {
     const fetchPublicGithubData = async () => {
       try {
@@ -147,10 +164,10 @@ export const HistoryPage = () => {
         }
 
         if (!userRes.ok || !reposRes.ok) {
-          setGithubStats(prev => ({
-            ...prev,
-            commits: commitsCount
-          }));
+          setGithubStats(prev => {
+            if (prev.commits === commitsCount) return prev;
+            return { ...prev, commits: commitsCount };
+          });
           return;
         }
 
@@ -168,14 +185,30 @@ export const HistoryPage = () => {
 
         const sinceYear = userData.created_at ? new Date(userData.created_at).getFullYear().toString() : '2025';
 
-        setGithubStats(prev => ({
-          ...prev,
-          projects: userData.public_repos ? userData.public_repos.toString() : prev.projects,
-          technologies: languagesSet.size > 0 ? languagesSet.size.toString() : prev.technologies,
-          since: sinceYear,
-          commits: commitsCount,
-          languagesList: languagesSet.size > 0 ? Array.from(languagesSet) : prev.languagesList,
-        }));
+        setGithubStats(prev => {
+          const projects = userData.public_repos ? userData.public_repos.toString() : prev.projects;
+          const technologies = languagesSet.size > 0 ? languagesSet.size.toString() : prev.technologies;
+          const languagesList = languagesSet.size > 0 ? Array.from(languagesSet) : prev.languagesList;
+
+          if (
+            prev.projects === projects &&
+            prev.technologies === technologies &&
+            prev.since === sinceYear &&
+            prev.commits === commitsCount &&
+            prev.languagesList.join(',') === languagesList.join(',')
+          ) {
+            return prev;
+          }
+
+          return {
+            ...prev,
+            projects,
+            technologies,
+            since: sinceYear,
+            commits: commitsCount,
+            languagesList,
+          };
+        });
       } catch (e) {
         // Keep initial state if public API fails
       }
@@ -214,10 +247,11 @@ export const HistoryPage = () => {
       });
   }, []);
 
-  // Generate dynamic 3D badge card textures based on live GitHub stats (debounced so frame 0 intro is 100% fluid)
+  // Generate dynamic 3D badge card textures when live stats or assets change.
+  // Uses a 800ms debounce so it NEVER blocks the main thread during 60fps page transitions.
   useEffect(() => {
-    const currentKey = `${githubStats.since}|${githubStats.projects}|${githubStats.technologies}|${githubStats.commits}|${githubStats.languagesList.join(',')}|${assetsReady ? '1' : '0'}`;
-    if (lastGeneratedKeyRef.current === currentKey) return;
+    const currentKey = `${githubStats.since}|${githubStats.projects}|${githubStats.technologies}|${githubStats.commits}|${githubStats.languagesList.join(',')}|${assetsReady && preloadedAvatar ? '1' : '0'}`;
+    if (lastGeneratedKeyRef.current === currentKey && cachedFrontTexture) return;
 
     const timer = setTimeout(() => {
       lastGeneratedKeyRef.current = currentKey;
@@ -263,7 +297,7 @@ export const HistoryPage = () => {
       });
       cachedBackTexture = back;
       setBackTexture(back);
-    }, 120);
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [githubStats, assetsReady]);
@@ -291,11 +325,13 @@ export const HistoryPage = () => {
             damping={0.2}
             elasticity={0.9}
             breeze={0.92}
-            interactive={true}
+            interactive={!isExiting}
             intro={true}
             introDirection="top"
             githubUrl="https://github.com/RohitKSahoo"
             companies={DEFAULT_COMPANIES}
+            isExiting={isExiting}
+            onExitComplete={onExitComplete}
             className="w-full h-full"
           />
         </div>,
@@ -305,10 +341,10 @@ export const HistoryPage = () => {
       {/* Main Content Grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10 pointer-events-none">
         
-        {/* Left Column (5/12) - Timeline sliding smoothly up from bottom edge */}
+        {/* Left Column (5/12) - Timeline sliding smoothly up from bottom edge, and down on exit */}
         <motion.div 
           initial={{ opacity: 0, y: 70 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={isExiting ? { opacity: 0, y: 40, transition: { duration: 0.2, ease: 'easeIn' } } : { opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 220, damping: 26, mass: 0.9, delay: 0.05 }}
           className="lg:col-span-5 flex flex-col gap-10 py-2 overflow-y-auto pr-2 pointer-events-none"
         >
