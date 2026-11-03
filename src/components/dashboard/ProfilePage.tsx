@@ -35,14 +35,14 @@ type Direction = typeof DIRECTIONS[number];
 
 function calculateDirection(dx: number, dy: number): Direction {
   // Center deadzone: look straight forward when cursor is nearby
-  if (Math.hypot(dx, dy) < 70) {
+  if (Math.hypot(dx, dy) < 60) {
     return 'center';
   }
 
   // Vertical row selection (-1 = up, 0 = mid, 1 = down)
   let row = 0;
-  if (dy < -65) row = -1;
-  else if (dy > 65) row = 1;
+  if (dy < -45) row = -1;
+  else if (dy > 90) row = 1;
 
   // Horizontal column selection (-3 to +3)
   // Negative dx = cursor on viewer's left -> avatar looks viewer's left
@@ -154,7 +154,7 @@ export const ProfilePage = ({
 
       const box = el.getBoundingClientRect();
       const headX = box.left + box.width / 2;
-      const headY = box.top + box.height * 0.32;
+      const headY = box.top + box.height * 0.48;
 
       const dx = pointer.x - headX;
       const dy = pointer.y - headY;
