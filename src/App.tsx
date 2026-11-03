@@ -230,7 +230,7 @@ function App() {
         />
 
         {/* ACTIVE MODULE VIEWPORT */}
-        <div ref={scrollContainerRef} className="px-5 pt-[95px] lg:pt-[110px] pb-24 lg:pb-24 pointer-events-none" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div ref={scrollContainerRef} className="px-4 sm:px-6 lg:px-8 pt-[76px] sm:pt-[84px] lg:pt-[92px] xl:pt-[104px] pb-20 lg:pb-24 pointer-events-none" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div className="max-w-[1600px] w-full mx-auto pointer-events-none">
              {renderContent()}
           </div>

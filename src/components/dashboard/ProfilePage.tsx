@@ -231,12 +231,12 @@ export const ProfilePage = ({
                    onExitComplete?.();
                  }
                }}
-               className="relative w-full max-w-7xl xl:max-w-[1920px] h-[74vh] sm:h-[84vh] lg:h-[92vh] pointer-events-auto flex items-end justify-center select-none origin-bottom"
+               className="relative w-full max-w-5xl lg:max-w-6xl xl:max-w-[1700px] h-[58vh] sm:h-[68vh] md:h-[74vh] lg:h-[80vh] xl:h-[86vh] max-h-[880px] laptop-compact-avatar pointer-events-auto flex items-end justify-center select-none origin-bottom"
                style={{ bottom: 0 }}
              >
                 <motion.div
                   animate={{ y: 0 }}
-                  className="relative w-full h-full flex items-end justify-center bg-transparent scale-100 origin-bottom"
+                  className="relative w-full h-full flex items-end justify-center bg-transparent scale-95 sm:scale-100 origin-bottom"
                   style={{ bottom: 0 }}
                 >
                   <DitherVeil 
@@ -273,26 +273,26 @@ export const ProfilePage = ({
           transition={{ duration: 0.45, ease: "easeOut" }}
           className="relative z-10 flex flex-col min-h-[inherit] justify-between p-0 pointer-events-none"
         >
-          <div className="flex flex-col lg:flex-row justify-between gap-6 lg:gap-8 items-start w-full px-0 pt-6 sm:pt-8 lg:pt-6">
-            <div className="flex flex-col gap-3 lg:gap-4 max-w-lg text-left pointer-events-auto">
+          <div className="flex flex-col lg:flex-row justify-between gap-5 lg:gap-8 items-start w-full px-0 pt-2 sm:pt-4 lg:pt-3">
+            <div className="flex flex-col gap-2.5 sm:gap-3 lg:gap-3.5 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-md xl:max-w-lg text-left pointer-events-auto">
 
-              <h2 className="text-5xl lg:text-5xl font-bold font-satoshi text-white leading-tight tracking-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-[clamp(2.1rem,2.7vw,3.15rem)] xl:text-5xl font-bold font-satoshi text-white leading-tight tracking-tight laptop-compact-text">
                 CS Undergrad & <br className="sm:hidden" /> Systems Builder <br /> Based in <span className="text-red-500">India.</span>
               </h2>
             </div>
 
-            <div className="flex flex-col gap-6 lg:gap-8 lg:text-right lg:items-end pointer-events-auto">
-              <p className="text-sm lg:text-base text-white/60 font-medium leading-relaxed max-w-[280px] lg:max-w-sm font-inter">
+            <div className="flex flex-col gap-4 sm:gap-6 lg:gap-6 lg:text-right lg:items-end pointer-events-auto">
+              <p className="text-xs sm:text-sm lg:text-base text-white/60 font-medium leading-relaxed max-w-[260px] sm:max-w-[280px] lg:max-w-xs xl:max-w-sm font-inter">
                 Exploring real-time systems, backend architectures, and unconventional ideas.
               </p>
-            <div className="flex flex-col gap-3 lg:self-end pointer-events-auto w-56 sm:w-auto">
+            <div className="flex flex-col gap-2.5 sm:gap-3 lg:self-end pointer-events-auto w-52 sm:w-auto">
               <button 
                 onClick={onExploreProjects}
-                className="group relative block w-56 sm:w-auto focus:outline-none cursor-pointer rounded-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                className="group relative block w-52 sm:w-auto focus:outline-none cursor-pointer rounded-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
                 <GlassSurface
                   width="100%"
-                  height={50}
+                  height={46}
                   borderRadius={10}
                   distortionScale={-100}
                   displace={0.3}
@@ -301,22 +301,22 @@ export const ProfilePage = ({
                   redOffset={20}
                   greenOffset={5}
                   blueOffset={10}
-                  className="w-56 sm:w-auto border border-red-500/40 group-hover:border-red-500/80 shadow-[0_0_20px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_28px_rgba(239,68,68,0.45)] transition-all"
+                  className="w-52 sm:w-auto border border-red-500/40 group-hover:border-red-500/80 shadow-[0_0_20px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_28px_rgba(239,68,68,0.45)] transition-all"
                 >
-                  <div className="flex items-center justify-between gap-4 px-5 sm:px-6 w-full text-white font-bold font-satoshi text-sm uppercase tracking-wider">
+                  <div className="flex items-center justify-between gap-3.5 px-5 sm:px-6 w-full text-white font-bold font-satoshi text-xs sm:text-sm uppercase tracking-wider">
                     <span className="group-hover:text-red-400 transition-colors">Explore Projects</span>
-                    <Zap size={16} className="text-red-500 group-hover:scale-110 transition-transform" fill="currentColor" />
+                    <Zap size={15} className="text-red-500 group-hover:scale-110 transition-transform" fill="currentColor" />
                   </div>
                 </GlassSurface>
               </button>
               
               <button 
                 onClick={handleViewCV}
-                className="group relative block w-56 sm:w-auto focus:outline-none cursor-pointer rounded-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                className="group relative block w-52 sm:w-auto focus:outline-none cursor-pointer rounded-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
                 <GlassSurface
                   width="100%"
-                  height={50}
+                  height={46}
                   borderRadius={10}
                   distortionScale={-100}
                   displace={0.2}
@@ -325,11 +325,11 @@ export const ProfilePage = ({
                   redOffset={5}
                   greenOffset={5}
                   blueOffset={15}
-                  className="w-56 sm:w-auto border border-white/10 group-hover:border-white/25 shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-all"
+                  className="w-52 sm:w-auto border border-white/10 group-hover:border-white/25 shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-all"
                 >
-                  <div className="flex items-center justify-between gap-4 px-5 sm:px-6 w-full text-white/80 group-hover:text-white font-bold font-satoshi text-sm uppercase tracking-wider transition-colors">
+                  <div className="flex items-center justify-between gap-3.5 px-5 sm:px-6 w-full text-white/80 group-hover:text-white font-bold font-satoshi text-xs sm:text-sm uppercase tracking-wider transition-colors">
                     <span>Explore CV</span>
-                    <FileText size={16} className="group-hover:text-red-500 transition-colors" />
+                    <FileText size={15} className="group-hover:text-red-500 transition-colors" />
                   </div>
                 </GlassSurface>
               </button>
