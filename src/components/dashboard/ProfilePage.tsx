@@ -231,12 +231,12 @@ export const ProfilePage = ({
                    onExitComplete?.();
                  }
                }}
-               className="relative w-full max-w-5xl lg:max-w-6xl xl:max-w-[1700px] h-[58vh] sm:h-[68vh] md:h-[74vh] lg:h-[80vh] xl:h-[86vh] max-h-[880px] laptop-compact-avatar pointer-events-auto flex items-end justify-center select-none origin-bottom"
+               className="relative w-full max-w-7xl xl:max-w-[1920px] h-[74vh] sm:h-[84vh] lg:h-[92vh] pointer-events-auto flex items-end justify-center select-none origin-bottom"
                style={{ bottom: 0 }}
              >
                 <motion.div
                   animate={{ y: 0 }}
-                  className="relative w-full h-full flex items-end justify-center bg-transparent scale-95 sm:scale-100 origin-bottom"
+                  className="relative w-full h-full flex items-end justify-center bg-transparent scale-100 origin-bottom"
                   style={{ bottom: 0 }}
                 >
                   <DitherVeil 
