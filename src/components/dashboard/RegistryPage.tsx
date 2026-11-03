@@ -435,12 +435,12 @@ export const RegistryPage = () => {
                       </div>
                     ) : (
                       /* Mobile Phone Mockup */
-                      <div className="relative rounded-[48px] border-[2px] border-white/20 bg-[#0a0a0c] p-2.5 shadow-[0_20px_60px_rgba(0,0,0,0.9)] w-[285px] sm:w-[310px] aspect-[9/19.5] max-h-[640px] flex flex-col justify-between overflow-hidden group">
+                      <div className="relative rounded-[22px] border-[2px] border-white/20 bg-[#0a0a0c] p-2.5 shadow-[0_20px_60px_rgba(0,0,0,0.9)] w-[245px] sm:w-[270px] aspect-[9/19.5] max-h-[550px] flex flex-col justify-between overflow-hidden group">
                         {/* Camera Punch Hole */}
-                        <div className="absolute top-3.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-black border border-white/15 z-20 shadow-inner" />
+                        <div className="absolute top-3 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-black border border-white/15 z-20 shadow-inner" />
 
                         {/* Phone Screen Image from Asset Folder */}
-                        <div className="relative w-full h-full rounded-[38px] overflow-hidden bg-black flex items-center justify-center">
+                        <div className="relative w-full h-full rounded-[14px] overflow-hidden bg-black flex items-center justify-center">
                           <img
                             src={activeProject.images[activeImageIndex]}
                             alt={activeProject.name}
