@@ -7,6 +7,83 @@ import { TechText } from '../effects/TechText';
 import { CVViewerModal } from '../CVViewerModal';
 import GlassSurface from '../effects/GlassSurface';
 
+const DIRECTIONS = [
+  'up-far-left',
+  'up-mid-left',
+  'up-left',
+  'up',
+  'up-right',
+  'up-mid-right',
+  'up-far-right',
+  'far-left',
+  'mid-left',
+  'left',
+  'center',
+  'right',
+  'mid-right',
+  'far-right',
+  'down-far-left',
+  'down-mid-left',
+  'down-left',
+  'down',
+  'down-right',
+  'down-mid-right',
+  'down-far-right',
+] as const;
+
+type Direction = typeof DIRECTIONS[number];
+
+function calculateDirection(dx: number, dy: number): Direction {
+  // Center deadzone: look straight forward when cursor is nearby
+  if (Math.hypot(dx, dy) < 70) {
+    return 'center';
+  }
+
+  // Vertical row selection (-1 = up, 0 = mid, 1 = down)
+  let row = 0;
+  if (dy < -65) row = -1;
+  else if (dy > 65) row = 1;
+
+  // Horizontal column selection (-3 to +3)
+  // Negative dx = cursor on viewer's left -> avatar looks viewer's left
+  // Positive dx = cursor on viewer's right -> avatar looks viewer's right
+  let col = 0;
+  if (dx < -380) col = -3;
+  else if (dx < -190) col = -2;
+  else if (dx < -55) col = -1;
+  else if (dx > 380) col = 3;
+  else if (dx > 190) col = 2;
+  else if (dx > 55) col = 1;
+
+  if (row === -1) {
+    if (col === -3) return 'up-far-left';
+    if (col === -2) return 'up-mid-left';
+    if (col === -1) return 'up-left';
+    if (col === 0) return 'up';
+    if (col === 1) return 'up-right';
+    if (col === 2) return 'up-mid-right';
+    return 'up-far-right';
+  }
+  if (row === 1) {
+    if (col === -3) return 'down-far-left';
+    if (col === -2) return 'down-mid-left';
+    if (col === -1) return 'down-left';
+    if (col === 0) return 'down';
+    if (col === 1) return 'down-right';
+    if (col === 2) return 'down-mid-right';
+    return 'down-far-right';
+  }
+
+  // Middle horizontal row
+  if (col === -3) return 'far-left';
+  if (col === -2) return 'mid-left';
+  if (col === -1) return 'left';
+  if (col === 0) return 'center';
+  if (col === 1) return 'right';
+  if (col === 2) return 'mid-right';
+  return 'far-right';
+}
+
 export const ProfilePage = ({ 
   onExploreProjects, 
   isDockVisible = false,
@@ -21,30 +98,87 @@ export const ProfilePage = ({
   const [isMobile, setIsMobile] = React.useState(false);
   const [isCVModalOpen, setIsCVModalOpen] = React.useState(false);
   const [isAvatarLoaded, setIsAvatarLoaded] = React.useState(false);
+  const [direction, setDirection] = React.useState<Direction>('center');
+
+  const avatarFigureRef = React.useRef<HTMLDivElement>(null);
 
   const handleViewCV = () => {
     setIsCVModalOpen(true);
   };
 
+  // Preload all 21 directional frames in memory for instantaneous 0ms switching
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    const img = new Image();
-    img.src = '/avatar.png';
-    if (img.complete) {
-      setIsAvatarLoaded(true);
-    } else {
-      img.onload = () => setIsAvatarLoaded(true);
-    }
+    const directionsList: Direction[] = [
+      'up-far-left', 'up-mid-left', 'up-left', 'up', 'up-right', 'up-mid-right', 'up-far-right',
+      'far-left', 'mid-left', 'left', 'center', 'right', 'mid-right', 'far-right',
+      'down-far-left', 'down-mid-left', 'down-left', 'down', 'down-right', 'down-mid-right', 'down-far-right'
+    ];
+
+    let primaryLoaded = false;
+    const centerImg = new Image();
+    centerImg.src = '/avatar-frames/dir_center.png?v=4';
+    const markLoaded = () => {
+      if (!primaryLoaded) {
+        primaryLoaded = true;
+        setIsAvatarLoaded(true);
+      }
+    };
+    if (centerImg.complete) markLoaded();
+    else centerImg.onload = markLoaded;
+
+    // Background preload all remaining 20 frames
+    directionsList.forEach(name => {
+      if (name === 'center') return;
+      const img = new Image();
+      img.src = `/avatar-frames/dir_${name}.png?v=4`;
+    });
 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Cursor tracking across the 3x5 directional grid
+  React.useEffect(() => {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      return;
+    }
+
+    let pointer: { x: number; y: number } | null = null;
+
+    const aim = () => {
+      const el = avatarFigureRef.current;
+      if (!el || !pointer) return;
+
+      const box = el.getBoundingClientRect();
+      const headX = box.left + box.width / 2;
+      const headY = box.top + box.height * 0.32;
+
+      const dx = pointer.x - headX;
+      const dy = pointer.y - headY;
+
+      const targetDirection = calculateDirection(dx, dy);
+      setDirection(prev => prev === targetDirection ? prev : targetDirection);
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      pointer = { x: e.clientX, y: e.clientY };
+      aim();
+    };
+
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('scroll', aim, { passive: true });
+
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('scroll', aim);
+    };
+  }, []);
+
   React.useEffect(() => {
     if (isAvatarLoaded) {
-      // Trigger dynamic background ripple and fluid surge synchronized with avatar slide-up
       const timer = setTimeout(() => {
         window.dispatchEvent(
           new CustomEvent('liquid-ether-surge', {
@@ -66,6 +200,8 @@ export const ProfilePage = ({
     }
   }, [isExiting]);
 
+  const activeAvatarSrc = `/avatar-frames/dir_${direction}.png?v=4`;
+
   return (
     <div className="flex flex-col gap-10 animate-in fade-in duration-500 font-inter">
       <div className="relative min-h-[calc(100dvh-180px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
@@ -73,8 +209,18 @@ export const ProfilePage = ({
         {typeof document !== 'undefined' && createPortal(
           <div className="fixed inset-x-0 bottom-0 flex justify-center items-end z-[5] pointer-events-none" style={{ bottom: 0 }}>
              <motion.div 
+               ref={avatarFigureRef}
                initial={{ opacity: 0, y: '85%' }}
-               animate={isExiting ? { opacity: 0, y: '85%' } : isAvatarLoaded ? { opacity: 1, y: '0%' } : { opacity: 0, y: '85%' }}
+               animate={
+                 isExiting 
+                   ? { opacity: 0, y: '85%' } 
+                   : isAvatarLoaded 
+                   ? { 
+                       opacity: 1, 
+                       y: '0%',
+                     } 
+                   : { opacity: 0, y: '85%' }
+               }
                transition={
                  isExiting
                    ? { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
@@ -85,24 +231,22 @@ export const ProfilePage = ({
                    onExitComplete?.();
                  }
                }}
-               className="relative w-full max-w-6xl xl:max-w-[1700px] h-[65vh] sm:h-[75vh] lg:h-[85vh] pointer-events-auto flex items-end justify-center"
+               className="relative w-full max-w-7xl xl:max-w-[1920px] h-[74vh] sm:h-[84vh] lg:h-[92vh] pointer-events-auto flex items-end justify-center select-none origin-bottom"
                style={{ bottom: 0 }}
              >
                 <motion.div
-                  animate={isExiting ? { y: 0 } : isMobile ? { y: [0, -8, 0] } : {}}
-                  transition={isExiting ? { duration: 0.3 } : isMobile ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
-                  className="relative w-full h-full flex items-end justify-center bg-transparent scale-110 sm:scale-120 lg:scale-135 origin-bottom"
+                  animate={{ y: 0 }}
+                  className="relative w-full h-full flex items-end justify-center bg-transparent scale-100 origin-bottom"
                   style={{ bottom: 0 }}
                 >
                   <DitherVeil 
-                    src="/avatar.png"
+                    src={activeAvatarSrc}
                     fit="contain"
                     align="bottom"
                     intro={false}
                     colorEntrance={true}
                     colorEntranceDuration={2500}
                     triggerEntrance={isAvatarLoaded ? 1 : 0}
-                    onLoad={() => setIsAvatarLoaded(true)}
                     pattern="atkinson"
                     pixelSize={2}
                     levels={5}
@@ -112,11 +256,11 @@ export const ProfilePage = ({
                     softness={0.7}
                     linger={4}
                     wander={false}
-                    clickBurst={true}
+                    clickBurst={false}
                     rimColor="#000000"
                     rim={0}
                     transparentBg={true}
-                    className="w-full h-full cursor-crosshair bg-transparent"
+                    className="w-full h-full bg-transparent"
                   />
                 </motion.div>
              </motion.div>
