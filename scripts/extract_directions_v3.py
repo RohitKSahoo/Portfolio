@@ -34,7 +34,7 @@ def extract_all():
         ]),
         ('center', 'public/assets/Head_directions_1.jpg', [
             'dir_far-left', 'dir_mid-left', 'dir_left', 'dir_center',
-            'dir_right', 'dir_mid-right', 'dir_far-right'
+            None, 'dir_right', 'dir_far-right'
         ]),
         ('down', 'public/assets/Head_directions_3.jpg', [
             'dir_down-far-left', 'dir_down-mid-left', 'dir_down-left', 'dir_down',
@@ -86,6 +86,9 @@ def extract_all():
         assert len(all_ordered) == 7, f"Expected 7 components, got {len(all_ordered)}"
         
         for idx, (comp, name) in enumerate(zip(all_ordered, names)):
+            if not name:
+                print(f"  [{idx+1}/7] Skipped duplicate figure")
+                continue
             label_id = comp['label']
             # Use bounding box center to avoid centroid head bias
             box_cx = comp['x'] + (comp['w'] // 2)

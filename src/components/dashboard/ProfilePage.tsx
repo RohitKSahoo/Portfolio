@@ -20,7 +20,6 @@ const DIRECTIONS = [
   'left',
   'center',
   'right',
-  'mid-right',
   'far-right',
   'down-far-left',
   'down-mid-left',
@@ -79,8 +78,7 @@ function calculateDirection(dx: number, dy: number): Direction {
   if (col === -2) return 'mid-left';
   if (col === -1) return 'left';
   if (col === 0) return 'center';
-  if (col === 1) return 'right';
-  if (col === 2) return 'mid-right';
+  if (col === 1 || col === 2) return 'right';
   return 'far-right';
 }
 
@@ -114,13 +112,13 @@ export const ProfilePage = ({
 
     const directionsList: Direction[] = [
       'up-far-left', 'up-mid-left', 'up-left', 'up', 'up-right', 'up-mid-right', 'up-far-right',
-      'far-left', 'mid-left', 'left', 'center', 'right', 'mid-right', 'far-right',
+      'far-left', 'mid-left', 'left', 'center', 'right', 'far-right',
       'down-far-left', 'down-mid-left', 'down-left', 'down', 'down-right', 'down-mid-right', 'down-far-right'
     ];
 
     let primaryLoaded = false;
     const centerImg = new Image();
-    centerImg.src = '/avatar-frames/dir_center.png?v=4';
+    centerImg.src = '/avatar-frames/dir_center.png?v=5';
     const markLoaded = () => {
       if (!primaryLoaded) {
         primaryLoaded = true;
@@ -130,11 +128,11 @@ export const ProfilePage = ({
     if (centerImg.complete) markLoaded();
     else centerImg.onload = markLoaded;
 
-    // Background preload all remaining 20 frames
+    // Background preload all remaining frames
     directionsList.forEach(name => {
       if (name === 'center') return;
       const img = new Image();
-      img.src = `/avatar-frames/dir_${name}.png?v=4`;
+      img.src = `/avatar-frames/dir_${name}.png?v=5`;
     });
 
     return () => window.removeEventListener('resize', handleResize);
@@ -200,7 +198,7 @@ export const ProfilePage = ({
     }
   }, [isExiting]);
 
-  const activeAvatarSrc = `/avatar-frames/dir_${direction}.png?v=4`;
+  const activeAvatarSrc = `/avatar-frames/dir_${direction}.png?v=5`;
 
   return (
     <div className="flex flex-col gap-10 animate-in fade-in duration-500 font-inter">
