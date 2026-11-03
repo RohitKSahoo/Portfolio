@@ -20,6 +20,35 @@ const ContactPage = lazy(loadContact);
 inject();
 
 const LIQUID_COLORS = ['#5227FF', '#FF9FFC', '#B497CF'];
+const TAB_ORDER = ['profile', 'projects', 'experience', 'contact'];
+
+const pageVariants = {
+  enter: (direction: number) => ({
+    y: direction >= 0 ? 55 : -55,
+    opacity: 0,
+    scale: 0.97,
+  }),
+  center: {
+    y: 0,
+    opacity: 1,
+    scale: 1,
+    transition: {
+      y: { type: 'spring', stiffness: 280, damping: 28, mass: 0.85 },
+      opacity: { duration: 0.22, ease: 'easeOut' },
+      scale: { duration: 0.22, ease: 'easeOut' },
+    },
+  },
+  exit: (direction: number) => ({
+    y: direction >= 0 ? 45 : -45,
+    opacity: 0,
+    scale: 0.95,
+    transition: {
+      y: { duration: 0.18, ease: [0.32, 0, 0.67, 0] },
+      opacity: { duration: 0.15, ease: 'linear' },
+      scale: { duration: 0.18, ease: 'easeIn' },
+    },
+  }),
+};
 
 function App() {
   const [activeTab, setActiveTab] = useState<string>(() => {
@@ -29,7 +58,9 @@ function App() {
     return 'profile';
   });
   const [pendingTab, setPendingTab] = useState<string | null>(null);
+  const [direction, setDirection] = useState<number>(0);
   const [isProfileExiting, setIsProfileExiting] = useState(false);
+  const [isHistoryExiting, setIsHistoryExiting] = useState(false);
   const [isDockVisible, setIsDockVisible] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -55,16 +86,35 @@ function App() {
 
   const handleProfileExitComplete = () => {
     if (pendingTab) {
+      const prevIdx = TAB_ORDER.indexOf(activeTab);
+      const nextIdx = TAB_ORDER.indexOf(pendingTab);
+      setDirection(nextIdx > prevIdx ? 1 : -1);
       setActiveTab(pendingTab);
       setPendingTab(null);
     }
     setIsProfileExiting(false);
   };
 
+  const handleHistoryExitComplete = () => {
+    if (pendingTab) {
+      const prevIdx = TAB_ORDER.indexOf(activeTab);
+      const nextIdx = TAB_ORDER.indexOf(pendingTab);
+      setDirection(nextIdx > prevIdx ? 1 : -1);
+      setActiveTab(pendingTab);
+      setPendingTab(null);
+    }
+    setIsHistoryExiting(false);
+  };
+
   const handleTabChange = (nextTab: string) => {
     if (nextTab === (pendingTab || activeTab)) return;
 
-    if (isProfileExiting) {
+    const prevIdx = TAB_ORDER.indexOf(activeTab);
+    const nextIdx = TAB_ORDER.indexOf(nextTab);
+    const newDir = nextIdx > prevIdx ? 1 : -1;
+    setDirection(newDir);
+
+    if (isProfileExiting || isHistoryExiting) {
       setPendingTab(nextTab);
       return;
     }
@@ -73,6 +123,10 @@ function App() {
       // Trigger avatar reverse slide-down exit animation before transitioning
       setPendingTab(nextTab);
       setIsProfileExiting(true);
+    } else if (activeTab === 'experience' && nextTab !== 'experience') {
+      // Trigger lanyard pull-up exit animation before transitioning
+      setPendingTab(nextTab);
+      setIsHistoryExiting(true);
     } else {
       setActiveTab(nextTab);
     }
@@ -88,15 +142,25 @@ function App() {
     }
   }, [isProfileExiting, pendingTab]);
 
+  useEffect(() => {
+    if (isHistoryExiting) {
+      const fallbackTimer = setTimeout(() => {
+        handleHistoryExitComplete();
+      }, 650);
+      return () => clearTimeout(fallbackTimer);
+    }
+  }, [isHistoryExiting, pendingTab]);
+
   const renderContent = () => {
     return (
-      <AnimatePresence mode="wait" initial={false}>
+      <AnimatePresence mode="wait" custom={direction} initial={false}>
         <motion.div
           key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.22, ease: "easeOut" }}
+          custom={direction}
+          variants={pageVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
           className="w-full"
         >
           <Suspense fallback={null}>
@@ -111,7 +175,12 @@ function App() {
                   />
                 );
                 case 'projects': return <RegistryPage />;
-                case 'experience': return <HistoryPage />;
+                case 'experience': return (
+                  <HistoryPage 
+                    isExiting={isHistoryExiting}
+                    onExitComplete={handleHistoryExitComplete}
+                  />
+                );
                 case 'contact': return <ContactPage />;
                 default: return (
                   <ProfilePage 
@@ -130,7 +199,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen selection:bg-[var(--theme-accent)] selection:text-white antialiased relative transition-colors">
+    <div className="min-h-screen selection:bg-[var(--theme-accent)] selection:text-white antialiased relative transition-colors overflow-x-clip">
       {/* MAGNETIC DOCK NAVIGATION */}
       <SystemDock 
         activeTab={pendingTab || activeTab} 
@@ -161,7 +230,7 @@ function App() {
         />
 
         {/* ACTIVE MODULE VIEWPORT */}
-        <div ref={scrollContainerRef} className="px-5 pt-[95px] lg:pt-[110px] pb-24 lg:pb-24 pointer-events-none" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div ref={scrollContainerRef} className="px-4 sm:px-6 lg:px-8 pt-[78px] sm:pt-[92px] lg:pt-[112px] pb-20 lg:pb-24 pointer-events-none" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div className="max-w-[1600px] w-full mx-auto pointer-events-none">
              {renderContent()}
           </div>

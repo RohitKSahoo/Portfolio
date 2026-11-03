@@ -35,6 +35,8 @@ export interface LanyardProps {
   flipRef?: React.MutableRefObject<(() => void) | null>;
   flipSpin?: number;
   flipAngle?: number;
+  isExiting?: boolean;
+  onExitComplete?: () => void;
 }
 
 const CARD_SIZES: Record<string, [number, number]> = {
@@ -455,6 +457,23 @@ const buildWeaveTexture = () => {
   return texture;
 };
 
+let sharedGrainTexture: THREE.CanvasTexture | null = null;
+let sharedWeaveTexture: THREE.DataTexture | null = null;
+
+const getGrainTexture = () => {
+  if (!sharedGrainTexture) {
+    sharedGrainTexture = buildGrainTexture();
+  }
+  return sharedGrainTexture;
+};
+
+const getWeaveTexture = () => {
+  if (!sharedWeaveTexture) {
+    sharedWeaveTexture = buildWeaveTexture();
+  }
+  return sharedWeaveTexture;
+};
+
 const drawFitted = (
   ctx: CanvasRenderingContext2D,
   image: HTMLImageElement,
@@ -830,7 +849,9 @@ export const Lanyard: React.FC<LanyardProps> = ({
   showFoldersOnBack = true,
   flipRef,
   flipSpin = 9,
-  flipAngle = Math.PI
+  flipAngle = Math.PI,
+  isExiting = false,
+  onExitComplete
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsRef = useRef<any>(null);
@@ -864,7 +885,9 @@ export const Lanyard: React.FC<LanyardProps> = ({
     companies,
     showFoldersOnBack,
     flipSpin,
-    flipAngle
+    flipAngle,
+    isExiting,
+    onExitComplete
   };
 
   useEffect(() => {
@@ -915,8 +938,8 @@ export const Lanyard: React.FC<LanyardProps> = ({
     const strapTexture = makeCanvasTexture(strapCanvas, anisotropy);
     strapTexture.wrapS = THREE.ClampToEdgeWrapping;
     strapTexture.wrapT = THREE.RepeatWrapping;
-    const grain = buildGrainTexture();
-    const weave = buildWeaveTexture();
+    const grain = getGrainTexture();
+    const weave = getWeaveTexture();
     const foilUniforms = {
       foilStrength: { value: 0 },
       foilAspect: { value: 1.4 },
@@ -1249,6 +1272,10 @@ export const Lanyard: React.FC<LanyardProps> = ({
       };
     };
 
+    let exitStartTime: number | null = null;
+    let exitDone = false;
+    let initialAnchorY = 0;
+
     const tick = (now: number) => {
       raf = 0;
       if (!alive) return;
@@ -1256,6 +1283,37 @@ export const Lanyard: React.FC<LanyardProps> = ({
       last = now;
       time += dt;
       const current = physics();
+      const s = settingsRef.current;
+
+      if (s?.isExiting) {
+        sim.grab = null;
+        if (exitStartTime === null) {
+          exitStartTime = now;
+          initialAnchorY = sim.anchor.y;
+        }
+        const exitDuration = 340;
+        const elapsed = now - exitStartTime;
+        const progress = Math.min(1, Math.max(0, elapsed / exitDuration));
+
+        // Ease-in cubic curve for dynamic upward pull into ceiling
+        const ease = progress * progress * progress;
+        const liftDist = (camera.position.z * Math.tan((FOV * Math.PI) / 360) * 2) + layout.height * 2.5 + 4;
+        sim.anchor.y = initialAnchorY + ease * liftDist;
+        sim.nodes[0].copy(sim.anchor);
+        sim.previous[0].copy(sim.anchor);
+
+        // Assist body upward velocity so XPBD does not lag behind the pull
+        sim.body.velocity.y = Math.max(sim.body.velocity.y, ease * 30 + 6);
+
+        if (progress >= 1 && !exitDone) {
+          exitDone = true;
+          s.onExitComplete?.();
+        }
+      } else {
+        exitStartTime = null;
+        exitDone = false;
+      }
+
       stepSimulation(sim, dt, current, time);
       const body = sim.body;
       if (!Number.isFinite(body.position.x + body.position.y + body.position.z + body.quaternion.w)) {
@@ -1263,8 +1321,8 @@ export const Lanyard: React.FC<LanyardProps> = ({
         placeHanging(sim, layout, false);
       }
       render();
-      const resting = sim.calm > 1.2 && !sim.grab && current.breeze === 0;
-      if (visible && !resting) raf = requestAnimationFrame(tick);
+      const resting = !s?.isExiting && sim.calm > 1.2 && !sim.grab && current.breeze === 0;
+      if (visible && (!resting || s?.isExiting)) raf = requestAnimationFrame(tick);
     };
 
     const start = () => {
@@ -1494,7 +1552,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
       canvas.removeEventListener('touchstart', onTouchStart);
       [bodyMesh, frontMesh, backMesh, ring, clampMesh, eyelet, band].forEach(mesh => mesh.geometry?.dispose());
       [frontMaterial, backMaterial, edgeMaterial, metalMaterial, bandMaterial].forEach(material => material.dispose());
-      [frontTexture, backTexture, strapTexture, grain, weave].forEach(texture => texture.dispose());
+      [frontTexture, backTexture, strapTexture].forEach(texture => texture.dispose());
       environment.dispose();
       renderer.dispose();
       if (canvas.parentNode) canvas.parentNode.removeChild(canvas);

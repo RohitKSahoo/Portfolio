@@ -488,6 +488,7 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
   const wakeRef = useRef<() => void>(() => { });
   const triggerRef = useRef<(() => void) | null>(null);
   const lastTriggerRef = useRef<any>(undefined);
+  const updateImageRef = useRef<((newSrc: string) => void) | null>(null);
 
   useEffect(() => {
     if (triggerEntrance !== undefined && triggerEntrance !== lastTriggerRef.current) {
@@ -495,6 +496,12 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       triggerRef.current?.();
     }
   }, [triggerEntrance]);
+
+  useEffect(() => {
+    if (src && updateImageRef.current) {
+      updateImageRef.current(src);
+    }
+  }, [src]);
 
   useEffect(() => {
     settingsRef.current = {
@@ -636,6 +643,8 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
     const brush = { x: 0, y: 0, px: 0, py: 0 };
     const bursts: Array<{ x: number; y: number; start: number }> = [];
 
+    const diffusionCache = new Map<string, { data: Uint8Array; width: number; height: number }>();
+
     const layout = () => {
       width = Math.max(1, container.clientWidth);
       height = Math.max(1, container.clientHeight);
@@ -643,6 +652,15 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       viewUniforms.uResolution.value = [canvas.width, canvas.height];
       maskUniforms.uSize.value = [width, height];
       viewUniforms.uSize.value = [width, height];
+      if (image && settingsRef.current) {
+        viewUniforms.uCover.value = fitScale(
+          canvas.width,
+          canvas.height,
+          image.naturalWidth,
+          image.naturalHeight,
+          settingsRef.current.fit === 'contain'
+        );
+      }
       const mw = Math.max(2, Math.round(width * MASK_SCALE));
       const mh = Math.max(2, Math.round(height * MASK_SCALE));
       if (mw !== masks[0].width || mh !== masks[0].height) {
@@ -656,7 +674,15 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
     };
 
     const updateDiffusion = (cell: number, s: Settings) => {
-      if (!image || !samplerContext) return;
+      if (!image || !samplerContext || !image.naturalWidth || !image.naturalHeight) return;
+      viewUniforms.uCover.value = fitScale(
+        canvas.width,
+        canvas.height,
+        image.naturalWidth,
+        image.naturalHeight,
+        s.fit === 'contain'
+      );
+      const [cx, cy] = viewUniforms.uCover.value;
       const cols = Math.ceil(canvas.width / cell);
       const rows = Math.ceil(canvas.height / cell);
       const key = [
@@ -670,11 +696,23 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
         cols,
         rows,
         canvas.width,
-        canvas.height
+        canvas.height,
+        cx.toFixed(4),
+        cy.toFixed(4),
+        image.src
       ].join('|');
       if (key === diffusedKey) return;
       diffusedKey = key;
-      const [cx, cy] = viewUniforms.uCover.value;
+
+      const cached = diffusionCache.get(key);
+      if (cached) {
+        diffusedTexture.image = cached.data;
+        diffusedTexture.width = cached.width;
+        diffusedTexture.height = cached.height;
+        diffusedTexture.needsUpdate = true;
+        return;
+      }
+
       const iw = image.naturalWidth;
       const ih = image.naturalHeight;
       sampler.width = cols;
@@ -707,10 +745,12 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       }
       const grade = (v: number) => Math.pow(Math.min(1, Math.max(0, (v - 0.5) * s.contrast + 0.5 + s.brightness)), 1.6);
       const pixels = samplerContext.getImageData(0, 0, cols, rows).data;
-      diffusedTexture.image = diffuse(pixels, cols, rows, KERNELS[s.pattern], s.levels, s.palette === 'rgb', grade);
+      const diffusedData = diffuse(pixels, cols, rows, KERNELS[s.pattern], s.levels, s.palette === 'rgb', grade);
+      diffusedTexture.image = diffusedData;
       diffusedTexture.width = cols;
       diffusedTexture.height = rows;
       diffusedTexture.needsUpdate = true;
+      diffusionCache.set(key, { data: diffusedData, width: cols, height: rows });
     };
 
     const frame = (now: number) => {
@@ -856,36 +896,49 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       wake();
     };
 
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.decoding = 'async';
-    img.onload = () => {
-      image = img;
-      imageTexture.image = img;
+    const applyImage = (newImg: HTMLImageElement) => {
+      image = newImg;
+      imageTexture.image = newImg;
+      imageTexture.needsUpdate = true;
       try {
         if (samplerContext) {
-          const edge = measureEdge(samplerContext, img);
+          const edge = measureEdge(samplerContext, newImg);
           viewUniforms.uMatte.value = edge.matte;
           viewUniforms.uKey.value = edge.plain ? 1 : 0;
         }
       } catch { }
-      introStart = performance.now();
+      diffusedKey = '';
+      layout();
+      const s = settingsRef.current;
+      if (s) {
+        const cell = Math.max(1, Math.round(s.pixelSize * renderer.dpr));
+        updateDiffusion(cell, s);
+      }
       onLoad?.();
       wake();
     };
-    img.onerror = () => {
-      if (img.src && !img.src.includes('android_robot.png')) {
-        img.src = '/android_robot.png';
+
+    updateImageRef.current = (newSrc: string) => {
+      if (!newSrc) return;
+      const nextImg = new Image();
+      nextImg.crossOrigin = 'anonymous';
+      nextImg.decoding = 'async';
+      nextImg.onload = () => {
+        applyImage(nextImg);
+      };
+      nextImg.onerror = () => {
+        if (nextImg.src && !nextImg.src.includes('android_robot.png')) {
+          nextImg.src = '/android_robot.png';
+        }
+      };
+      nextImg.src = newSrc;
+      if (nextImg.complete && nextImg.naturalWidth > 0) {
+        applyImage(nextImg);
       }
     };
-    img.src = src;
 
-    if (img.complete && img.naturalWidth > 0) {
-      image = img;
-      imageTexture.image = img;
-      introStart = performance.now();
-      onLoad?.();
-      wake();
+    if (src) {
+      updateImageRef.current(src);
     }
 
     const locate = (e: PointerEvent) => {
@@ -935,9 +988,9 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
     return () => {
       cancelAnimationFrame(raf);
       wakeRef.current = () => { };
+      updateImageRef.current = null;
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
-      img.onload = null;
       container.removeEventListener('pointermove', onMove);
       container.removeEventListener('pointerenter', onMove);
       container.removeEventListener('pointerdown', onDown);
@@ -946,7 +999,7 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       gl.getExtension('WEBGL_lose_context')?.loseContext();
       if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
     };
-  }, [src]);
+  }, []);
 
   return <div ref={containerRef} className={`dither-veil ${className}`.trim()} style={style} />;
 };
