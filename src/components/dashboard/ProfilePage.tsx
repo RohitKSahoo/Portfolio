@@ -474,11 +474,11 @@ export const ProfilePage = ({
               </div>
             </motion.div>
 
-            {/* CALLIGRAPHY SUBTITLE WITH TYPEWRITER EFFECT BELOW NAME ON MOBILE */}
-            <p className="block lg:hidden text-center text-[1.32rem] sm:text-2xl text-white/95 font-calligraphy tracking-wider px-4 py-1 leading-snug pointer-events-auto min-h-[3.2rem]">
+            {/* SUBTITLE WITH TYPEWRITER EFFECT BELOW NAME ON MOBILE */}
+            <p className="block lg:hidden text-center text-xs sm:text-sm text-white/70 font-inter font-medium leading-relaxed px-4 py-1 pointer-events-auto min-h-[2.4rem]">
               <span>{typedSubtitle}</span>
               {isTyping && (
-                <span className="inline-block w-[2px] h-[1.1em] ml-1 bg-red-500 animate-pulse align-middle" />
+                <span className="inline-block w-[1.5px] h-[1em] ml-1 bg-red-500 animate-pulse align-middle" />
               )}
             </p>
           </div>

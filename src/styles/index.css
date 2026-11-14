@@ -158,7 +158,3 @@
 .marquee-pause:active {
   animation-play-state: paused;
 }
-
-.font-calligraphy {
-  font-family: 'Sacramento', 'Great Vibes', 'Tangerine', cursive, sans-serif;
-}
