@@ -5,8 +5,8 @@ import './Lanyard.css';
 const globalImageCache = new Map<string, Promise<HTMLImageElement | null>>();
 
 export interface LanyardProps {
-  frontImage?: string;
-  backImage?: string;
+  frontImage?: string | HTMLCanvasElement;
+  backImage?: string | HTMLCanvasElement;
   imageFit?: 'cover' | 'contain';
   cardColor?: string;
   orientation?: 'portrait' | 'landscape';
@@ -15,7 +15,7 @@ export interface LanyardProps {
   size?: number;
   anchor?: 'left' | 'center' | 'right' | number;
   strapLength?: number;
-  strapImage?: string;
+  strapImage?: string | HTMLCanvasElement;
   strapColor?: string;
   strapWidth?: number;
   metal?: 'graphite' | 'silver' | 'gold';
@@ -239,9 +239,10 @@ const traceRoundedRect = (
   path.bezierCurveTo(x, y + k, x + k, y, x + r, y);
 };
 
-const loadImage = (cache: Map<string, Promise<HTMLImageElement | null>>, url?: string): Promise<HTMLImageElement | null> => {
-  if (!url) return Promise.resolve(null);
-  const cached = cache.get(url);
+const loadImage = (cache: Map<string, Promise<HTMLImageElement | null>>, source?: string | HTMLCanvasElement): Promise<HTMLImageElement | HTMLCanvasElement | null> => {
+  if (!source) return Promise.resolve(null);
+  if (typeof source !== 'string') return Promise.resolve(source);
+  const cached = cache.get(source);
   if (cached) return cached;
   const promise = new Promise<HTMLImageElement | null>(resolve => {
     const image = new Image();
@@ -249,9 +250,9 @@ const loadImage = (cache: Map<string, Promise<HTMLImageElement | null>>, url?: s
     image.decoding = 'async';
     image.onload = () => resolve(image);
     image.onerror = () => resolve(null);
-    image.src = url;
+    image.src = source;
   });
-  cache.set(url, promise);
+  cache.set(source, promise);
   return promise;
 };
 
@@ -476,7 +477,7 @@ const getWeaveTexture = () => {
 
 const drawFitted = (
   ctx: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: HTMLImageElement | HTMLCanvasElement,
   width: number,
   height: number,
   fit: 'cover' | 'contain'
@@ -489,7 +490,7 @@ const drawFitted = (
 
 const paintFace = (
   canvas: HTMLCanvasElement,
-  image: HTMLImageElement | null,
+  image: HTMLImageElement | HTMLCanvasElement | null,
   color: [number, number, number],
   fit: 'cover' | 'contain'
 ) => {
@@ -502,7 +503,7 @@ const paintFace = (
 
 const paintStrap = (
   canvas: HTMLCanvasElement,
-  image: HTMLImageElement | null,
+  image: HTMLImageElement | HTMLCanvasElement | null,
   color: [number, number, number]
 ) => {
   const across = 192;
@@ -925,7 +926,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
     scene.add(keyLight, fillLight);
 
     const imageCache = globalImageCache;
-    const images: { front: HTMLImageElement | null; back: HTMLImageElement | null; strap: HTMLImageElement | null } = {
+    const images: { front: HTMLImageElement | HTMLCanvasElement | null; back: HTMLImageElement | HTMLCanvasElement | null; strap: HTMLImageElement | HTMLCanvasElement | null } = {
       front: null,
       back: null,
       strap: null
@@ -1109,8 +1110,14 @@ export const Lanyard: React.FC<LanyardProps> = ({
         }
       }
 
-      const imageKey = `${s.frontImage}|${s.backImage}|${s.strapImage}`;
-      if (imageKey !== applied.imageKey) {
+      if (
+        s.frontImage !== applied.frontImage ||
+        s.backImage !== applied.backImage ||
+        s.strapImage !== applied.strapImage
+      ) {
+        applied.frontImage = s.frontImage;
+        applied.backImage = s.backImage;
+        applied.strapImage = s.strapImage;
         const token = ++imageToken;
         Promise.all([
           loadImage(imageCache, s.frontImage),
@@ -1155,7 +1162,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
       }
       canvas.style.touchAction = s.interactive ? 'pan-y' : 'auto';
 
-      applied = { layoutKey, framingKey, imageKey, faceKey, strapColor: s.strapColor, strapScale };
+      applied = { layoutKey, framingKey, frontImage: s.frontImage, backImage: s.backImage, strapImage: s.strapImage, faceKey, strapColor: s.strapColor, strapScale };
       start();
     };
 

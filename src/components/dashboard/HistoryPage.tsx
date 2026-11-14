@@ -12,9 +12,9 @@ const DEFAULT_GITHUB_STATS = {
   languagesList: ['Kotlin', 'Java', 'TypeScript', 'JavaScript', 'Python', 'HTML', 'CSS']
 };
 
-let cachedFrontTexture = '';
-let cachedBackTexture = '';
-let cachedStrapTexture = '';
+let cachedFrontTexture: HTMLCanvasElement | null = null;
+let cachedBackTexture: HTMLCanvasElement | null = null;
+let cachedStrapTexture: HTMLCanvasElement | null = null;
 let preloadedAvatar: HTMLImageElement | null = null;
 const preloadedLogos: Record<string, HTMLImageElement> = {};
 
@@ -44,7 +44,7 @@ if (typeof window !== 'undefined') {
 }
 
 function getInitialTextures() {
-  if (typeof window === 'undefined') return { front: '', back: '', strap: '' };
+  if (typeof window === 'undefined') return { front: null, back: null, strap: null };
   if (!cachedFrontTexture) {
     cachedStrapTexture = generateStrapImage();
     cachedFrontTexture = generateFrontBadge({
@@ -104,9 +104,9 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
   const [assetsReady, setAssetsReady] = useState(false);
 
   const initial = getInitialTextures();
-  const [frontTexture, setFrontTexture] = useState<string>(initial.front);
-  const [backTexture, setBackTexture] = useState<string>(initial.back);
-  const [strapTexture, setStrapTexture] = useState<string>(initial.strap);
+  const [frontTexture, setFrontTexture] = useState<HTMLCanvasElement | null>(initial.front);
+  const [backTexture, setBackTexture] = useState<HTMLCanvasElement | null>(initial.back);
+  const [strapTexture, setStrapTexture] = useState<HTMLCanvasElement | null>(initial.strap);
 
   const initialKey = `${DEFAULT_GITHUB_STATS.since}|${DEFAULT_GITHUB_STATS.projects}|${DEFAULT_GITHUB_STATS.technologies}|${DEFAULT_GITHUB_STATS.commits}|${DEFAULT_GITHUB_STATS.languagesList.join(',')}|${preloadedAvatar ? '1' : '0'}`;
   const lastGeneratedKeyRef = useRef<string>(cachedFrontTexture ? initialKey : '');
@@ -309,8 +309,9 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       {typeof document !== 'undefined' && createPortal(
         <div className="fixed inset-0 w-screen h-screen z-[5] pointer-events-auto overflow-hidden">
           <Lanyard
-            frontImage={frontTexture}
-            backImage={backTexture}
+            frontImage={frontTexture || undefined}
+            backImage={backTexture || undefined}
+            strapImage={strapTexture || undefined}
             cardColor="#0d0e10"
             strapColor="#0a0a0c"
             strapWidth={0.55}

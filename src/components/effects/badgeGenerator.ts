@@ -381,13 +381,13 @@ const drawMinimalRedirectArrow = (
   ctx.restore();
 };
 
-export const generateFrontBadge = (data: BadgeData): string => {
+export const generateFrontBadge = (data: BadgeData): HTMLCanvasElement => {
   const isLandscape = data.orientation !== 'portrait';
   const canvas = document.createElement('canvas');
   canvas.width = isLandscape ? 1530 : 800;
   canvas.height = isLandscape ? 1000 : 1125;
   const ctx = canvas.getContext('2d');
-  if (!ctx) return '';
+  if (!ctx) return canvas;
 
   const W = canvas.width;
   const H = canvas.height;
@@ -673,16 +673,16 @@ export const generateFrontBadge = (data: BadgeData): string => {
     ctx.restore();
   }
 
-  return canvas.toDataURL('image/png');
+  return canvas;
 };
 
-export const generateBackBadge = (data: BadgeData): string => {
+export const generateBackBadge = (data: BadgeData): HTMLCanvasElement => {
   const isLandscape = data.orientation !== 'portrait';
   const canvas = document.createElement('canvas');
   canvas.width = isLandscape ? 1530 : 800;
   canvas.height = isLandscape ? 1000 : 1125;
   const ctx = canvas.getContext('2d');
-  if (!ctx) return '';
+  if (!ctx) return canvas;
 
   const W = canvas.width;
   const H = canvas.height;
@@ -1099,15 +1099,15 @@ export const generateBackBadge = (data: BadgeData): string => {
     ctx.restore();
   }
 
-  return canvas.toDataURL('image/png');
+  return canvas;
 };
 
-export const generateStrapImage = (): string => {
+export const generateStrapImage = (): HTMLCanvasElement => {
   const canvas = document.createElement('canvas');
   canvas.width = 768;
   canvas.height = 192;
   const ctx = canvas.getContext('2d');
-  if (!ctx) return '';
+  if (!ctx) return canvas;
 
   // 1. Tactical Carbon Obsidian Weave Base
   ctx.fillStyle = '#08080a';
@@ -1147,5 +1147,5 @@ export const generateStrapImage = (): string => {
   ctx.fillText('★  ROHIT K. SAHOO  //  GITHUB : ROHITKSAHOO  //  VSSUT CSE  ★', 384, 96);
   ctx.restore();
 
-  return canvas.toDataURL('image/png');
+  return canvas;
 };

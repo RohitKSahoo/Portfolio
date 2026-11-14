@@ -57,10 +57,7 @@ function App() {
     }
     return 'profile';
   });
-  const [pendingTab, setPendingTab] = useState<string | null>(null);
   const [direction, setDirection] = useState<number>(0);
-  const [isProfileExiting, setIsProfileExiting] = useState(false);
-  const [isHistoryExiting, setIsHistoryExiting] = useState(false);
   const [isDockVisible, setIsDockVisible] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -84,72 +81,15 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
-  const handleProfileExitComplete = () => {
-    if (pendingTab) {
-      const prevIdx = TAB_ORDER.indexOf(activeTab);
-      const nextIdx = TAB_ORDER.indexOf(pendingTab);
-      setDirection(nextIdx > prevIdx ? 1 : -1);
-      setActiveTab(pendingTab);
-      setPendingTab(null);
-    }
-    setIsProfileExiting(false);
-  };
-
-  const handleHistoryExitComplete = () => {
-    if (pendingTab) {
-      const prevIdx = TAB_ORDER.indexOf(activeTab);
-      const nextIdx = TAB_ORDER.indexOf(pendingTab);
-      setDirection(nextIdx > prevIdx ? 1 : -1);
-      setActiveTab(pendingTab);
-      setPendingTab(null);
-    }
-    setIsHistoryExiting(false);
-  };
-
   const handleTabChange = (nextTab: string) => {
-    if (nextTab === (pendingTab || activeTab)) return;
+    if (nextTab === activeTab) return;
 
     const prevIdx = TAB_ORDER.indexOf(activeTab);
     const nextIdx = TAB_ORDER.indexOf(nextTab);
     const newDir = nextIdx > prevIdx ? 1 : -1;
     setDirection(newDir);
-
-    if (isProfileExiting || isHistoryExiting) {
-      setPendingTab(nextTab);
-      return;
-    }
-
-    if (activeTab === 'profile' && nextTab !== 'profile') {
-      // Trigger avatar reverse slide-down exit animation before transitioning
-      setPendingTab(nextTab);
-      setIsProfileExiting(true);
-    } else if (activeTab === 'experience' && nextTab !== 'experience') {
-      // Trigger lanyard pull-up exit animation before transitioning
-      setPendingTab(nextTab);
-      setIsHistoryExiting(true);
-    } else {
-      setActiveTab(nextTab);
-    }
+    setActiveTab(nextTab);
   };
-
-  // Safety fallback in case animation completion event is dropped
-  useEffect(() => {
-    if (isProfileExiting) {
-      const fallbackTimer = setTimeout(() => {
-        handleProfileExitComplete();
-      }, 750);
-      return () => clearTimeout(fallbackTimer);
-    }
-  }, [isProfileExiting, pendingTab]);
-
-  useEffect(() => {
-    if (isHistoryExiting) {
-      const fallbackTimer = setTimeout(() => {
-        handleHistoryExitComplete();
-      }, 650);
-      return () => clearTimeout(fallbackTimer);
-    }
-  }, [isHistoryExiting, pendingTab]);
 
   const renderContent = () => {
     return (
@@ -170,24 +110,15 @@ function App() {
                   <ProfilePage 
                     onExploreProjects={() => handleTabChange('projects')} 
                     isDockVisible={isDockVisible}
-                    isExiting={isProfileExiting}
-                    onExitComplete={handleProfileExitComplete}
                   />
                 );
                 case 'projects': return <RegistryPage />;
-                case 'experience': return (
-                  <HistoryPage 
-                    isExiting={isHistoryExiting}
-                    onExitComplete={handleHistoryExitComplete}
-                  />
-                );
+                case 'experience': return <HistoryPage />;
                 case 'contact': return <ContactPage />;
                 default: return (
                   <ProfilePage 
                     onExploreProjects={() => handleTabChange('projects')} 
                     isDockVisible={isDockVisible}
-                    isExiting={isProfileExiting}
-                    onExitComplete={handleProfileExitComplete}
                   />
                 );
               }
@@ -202,7 +133,7 @@ function App() {
     <div className="min-h-screen selection:bg-[var(--theme-accent)] selection:text-white antialiased relative transition-colors overflow-x-clip">
       {/* MAGNETIC DOCK NAVIGATION */}
       <SystemDock 
-        activeTab={pendingTab || activeTab} 
+        activeTab={activeTab} 
         setActiveTab={handleTabChange} 
         isDockVisible={isDockVisible}
         setIsDockVisible={setIsDockVisible}
