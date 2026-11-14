@@ -342,19 +342,54 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       {/* Main Content Grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10 pointer-events-none">
         
-        {/* Left Column (5/12) - Timeline sliding smoothly up from bottom edge, and down on exit */}
+        {/* Left Column (5/12 or 6/12 on XL) - Timeline sliding smoothly up from bottom edge, and down on exit */}
         <motion.div 
           initial={{ opacity: 0, y: 70 }}
           animate={isExiting ? { opacity: 0, y: 40, transition: { duration: 0.2, ease: 'easeIn' } } : { opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 220, damping: 26, mass: 0.9, delay: 0.05 }}
-          className="lg:col-span-5 flex flex-col gap-10 py-2 overflow-y-auto pr-2 pointer-events-none"
+          className="lg:col-span-5 xl:col-span-6 flex flex-col gap-8 py-2 overflow-y-auto max-h-[calc(100vh-140px)] pr-3 custom-scrollbar pointer-events-auto pb-20"
         >
 
-          {/* Timeline Item 1 */}
+          {/* Timeline Item 1: Multiplyy */}
           <motion.div 
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 220, damping: 26, delay: 0.12 }}
+            transition={{ type: "spring", stiffness: 220, damping: 26, delay: 0.08 }}
+            className="flex gap-6 group pointer-events-auto select-text"
+          >
+            <div className="flex flex-col items-center mt-1 shrink-0">
+              <div className="w-5 h-5 rounded-sm border border-red-500 bg-[#0d0d0d] flex items-center justify-center shadow-[0_0_8px_rgba(239,68,68,0.4)]">
+                <div className="w-2 h-2 bg-red-500 rounded-sm" />
+              </div>
+              <div className="w-[1px] h-full bg-white/10 my-2" />
+            </div>
+            
+            <div className="flex-1 pb-6">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm font-satoshi text-red-500 font-bold tracking-wider">AUG 2026 — PRESENT</span>
+                <span className="text-xs text-white/40 font-mono">· 4 mos · Remote</span>
+              </div>
+              <div className="flex items-center gap-3 mt-1 mb-2.5 flex-wrap">
+                <h3 className="text-2xl sm:text-3xl font-bold font-satoshi text-white tracking-tight">Full Stack Developer</h3>
+                <div className="flex gap-1.5 flex-wrap">
+                  <span className="text-[0.7rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/60 uppercase tracking-wider">Multiplyy</span>
+                  <span className="text-[0.7rem] font-satoshi font-medium border border-red-500/30 bg-red-500/10 px-2 py-0.5 rounded text-red-400 uppercase tracking-wider">Internship</span>
+                  <span className="text-[0.7rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/40 uppercase tracking-wider">Remote</span>
+                </div>
+              </div>
+              <span className="text-xs font-mono text-red-500/80 font-bold block mb-2 tracking-wider"># WORKSPACE & SYSTEM ARCHITECTURE</span>
+              <ul className="text-sm sm:text-base text-white/65 space-y-2 list-disc list-inside font-inter">
+                <li>Building high-performance full-stack web architectures and scalable systems.</li>
+                <li>Developing responsive frontend interfaces and robust backend service layers.</li>
+              </ul>
+            </div>
+          </motion.div>
+
+          {/* Timeline Item 2: Papercycle */}
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 220, damping: 26, delay: 0.16 }}
             className="flex gap-6 group pointer-events-auto select-text"
           >
             <div className="flex flex-col items-center mt-1 shrink-0">
@@ -364,28 +399,69 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
               <div className="w-[1px] h-full bg-white/10 my-2" />
             </div>
             
-            <div className="flex-1 pb-10">
-              <span className="text-sm font-satoshi text-red-500 font-bold tracking-wider">2025 — PRESENT</span>
-              <div className="flex items-center gap-4 mt-1 mb-3">
-                <h3 className="text-3xl font-bold font-satoshi text-white tracking-tight">Computer Science Student</h3>
-                <div className="flex gap-1.5">
-                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">CSE</span>
-                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Learning</span>
+            <div className="flex-1 pb-6">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm font-satoshi text-red-500 font-bold tracking-wider">MAY 2026 — JUL 2026</span>
+                <span className="text-xs text-white/40 font-mono">· 3 mos · Remote</span>
+              </div>
+              <div className="flex items-center gap-3 mt-1 mb-2.5 flex-wrap">
+                <h3 className="text-2xl sm:text-3xl font-bold font-satoshi text-white tracking-tight">Full Stack Developer</h3>
+                <div className="flex gap-1.5 flex-wrap">
+                  <span className="text-[0.7rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/60 uppercase tracking-wider">Papercycle</span>
+                  <span className="text-[0.7rem] font-satoshi font-medium border border-red-500/30 bg-red-500/10 px-2 py-0.5 rounded text-red-400 uppercase tracking-wider">Internship</span>
+                  <span className="text-[0.7rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/40 uppercase tracking-wider">Bhubaneswar</span>
                 </div>
               </div>
-              <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># ACADEMIC JOURNEY</span>
-              <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
-                <li><strong className="text-white font-medium">3rd-year</strong> Computer Science student at <strong className="text-white font-medium">Veer Surendra Sai University of Technology</strong> (VSSUT).</li>
-                <li>Focusing on mastering core CS fundamentals while building practical software solutions.</li>
+              <span className="text-xs font-mono text-red-500/80 font-bold block mb-2 tracking-wider"># FULL STACK & MOBILE DEVELOPMENT</span>
+              <ul className="text-sm sm:text-base text-white/65 space-y-2 list-disc list-inside font-inter leading-relaxed">
+                <li>Develop and maintain full-stack applications using <strong className="text-white font-medium">NestJS</strong>, <strong className="text-white font-medium">PostgreSQL</strong>, and <strong className="text-white font-medium">Next.js</strong>.</li>
+                <li>Build responsive UIs using <strong className="text-white font-medium">Tailwind CSS</strong> and manage application state with <strong className="text-white font-medium">Redux</strong>.</li>
+                <li>Design and integrate <strong className="text-white font-medium">RESTful APIs</strong> across frontend and backend systems.</li>
+                <li>Develop cross-platform mobile applications using <strong className="text-white font-medium">Flutter</strong>.</li>
+                <li>Collaborate on team projects, participate in code reviews, and deliver tasks within deadlines.</li>
               </ul>
             </div>
           </motion.div>
 
-          {/* Timeline Item 2 */}
+          {/* Timeline Item 3: Central Tool Room & Training Centre */}
           <motion.div 
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 220, damping: 26, delay: 0.22 }}
+            transition={{ type: "spring", stiffness: 220, damping: 26, delay: 0.24 }}
+            className="flex gap-6 group pointer-events-auto select-text"
+          >
+            <div className="flex flex-col items-center mt-1 shrink-0">
+              <div className="w-5 h-5 rounded-sm border border-white/20 bg-[#0d0d0d] flex items-center justify-center">
+                <div className="w-2 h-2 bg-white/20 rounded-sm" />
+              </div>
+              <div className="w-[1px] h-full bg-white/10 my-2" />
+            </div>
+            
+            <div className="flex-1 pb-6">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm font-satoshi text-white/50 font-bold tracking-wider">MAY 2025 — JUN 2025</span>
+                <span className="text-xs text-white/40 font-mono">· 2 mos · On-site</span>
+              </div>
+              <div className="flex items-center gap-3 mt-1 mb-2.5 flex-wrap">
+                <h3 className="text-2xl sm:text-3xl font-bold font-satoshi text-white/90 tracking-tight">AI/ML Intern</h3>
+                <div className="flex gap-1.5 flex-wrap">
+                  <span className="text-[0.7rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/60 uppercase tracking-wider">CTTC Bhubaneswar</span>
+                  <span className="text-[0.7rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/40 uppercase tracking-wider">On-site</span>
+                </div>
+              </div>
+              <span className="text-xs font-mono text-red-500/80 font-bold block mb-2 tracking-wider"># COMPUTER VISION & DEEP LEARNING</span>
+              <ul className="text-sm sm:text-base text-white/65 space-y-2 list-disc list-inside font-inter leading-relaxed">
+                <li>Applied deep learning techniques to practical AI problems, focusing on model training and performance evaluation.</li>
+                <li>Designed an <strong className="text-white font-medium">AI face detection system</strong>.</li>
+              </ul>
+            </div>
+          </motion.div>
+
+          {/* Timeline Item 4: Education */}
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 220, damping: 26, delay: 0.32 }}
             className="flex gap-6 group pointer-events-auto select-text"
           >
             <div className="flex flex-col items-center mt-1 shrink-0">
@@ -396,28 +472,25 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
             </div>
             
             <div className="flex-1">
-              <span className="text-sm font-satoshi text-white/40 font-bold tracking-wider">2025 — PRESENT</span>
-              <div className="flex items-center gap-4 mt-1 mb-3">
-                <h3 className="text-3xl font-bold font-satoshi text-white/80 tracking-tight">Exploring Development</h3>
-                <div className="flex gap-1.5">
-                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">AI</span>
-                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Android</span>
+              <span className="text-sm font-satoshi text-white/40 font-bold tracking-wider">2023 — PRESENT</span>
+              <div className="flex items-center gap-3 mt-1 mb-2.5 flex-wrap">
+                <h3 className="text-2xl sm:text-3xl font-bold font-satoshi text-white/80 tracking-tight">Computer Science Student</h3>
+                <div className="flex gap-1.5 flex-wrap">
+                  <span className="text-[0.7rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">VSSUT</span>
+                  <span className="text-[0.7rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">B.Tech CSE</span>
                 </div>
               </div>
-              <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># HOBBY PROJECTS</span>
-              <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
-                <li><strong className="text-white font-medium">Browser Extensions & Web Animations:</strong> Explored building privacy-focused dashboards with WebGL rendering.</li>
-                <li><strong className="text-white font-medium">Edge AI & Audio Processing:</strong> Implemented low-latency voice activity detection on Android.</li>
-                <li><strong className="text-white font-medium">Automation & CLI Tools:</strong> Developed tools to automate Git operations and commit generation using AI.</li>
-                <li><strong className="text-white font-medium">Real-time Systems & Security:</strong> Built live location and audio streaming architectures for personal safety.</li>
-                <li><strong className="text-white font-medium">Location-Based Services:</strong> Explored geofencing APIs to automate system settings based on location.</li>
+              <span className="text-xs font-mono text-red-500/80 font-bold block mb-2 tracking-wider"># ACADEMIC FOUNDATION</span>
+              <ul className="text-sm sm:text-base text-white/65 space-y-2 list-disc list-inside font-inter">
+                <li>3rd-year Computer Science student at <strong className="text-white font-medium">Veer Surendra Sai University of Technology</strong> (VSSUT).</li>
+                <li>Focusing on Data Structures, Algorithms, Operating Systems, and Distributed Systems while engineering real-world products.</li>
               </ul>
             </div>
           </motion.div>
         </motion.div>
 
-        {/* Right Column (7/12) - Transparent to allow clicking & interacting with the 3D Lanyard */}
-        <div className="hidden lg:block lg:col-span-7 pointer-events-none" />
+        {/* Right Column (7/12 or 6/12 on XL) - Transparent to allow clicking & interacting with the 3D Lanyard */}
+        <div className="hidden lg:block lg:col-span-7 xl:col-span-6 pointer-events-none" />
       </div>
 
     </div>

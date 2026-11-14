@@ -12,20 +12,26 @@ export interface CompanyExperience {
 
 export const DEFAULT_COMPANIES: CompanyExperience[] = [
   {
+    name: 'Multiplyy',
+    role: 'Full Stack Developer',
+    period: 'Aug 2026 - Present',
+    url: 'https://www.linkedin.com/in/rohitksahoo/',
+    logo: 'MY'
+  },
+  {
     name: 'Papercycle',
-    role: 'Digital Recycling & Waste Platform',
-    period: '2024 - Present',
+    role: 'Full Stack Developer',
+    period: 'May 2026 - Jul 2026',
     url: 'https://www.papercycle.in/',
     logo: 'PC',
     logoUrl: '/papercycle.png'
   },
   {
-    name: 'Enigma VSSUT',
-    role: 'Official Coding Club of VSSUT',
-    period: '2025 - Present',
-    url: 'https://www.enigmavssut.in/',
-    logo: 'EN',
-    logoUrl: '/enigma.png'
+    name: 'CTTC BBSR',
+    role: 'AI/ML Intern',
+    period: 'May 2025 - Jun 2025',
+    url: 'https://www.cttc.gov.in/',
+    logo: 'CT'
   }
 ];
 
