@@ -193,11 +193,12 @@ export const ProfilePage = ({
   }, []);
 
   React.useEffect(() => {
-    if (isAvatarLoaded) {
+    // Only dispatch heavy multi-stage fluid shockwave burst on desktop GPUs to eliminate mobile load lag
+    if (isAvatarLoaded && !isMobile) {
       const timer = setTimeout(() => {
         window.dispatchEvent(
           new CustomEvent('liquid-ether-surge', {
-            detail: { origin: 'top-left', intensity: isMobile ? 1.2 : 1.6 }
+            detail: { origin: 'top-left', intensity: 1.4 }
           })
         );
       }, 100);
@@ -218,8 +219,8 @@ export const ProfilePage = ({
   const activeAvatarSrc = `/avatar-frames/dir_${isMobile ? 'center' : direction}.png?v=5`;
 
   return (
-    <div className="flex flex-col gap-10 animate-in fade-in duration-500 font-inter">
-      <div className="relative min-h-[calc(100dvh-170px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
+    <div className="flex flex-col animate-in fade-in duration-500 font-inter w-full h-full flex-1">
+      <div className="relative flex-1 min-h-[calc(100dvh-170px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
         {/* CENTER AVATAR FIGURE - ANCHORED FIRMLY IN CENTER ON MOBILE, BOTTOM ON DESKTOP */}
         {typeof document !== 'undefined' && createPortal(
           <div 
@@ -232,27 +233,35 @@ export const ProfilePage = ({
           >
              <motion.div 
                ref={avatarFigureRef}
-               initial={
-                 isMobile
-                   ? { opacity: 0, scale: 0.92, y: 12 }
-                   : { opacity: 0, y: '85%' }
-               }
+               initial={{
+                 opacity: 0,
+                 y: isMobile ? 130 : '85%',
+                 scale: isMobile ? 0.92 : 1
+               }}
                animate={
-                 isExiting 
-                   ? { opacity: 0, ...(isMobile ? { scale: 0.94 } : { y: '85%' }) } 
-                   : isAvatarLoaded 
+                 isAvatarLoaded 
                    ? { 
                        opacity: 1, 
                        scale: 1,
                        y: 0,
                      } 
-                   : { opacity: 0, ...(isMobile ? { scale: 0.92, y: 12 } : { y: '85%' }) }
+                   : { 
+                       opacity: 0, 
+                       scale: isMobile ? 0.92 : 1, 
+                       y: isMobile ? 130 : '85%' 
+                     }
                }
-               transition={
-                 isExiting
-                   ? { duration: 0.5, ease: [0.16, 1, 0.3, 1] }
-                   : { duration: 1.15, ease: [0.16, 1, 0.3, 1], delay: 0.08 }
-               }
+               exit={{
+                 opacity: 0,
+                 y: isMobile ? 130 : '85%',
+                 scale: isMobile ? 0.94 : 1,
+                 transition: { duration: 0.35, ease: [0.32, 0, 0.67, 0] }
+               }}
+               transition={{
+                 duration: 1.1,
+                 ease: [0.16, 1, 0.3, 1],
+                 delay: 0.08
+               }}
                onAnimationComplete={() => {
                  if (isExiting) {
                    onExitComplete?.();
@@ -267,8 +276,8 @@ export const ProfilePage = ({
              >
                 <motion.div
                   animate={{ 
-                    y: isMobile ? 20 : 0,
-                    scale: isMobile ? 1.1 : 1
+                    y: isMobile ? 12 : 0,
+                    scale: isMobile ? 0.98 : 1
                   }}
                   transition={{ duration: 0.4 }}
                   className={
@@ -333,13 +342,15 @@ export const ProfilePage = ({
         )}
 
         <motion.div 
-          animate={{ opacity: isExiting ? 0 : 1, y: isExiting ? 20 : 0 }}
+          initial={{ opacity: 0, y: 45 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 55, transition: { duration: 0.22, ease: [0.32, 0, 0.67, 0] } }}
           transition={{ duration: 0.45, ease: "easeOut" }}
-          className="relative z-10 flex flex-col min-h-[inherit] justify-between p-0 pointer-events-none"
+          className="relative z-10 flex-1 flex flex-col min-h-[calc(100dvh-170px)] lg:min-h-[calc(100vh-180px)] justify-between p-0 pointer-events-none"
         >
           <div className="flex flex-col lg:flex-row justify-between gap-3.5 sm:gap-6 lg:gap-8 items-start w-full px-0 pt-1 sm:pt-4 lg:pt-3">
             <div className="flex flex-col gap-2 sm:gap-3 lg:gap-3.5 w-full lg:max-w-md xl:max-w-lg text-left pointer-events-auto">
-              <h2 className="text-[clamp(2.5rem,9.6vw,4rem)] sm:text-6xl lg:text-[clamp(2.8rem,3.4vw,4.2rem)] xl:text-6xl font-extrabold font-satoshi text-white leading-[1.08] tracking-tight w-full">
+              <h2 className="text-[clamp(1.95rem,7.5vw,3.1rem)] sm:text-5xl lg:text-[clamp(2.8rem,3.4vw,4.2rem)] xl:text-6xl font-extrabold font-satoshi text-white leading-[1.12] tracking-tight w-full">
                 CS Undergrad & Systems Builder Based in <span className="text-red-500">India.</span>
               </h2>
             </div>
@@ -403,35 +414,39 @@ export const ProfilePage = ({
           </div>
 
           {/* BOTTOM REGION: NAME OVER FOG */}
-          <div className="mt-auto w-full flex flex-col items-center gap-0 sm:gap-1 pb-2 pt-1 pointer-events-none">
+          <div className="mt-auto w-full flex flex-col items-center gap-0 sm:gap-1 pb-3 sm:pb-2 mb-2 sm:mb-0 pointer-events-none">
             {/* INTRODUCTORY HANDWRITTEN KICKER ABOVE NAME */}
             <motion.span 
+              initial={{ opacity: 0, y: 25 }}
               animate={{ 
                 y: isMobile ? 0 : (isDockVisible ? -25 : 65),
                 opacity: 1
               }}
+              exit={{ opacity: 0, y: 35, transition: { duration: 0.18 } }}
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
-              className="font-amatic text-2xl sm:text-3xl lg:text-4xl text-red-500 font-bold tracking-widest text-center pointer-events-auto select-none"
+              className="font-amatic text-[23px] sm:text-3xl lg:text-4xl text-red-500 font-bold tracking-widest text-center pointer-events-auto select-none"
             >
               Designing real-time architectures — I'm
             </motion.span>
 
             {/* NAME BANNER */}
             <motion.div 
+              initial={{ opacity: 0, y: 30 }}
               animate={{ 
                 y: isMobile ? 0 : (isDockVisible ? -25 : 65),
                 opacity: 1
               }}
+              exit={{ opacity: 0, y: 45, transition: { duration: 0.2 } }}
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
               className="w-full pointer-events-auto"
             >
-              <div className="w-full h-[80px] sm:h-[96px] lg:h-[160px] flex items-center justify-center">
+              <div className="w-full h-[68px] sm:h-[84px] lg:h-[160px] flex items-center justify-center">
                 <TechText
                   key={isMobile ? "mobile" : "desktop"}
                   text={isMobile ? "ROHIT K. SAHOO" : "ROHIT KUMAR SAHOO"}
                   fontFamily="Satoshi, sans-serif"
                   fontWeight={800}
-                  fontSize={isMobile ? 48 : 130}
+                  fontSize={isMobile ? 42 : 130}
                   letterSpacing={-0.03}
                   color="#ffffff"
                   accentColor="#ef4444"

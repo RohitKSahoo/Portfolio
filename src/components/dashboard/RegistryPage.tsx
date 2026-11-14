@@ -16,6 +16,34 @@ import Folder from '../effects/Folder';
 import { MagicBentoCard } from '../effects/MagicBento';
 import { PROJECTS } from './data';
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 42,
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 240,
+      damping: 24,
+      mass: 0.85
+    },
+  },
+};
+
 export const RegistryPage = () => {
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [clickOrigin, setClickOrigin] = React.useState<{ x: number; y: number } | null>(null);
@@ -105,7 +133,13 @@ export const RegistryPage = () => {
       </div>
     </div>,
     <div key="2" className="w-full h-full flex items-center justify-center bg-black relative">
-       <img src={project.images[0]} className="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all duration-500" alt="Preview" />
+       <img 
+         src={project.images[0]} 
+         loading="lazy"
+         decoding="async"
+         className="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-opacity duration-300" 
+         alt="Preview" 
+       />
        <div className="absolute inset-0 bg-black/40" />
        <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-red-500 text-white text-[0.5rem] font-bold font-satoshi uppercase rounded">LIVE</div>
     </div>,
@@ -127,12 +161,18 @@ export const RegistryPage = () => {
         </div>
         
         {/* MOBILE APP DRAWER GRID (< 768px) */}
-        <div className="grid grid-cols-2 gap-3.5 pt-2 pb-28 md:hidden relative">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-2 gap-3.5 pt-2 pb-28 md:hidden relative"
+        >
           {PROJECTS.map((project, idx) => (
-            <button
+            <motion.button
               key={project.id}
+              variants={cardVariants}
               onClick={(e) => handleCardClick(project.id, e)}
-              className="group relative flex flex-col items-center justify-between p-3.5 rounded-2xl bg-[#0c0d10]/85 border border-white/10 hover:border-red-500/40 active:scale-[0.95] transition-all duration-200 overflow-hidden text-center cursor-pointer shadow-[0_8px_24px_rgba(0,0,0,0.5)] focus:outline-none min-h-[164px]"
+              className="group relative flex flex-col items-center justify-between p-3.5 rounded-2xl bg-[#0c0d10]/85 border border-white/10 hover:border-red-500/40 active:scale-[0.95] transition-colors duration-200 overflow-hidden text-center cursor-pointer shadow-[0_8px_24px_rgba(0,0,0,0.5)] focus:outline-none min-h-[164px]"
             >
               {/* Header: Index & Status */}
               <div className="w-full flex items-center justify-between text-[10px] font-mono text-white/40 mb-1">
@@ -161,57 +201,68 @@ export const RegistryPage = () => {
                   {project.category || project.stack[0]}
                 </span>
               </div>
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </motion.div>
 
         {/* DESKTOP BENTO GRID (>= 768px) */}
-        <div ref={gridRef} className="hidden md:grid md:grid-cols-2 gap-x-6 gap-y-6 pt-4 relative">
+        <motion.div 
+          ref={gridRef} 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="hidden md:grid md:grid-cols-2 gap-x-6 gap-y-6 pt-4 relative"
+        >
           {PROJECTS.map((project) => (
-            <MagicBentoCard 
+            <motion.div
               key={project.id}
-              particleCount={0}
-              glowColor="239, 68, 68"
-              enableTilt={false}
-              enableMagnetism={false}
-              clickEffect={false}
-              className="flex flex-col gap-3 group cursor-pointer relative p-5 bg-[#0d0d0d] border border-white/5 transition-all duration-500 rounded-xl hover:border-white/10"
-              onClick={(e) => handleCardClick(project.id, e)}
+              variants={cardVariants}
+              className="h-full"
             >
-              <div className="absolute top-5 right-5 flex items-center gap-2">
-                <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
-                  project.status === 'STABLE' ? 'bg-emerald-400' : 'bg-amber-400'
-                }`} />
-                <span className="text-[0.6rem] font-satoshi font-medium text-white/40 tracking-wider">[{project.status}]</span>
-              </div>
+              <MagicBentoCard 
+                particleCount={0}
+                glowColor="239, 68, 68"
+                enableTilt={false}
+                enableMagnetism={false}
+                clickEffect={false}
+                className="flex flex-col gap-3 group cursor-pointer relative p-5 bg-[#0d0d0d] border border-white/5 transition-colors duration-300 rounded-xl hover:border-white/10 h-full"
+                onClick={(e) => handleCardClick(project.id, e)}
+              >
+                <div className="absolute top-5 right-5 flex items-center gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                    project.status === 'STABLE' ? 'bg-emerald-400' : 'bg-amber-400'
+                  }`} />
+                  <span className="text-[0.6rem] font-satoshi font-medium text-white/40 tracking-wider">[{project.status}]</span>
+                </div>
 
-              <div className="flex flex-col lg:flex-row items-center gap-6 group-hover:translate-y-[-2px] transition-transform duration-500">
-                 <div className="relative shrink-0">
-                    <Folder color="#EF4444" size={0.9} items={getFolderItems(project)} />
-                 </div>
+                <div className="flex flex-col lg:flex-row items-center gap-6 group-hover:translate-y-[-2px] transition-transform duration-300">
+                   <div className="relative shrink-0">
+                      <Folder color="#EF4444" size={0.9} items={getFolderItems(project)} />
+                   </div>
 
-                 <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-                    <h3 className="text-xl font-bold font-satoshi text-white group-hover:text-red-500 transition-colors tracking-tight">
-                      {project.name}
-                    </h3>
-                    <div className="flex flex-wrap gap-1.5 mt-2 justify-center lg:justify-start">
-                      {project.stack.slice(0, 3).map(tech => (
-                        <span key={tech} className="text-[0.6rem] font-satoshi font-medium text-white/40 border border-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                 </div>
-              </div>
+                   <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+                      <h3 className="text-xl font-bold font-satoshi text-white group-hover:text-red-500 transition-colors tracking-tight">
+                        {project.name}
+                      </h3>
+                      <div className="flex flex-wrap gap-1.5 mt-2 justify-center lg:justify-start">
+                        {project.stack.slice(0, 3).map(tech => (
+                          <span key={tech} className="text-[0.6rem] font-satoshi font-medium text-white/40 border border-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                   </div>
+                </div>
 
-              <div className="hidden lg:flex flex-col gap-2 mt-2 pt-4 border-t border-white/5 opacity-60 group-hover:opacity-100 transition-opacity">
-                  <p className="text-xs text-white/60 font-inter leading-relaxed line-clamp-2">
-                    {project.architecture}
-                  </p>
-              </div>
-            </MagicBentoCard>
+                <div className="hidden lg:flex flex-col gap-2 mt-2 pt-4 border-t border-white/5 opacity-60 group-hover:opacity-100 transition-opacity">
+                    <p className="text-xs text-white/60 font-inter leading-relaxed line-clamp-2">
+                      {project.architecture}
+                    </p>
+                </div>
+              </MagicBentoCard>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* PROJECT DETAILS MODAL */}

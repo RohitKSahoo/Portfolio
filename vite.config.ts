@@ -12,6 +12,9 @@ export default defineConfig({
     },
   },
   assetsInclude: ['**/*.glb'],
+  server: {
+    host: true,
+  },
   build: {
     rollupOptions: {
       output: {

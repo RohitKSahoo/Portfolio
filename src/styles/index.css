@@ -1,4 +1,4 @@
-/* Fonts loaded via index.html */
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -161,4 +161,8 @@
 
 .font-amatic {
   font-family: 'Amatic SC', cursive, sans-serif;
+}
+
+.font-alex {
+  font-family: 'Alex Brush', cursive, sans-serif;
 }

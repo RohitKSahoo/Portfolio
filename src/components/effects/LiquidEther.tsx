@@ -5,7 +5,8 @@ import './LiquidEther.css';
 
 const PIXEL_BUDGET = 2.4e6;
 const MAX_CELLS = 140000;
-const PRESSURE_STEPS = 32;
+const isTouchDevice = typeof window !== 'undefined' && (!window.matchMedia('(hover: hover)').matches || window.innerWidth < 768);
+const PRESSURE_STEPS = isTouchDevice ? 10 : 28;
 const PALETTE_SIZE = 256;
 
 const VERTEX = `#version 300 es
@@ -429,7 +430,7 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
       last: 0
     };
     const auto = { phase: Math.random() * 100, x: 0, y: 0, ready: false, ramp: 0 };
-    const opening = { active: settingsRef.current.intro && !reduced && generation === 0, time: 0 };
+    const opening = { active: !isTouchDevice && settingsRef.current.intro && !reduced && generation === 0, time: 0 };
     const splats: Splat[] = [];
     const puffs: Splat[] = [];
     let energy = 1;
@@ -670,18 +671,20 @@ export const LiquidEther: React.FC<LiquidEtherProps> = ({
       });
     };
 
-    // Inject initial splash to awaken the canvas
-    const initW = Math.max(1, container.clientWidth || window.innerWidth);
-    const initH = Math.max(1, container.clientHeight || window.innerHeight);
-    splats.push({
-      ax: initW * 0.45,
-      ay: initH * 0.5,
-      bx: initW * 0.55,
-      by: initH * 0.5,
-      vx: 1200,
-      vy: -800,
-      radius: settingsRef.current.radius * 1.5
-    });
+    // Inject initial splash to awaken the canvas (desktop only)
+    if (!isTouchDevice) {
+      const initW = Math.max(1, container.clientWidth || window.innerWidth);
+      const initH = Math.max(1, container.clientHeight || window.innerHeight);
+      splats.push({
+        ax: initW * 0.45,
+        ay: initH * 0.5,
+        bx: initW * 0.55,
+        by: initH * 0.5,
+        vx: 1200,
+        vy: -800,
+        radius: settingsRef.current.radius * 1.5
+      });
+    }
 
     const frame = (now: number) => {
       raf = 0;

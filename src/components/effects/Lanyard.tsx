@@ -38,6 +38,7 @@ export interface LanyardProps {
   flipAngle?: number;
   isExiting?: boolean;
   onExitComplete?: () => void;
+  triggerDrop?: number;
 }
 
 const CARD_SIZES: Record<string, [number, number]> = {
@@ -854,7 +855,8 @@ export const Lanyard: React.FC<LanyardProps> = ({
   flipSpin = 9,
   flipAngle = Math.PI,
   isExiting = false,
-  onExitComplete
+  onExitComplete,
+  triggerDrop
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsRef = useRef<any>(null);
@@ -891,7 +893,8 @@ export const Lanyard: React.FC<LanyardProps> = ({
     flipSpin,
     flipAngle,
     isExiting,
-    onExitComplete
+    onExitComplete,
+    triggerDrop
   };
 
   useEffect(() => {
@@ -1118,6 +1121,14 @@ export const Lanyard: React.FC<LanyardProps> = ({
         }
       }
 
+      if (s.triggerDrop !== undefined && s.triggerDrop > 0 && s.triggerDrop !== applied.triggerDrop) {
+        applied.triggerDrop = s.triggerDrop;
+        frameView();
+        placeHanging(sim, layout, true, s.introDirection || 'top');
+        sim.calm = 0;
+        start();
+      }
+
       if (
         s.frontImage !== applied.frontImage ||
         s.backImage !== applied.backImage ||
@@ -1170,7 +1181,17 @@ export const Lanyard: React.FC<LanyardProps> = ({
       }
       canvas.style.touchAction = s.interactive ? 'pan-y' : 'auto';
 
-      applied = { layoutKey, framingKey, frontImage: s.frontImage, backImage: s.backImage, strapImage: s.strapImage, faceKey, strapColor: s.strapColor, strapScale };
+      applied = { 
+        layoutKey, 
+        framingKey, 
+        frontImage: s.frontImage, 
+        backImage: s.backImage, 
+        strapImage: s.strapImage, 
+        faceKey, 
+        strapColor: s.strapColor, 
+        strapScale,
+        triggerDrop: applied.triggerDrop ?? s.triggerDrop
+      };
       start();
     };
 
@@ -1306,7 +1327,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
           exitStartTime = now;
           initialAnchorY = sim.anchor.y;
         }
-        const exitDuration = 340;
+        const exitDuration = 280;
         const elapsed = now - exitStartTime;
         const progress = Math.min(1, Math.max(0, elapsed / exitDuration));
 
