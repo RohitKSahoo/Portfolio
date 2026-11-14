@@ -98,7 +98,7 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
-  const [isHistoryExiting, setIsHistoryExiting] = useState(false);
+  const [exitingFromExperience, setExitingFromExperience] = useState(false);
   const exitTimeoutRef = useRef<number | null>(null);
 
   // Lock mobile touch scrolling completely on Hero/Profile page so avatar and text stay locked in place
@@ -143,20 +143,15 @@ function App() {
     if (nextTab === activeTab) return;
 
     if (activeTab === 'experience') {
-      // Trigger upward lanyard ceiling pull exit before switching
-      setIsHistoryExiting(true);
+      // Trigger upward lanyard ceiling pull exit while switching
+      setExitingFromExperience(true);
       if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
-
-      const finalizeSwitch = () => {
-        setIsHistoryExiting(false);
-        const prevIdx = TAB_ORDER.indexOf('experience');
-        const nextIdx = TAB_ORDER.indexOf(nextTab);
-        setDirection(nextIdx > prevIdx ? 1 : -1);
-        setActiveTab(nextTab);
-      };
-
-      exitTimeoutRef.current = window.setTimeout(finalizeSwitch, 360);
-      return;
+      exitTimeoutRef.current = window.setTimeout(() => {
+        setExitingFromExperience(false);
+      }, 400);
+    } else if (nextTab === 'experience') {
+      setExitingFromExperience(false);
+      if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
     }
 
     const prevIdx = TAB_ORDER.indexOf(activeTab);
@@ -170,7 +165,7 @@ function App() {
     return (
       <div className={`w-full relative ${activeTab === 'profile' ? 'flex-1 flex flex-col' : ''}`}>
         <AnimatePresence mode="wait" custom={direction} initial={false}>
-          {activeTab !== 'experience' && !isHistoryExiting && (
+          {activeTab !== 'experience' && (
             <motion.div
               key={activeTab}
               custom={direction}
@@ -208,20 +203,20 @@ function App() {
 
         {/* PERSISTENT & PRE-WARMED 3D LANYARD / EXPERIENCE MODULE */}
         <div
-          className={`w-full ${(activeTab === 'experience' || isHistoryExiting) ? 'block' : 'hidden'}`}
-          aria-hidden={activeTab !== 'experience' && !isHistoryExiting}
+          className={`w-full ${(activeTab === 'experience' || exitingFromExperience) ? 'block' : 'hidden'}`}
+          aria-hidden={activeTab !== 'experience'}
         >
           <Suspense fallback={null}>
-            {(shouldPreloadHistory || activeTab === 'experience' || isHistoryExiting) && (
+            {(shouldPreloadHistory || activeTab === 'experience' || exitingFromExperience) && (
               <HistoryPage 
-                isActive={activeTab === 'experience' && !isHistoryExiting}
-                isExiting={isHistoryExiting}
+                isActive={activeTab === 'experience'}
+                isExiting={exitingFromExperience}
                 onExitComplete={() => {
                   if (exitTimeoutRef.current) {
                     clearTimeout(exitTimeoutRef.current);
                     exitTimeoutRef.current = null;
                   }
-                  setIsHistoryExiting(false);
+                  setExitingFromExperience(false);
                 }}
               />
             )}
