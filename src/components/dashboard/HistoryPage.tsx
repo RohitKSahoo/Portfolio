@@ -26,7 +26,7 @@ if (typeof window !== 'undefined') {
     preloadedAvatar = av;
   };
 
-  ['/papercycle.png', '/enigma.png'].forEach(src => {
+  ['/papercycle.png', '/enigma.png', '/cttc.png'].forEach(src => {
     const lg = new Image();
     lg.crossOrigin = 'anonymous';
     lg.src = src;
@@ -127,7 +127,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
           img.onerror = () => res(null);
         });
 
-    const logosPromises = ['/papercycle.png', '/enigma.png'].map(src => {
+    const logosPromises = ['/papercycle.png', '/enigma.png', '/cttc.png'].map(src => {
       if (preloadedLogos[src] && preloadedLogos[src].complete) return Promise.resolve();
       return new Promise<void>(res => {
         const img = new Image();
@@ -320,7 +320,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
             orientation="landscape"
             cornerRadius={0.1}
             size={isMobile ? 0.46 : 0.58}
-            anchor={isMobile ? 0.5 : 0.7}
+            anchor={isMobile ? 0.5 : 0.72}
             strapLength={isMobile ? 0.25 : 0.27}
             gravity={0.65}
             damping={0.2}

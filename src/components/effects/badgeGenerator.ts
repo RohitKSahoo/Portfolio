@@ -31,7 +31,8 @@ export const DEFAULT_COMPANIES: CompanyExperience[] = [
     role: 'AI/ML Intern',
     period: 'May 2025 - Jun 2025',
     url: 'https://www.cttc.gov.in/',
-    logo: 'CT'
+    logo: 'CT',
+    logoUrl: '/cttc.png'
   }
 ];
 
