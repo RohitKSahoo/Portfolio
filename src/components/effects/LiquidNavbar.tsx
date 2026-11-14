@@ -38,24 +38,24 @@ export type LiquidNavbarProps = {
  */
 export const DOCK_CONFIG = {
   // --- Dimensions & Shape ---
-  dockRadius: 18,               // Corner roundness of the dock (px). Set 999 for capsule, 16-20 for modern squircle
-  itemRadius: 13,               // Corner roundness of the active item border (px)
+  dockRadius: 16,               // Outer dock squircle radius (px)
+  itemRadius: 11,               // Inner active item squircle radius (px) - concentric with dock!
   itemHeightDesktop: 44,        // Active item height on desktop (px)
   itemHeightMobile: 42,         // Active item height on mobile (px)
-  itemPaddingDesktop: "0 17px", // Item padding on desktop
+  itemPaddingDesktop: "0 18px", // Item padding on desktop
   itemPaddingMobile: "0 14px",  // Item padding on mobile
 
   // --- Typography ---
   fontSize: "12px",             // Font size for labels
-  fontWeight: 400,              // Font weight (400 = regular / less thick, 500 = medium, 600 = semibold)
+  fontWeight: 400,              // Font weight (400 = regular / clean)
   letterSpacing: "0.12em",      // Spacing between letters
 
   // --- Colors & Transparency ---
-  bgTint: "rgba(10, 10, 14, 0.82)",         // Dock background glass color
-  borderColor: "rgba(255, 255, 255, 0.12)",   // Outer dock border color
+  bgTint: "rgba(12, 12, 16, 0.65)",         // Translucent frosted glass background
+  borderColor: "rgba(255, 255, 255, 0.13)",   // Outer dock glass border
   accentBorderColor: "#ef4444",               // Selected item border color (crimson red)
-  accentGlowColor: "rgba(239, 68, 68, 0.38)", // Selected item border outer glow
-  selectedFillOpacity: 0.0,                   // 0.0 = completely transparent inside, borders only
+  accentGlowColor: "rgba(239, 68, 68, 0.4)",  // Selected item border outer glow
+  selectedFillOpacity: 0.0,                   // 0.0 = 100% transparent inside (no reddish fill)
   borderThickness: 1.5,                       // Active border thickness (px)
   textDefault: "rgba(255, 255, 255, 0.55)",   // Inactive label/icon color
   textHover: "#ffffff",                       // Hovered label color
@@ -64,7 +64,7 @@ export const DOCK_CONFIG = {
   // --- Physics & Animation ---
   springStiffness: 185,         // Speed of movement (higher = faster, lower = softer)
   springDamping: 21,            // Oscillation damping (higher = less bounce, perfectly damped)
-  splitThreshold: 130,          // Distance before liquid stretches into droplets (px)
+  splitThreshold: 140,          // Distance before liquid stretches into droplets (px)
 };
 
 const PAD = 14; // canvas bleed around the pill for shadows and ripples
@@ -99,10 +99,10 @@ const NIMBUS_CSS = `
   z-index: -2;
   overflow: hidden;
   background: var(--n-tint);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3) brightness(1.05);
-  backdrop-filter: blur(16px) saturate(1.3) brightness(1.05);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4) brightness(1.05);
+  backdrop-filter: blur(20px) saturate(1.4) brightness(1.05);
   border: 1px solid ${DOCK_CONFIG.borderColor};
-  box-shadow: inset 0 1px 1px var(--n-rim), 0 16px 36px -10px rgba(0, 0, 0, 0.8), 0 0 1px rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 1px 1px var(--n-rim), 0 20px 45px -12px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 255, 255, 0.15);
 }
 .nimbus-nav[data-refract="on"] .nimbus-glass {
   -webkit-backdrop-filter: url(#nimbus-refract) blur(4px) saturate(1.3) brightness(1.05);
@@ -130,7 +130,7 @@ const NIMBUS_CSS = `
   will-change: transform, width;
   background: transparent;
   border: ${DOCK_CONFIG.borderThickness}px solid var(--n-accent);
-  box-shadow: 0 0 14px var(--n-glow), inset 0 0 6px rgba(239, 68, 68, 0.12);
+  box-shadow: 0 0 12px var(--n-glow);
 }
 .nimbus-nav[data-gl="off"] .nimbus-drop {
   display: block;
@@ -278,35 +278,65 @@ const NIMBUS_CSS = `
 }
 `;
 
-/* ---------- shader: transparent inside + glowing red borders & rounded squircle corners ---------- */
+/* ---------- shader: transparent inside + glowing red squircle border ---------- */
 const VERT = `attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}`;
 const FRAG = `precision highp float;
 uniform vec2 uRes;uniform float uDpr;uniform float uTime;uniform vec4 uPill;
 uniform vec4 uBlob[6];uniform float uSy[6];uniform vec4 uRip[6];uniform vec3 uMouse;uniform float uDark;uniform float uAmb;
-float sdRB(vec2 p,vec2 b,float r){vec2 q=abs(p)-b+r;return length(max(q,0.))+min(max(q.x,q.y),0.)-r;}
-float sdCap(vec2 p,vec4 B,float sy){p-=B.xy;p.y/=sy;p.x=max(abs(p.x)-B.z,0.);return(length(p)-B.w)*min(1.,sy);}
-float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
-float dropD(vec2 p){float d=1e4;for(int i=0;i<6;i++){if(uBlob[i].w>.5){d=smin(d,sdCap(p,uBlob[i],uSy[i]),11.);}}return d;}
-// Modern squircle corners for dock outline (radius ~18px)
-float pillD(vec2 p){vec2 h=uPill.zw*.5;return sdRB(p-uPill.xy-h,h,min(18.0,h.y));}
+
+float sdRoundBox(vec2 p, vec2 b, float r){
+  vec2 q = abs(p) - b + r;
+  return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
+}
+
+float smin(float a, float b, float k){
+  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+  return mix(b, a, h) - k * h * (1.0 - h);
+}
+
+// Active squircle item (matching outer dock radius, concentric!)
+float dropD(vec2 p){
+  vec2 center = vec2((uBlob[0].x + uBlob[1].x) * 0.5, uBlob[0].y);
+  float halfW = abs(uBlob[0].x - uBlob[1].x) * 0.5 + uBlob[0].z + uBlob[0].w;
+  float halfH = 20.0;
+  float r = 11.0;
+  float d = sdRoundBox(p - center, vec2(halfW, halfH), r);
+
+  for(int i = 2; i < 6; i++){
+    if(uBlob[i].w > 0.5){
+      float dSat = length(p - uBlob[i].xy) - uBlob[i].w;
+      d = smin(d, dSat, 8.0);
+    }
+  }
+  return d;
+}
+
+// Outer dock squircle outline (radius 16px)
+float pillD(vec2 p){
+  vec2 h = uPill.zw * 0.5;
+  return sdRoundBox(p - uPill.xy - h, h, 16.0);
+}
+
 void main(){
- vec2 p=vec2(gl_FragCoord.x,uRes.y*uDpr-gl_FragCoord.y)/uDpr;
- float dp=pillD(p);float dd=dropD(p);
- float pm=smoothstep(1.,-1.,dp);
- if(pm<=0.001){gl_FragColor=vec4(0.);return;}
+  vec2 p = vec2(gl_FragCoord.x, uRes.y * uDpr - gl_FragCoord.y) / uDpr;
+  float dp = pillD(p);
+  float dd = dropD(p);
+  float pm = smoothstep(1.0, -1.0, dp);
+  if (pm <= 0.001) { gl_FragColor = vec4(0.0); return; }
 
- // Crimson Red Border: transparent inside, red outline with soft outer glow
- float border=smoothstep(2.3,0.5,abs(dd+0.6))*pm;
- float glow=exp(-max(0.0,dd)*0.32)*pm*0.42;
- float borderAlpha=clamp(border*0.95+glow*0.5,0.0,1.0);
- vec3 redAccent=vec3(0.94,0.27,0.27); // #ef4444
- vec3 borderColor=mix(redAccent,vec3(1.0,0.45,0.45),border*0.35);
+  // Crisp red border on the perimeter
+  float border = smoothstep(1.7, 0.3, abs(dd)) * pm;
+  // Soft outer glow ONLY on the outside of the border (never inside, so dd > 0)
+  float glow = (dd > 0.0) ? (exp(-dd * 0.42) * 0.4 * pm) : 0.0;
 
- // Very subtle lens shadow under the pill rim
- float rimAlpha=smoothstep(1.,-2.,dp)*(1.0-smoothstep(0.,2.5,-dp))*0.18;
- vec3 c=mix(vec3(0.),borderColor,borderAlpha);
- float a=max(rimAlpha*0.2,borderAlpha);
- gl_FragColor=vec4(c,a);
+  // Zero fill inside: inside is 100% transparent glass!
+  float borderAlpha = clamp(border * 0.95 + glow * 0.6, 0.0, 1.0);
+  vec3 redAccent = vec3(0.94, 0.27, 0.27); // #ef4444
+  vec3 borderColor = mix(redAccent, vec3(1.0, 0.45, 0.45), border * 0.35);
+
+  vec3 c = borderColor;
+  float a = borderAlpha;
+  gl_FragColor = vec4(c, a);
 }`;
 
 type Body = { x: number; v: number };
