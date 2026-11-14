@@ -155,12 +155,9 @@ function getInitialTextures() {
 // ============================================================
 export const MOBILE_LANYARD_CONFIG = {
   // Height of the mobile card container (Tailwind classes)
-  containerHeight: 'h-[230px] sm:h-[310px]',
-  // Scale factor of the 3D badge card (e.g. 0.62 = default, 0.78 = bigger, 0.90 = extra large)
-  size: 0.9,
-  // Length of the hanging strap (smaller value hangs higher up inside the box)
-  strapLength: 0.05,
-  // Horizontal center point (0.5 = center)
+  containerHeight: 'h-[280px] sm:h-[310px]',
+  size: 0.80,        // <-- You can now set 1.0, 1.2, 1.5, etc.
+  strapLength: 0.25, // Smaller value hangs higher up if the card gets tall
   anchor: 0.5,
 };
 

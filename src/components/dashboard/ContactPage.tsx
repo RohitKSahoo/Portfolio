@@ -4,6 +4,61 @@ import { Mail, Github, Linkedin, Send, ArrowRight, User, AtSign, AlignLeft, Mess
 import VariableProximity from '../effects/VariableProximity';
 import GlassSurface from '../effects/GlassSurface';
 
+const SOCIALS = [
+  {
+    name: 'Email',
+    handle: 'rohitkumarsahoo37@gmail.com',
+    href: 'mailto:rohitkumarsahoo37@gmail.com',
+    icon: Mail,
+    external: false,
+  },
+  {
+    name: 'GitHub',
+    handle: 'github.com/RohitKSahoo',
+    href: 'https://github.com/RohitKSahoo',
+    icon: Github,
+    external: true,
+  },
+  {
+    name: 'LinkedIn',
+    handle: 'linkedin.com/in/rohitksahoo',
+    href: 'https://linkedin.com/in/rohitksahoo',
+    icon: Linkedin,
+    external: true,
+  },
+  {
+    name: 'Instagram',
+    handle: '@rohitks.2407',
+    href: 'https://www.instagram.com/rohitks.2407?igsh=MTU4c3hhMGI1eXdqMQ==',
+    icon: Instagram,
+    external: true,
+  },
+];
+
+const SocialPill = ({ item }: { item: (typeof SOCIALS)[number] }) => {
+  const Icon = item.icon;
+  return (
+    <a
+      href={item.href}
+      {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      className="group flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-white/[0.04] hover:bg-red-500/[0.08] border border-white/10 hover:border-red-500/50 shadow-[0_2px_10px_rgba(0,0,0,0.4)] active:scale-95 transition-all shrink-0 cursor-pointer text-left"
+    >
+      <div className="p-1.5 bg-red-500/10 text-red-500 rounded-lg group-hover:bg-red-500/20 group-hover:scale-105 transition-all shrink-0">
+        <Icon size={16} />
+      </div>
+      <div className="flex flex-col min-w-0 pr-1">
+        <span className="text-xs font-bold font-satoshi text-white group-hover:text-red-400 transition-colors leading-tight">
+          {item.name}
+        </span>
+        <span className="text-[11px] text-white/50 font-inter group-hover:text-white/70 transition-colors leading-tight truncate max-w-[130px]">
+          {item.handle}
+        </span>
+      </div>
+      <ArrowRight size={12} className="text-white/40 group-hover:text-red-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
+    </a>
+  );
+};
+
 export const ContactPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const containerRef = useRef(null);
@@ -191,79 +246,98 @@ export const ContactPage = () => {
             <div className="w-12 h-0.5 bg-red-500 mt-1" />
           </div>
 
-          {[
-            {
-              name: 'Email',
-              handle: 'rohitkumarsahoo37@gmail.com',
-              href: 'mailto:rohitkumarsahoo37@gmail.com',
-              icon: Mail,
-              external: false,
-            },
-            {
-              name: 'GitHub',
-              handle: 'github.com/RohitKSahoo',
-              href: 'https://github.com/RohitKSahoo',
-              icon: Github,
-              external: true,
-            },
-            {
-              name: 'LinkedIn',
-              handle: 'linkedin.com/in/rohitksahoo',
-              href: 'https://linkedin.com/in/rohitksahoo',
-              icon: Linkedin,
-              external: true,
-            },
-            {
-              name: 'Instagram',
-              handle: '@rohitks.2407',
-              href: 'https://www.instagram.com/rohitks.2407?igsh=MTU4c3hhMGI1eXdqMQ==',
-              icon: Instagram,
-              external: true,
-            },
-          ].map((social) => {
-            const Icon = social.icon;
-            return (
-              <a
-                key={social.name}
-                href={social.href}
-                {...(social.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                className="group relative block focus:outline-none cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
-              >
-                <GlassSurface
-                  width="100%"
-                  height="auto"
-                  borderRadius={14}
-                  distortionScale={-100}
-                  displace={0.2}
-                  backgroundOpacity={0}
-                  saturation={1.1}
-                  redOffset={8}
-                  greenOffset={4}
-                  blueOffset={12}
-                  className="w-full border border-white/10 group-hover:border-red-500/40 shadow-[0_4px_20px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(239,68,68,0.15)] transition-all"
+          {/* Desktop View: Static Glass Cards */}
+          <div className="hidden lg:flex flex-col gap-6">
+            {SOCIALS.map((social) => {
+              const Icon = social.icon;
+              return (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  {...(social.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className="group relative block focus:outline-none cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
                 >
-                  <div className="p-5 sm:p-6 w-full flex items-center justify-between">
-                    <div className="flex items-center gap-5">
-                      <div className="p-4 bg-red-500/10 text-red-500 rounded-xl group-hover:bg-red-500/20 group-hover:scale-105 transition-all">
-                        <Icon size={26} />
+                  <GlassSurface
+                    width="100%"
+                    height="auto"
+                    borderRadius={14}
+                    distortionScale={-100}
+                    displace={0.2}
+                    backgroundOpacity={0}
+                    saturation={1.1}
+                    redOffset={8}
+                    greenOffset={4}
+                    blueOffset={12}
+                    className="w-full border border-white/10 group-hover:border-red-500/40 shadow-[0_4px_20px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(239,68,68,0.15)] transition-all"
+                  >
+                    <div className="p-5 sm:p-6 w-full flex items-center justify-between">
+                      <div className="flex items-center gap-5">
+                        <div className="p-4 bg-red-500/10 text-red-500 rounded-xl group-hover:bg-red-500/20 group-hover:scale-105 transition-all">
+                          <Icon size={26} />
+                        </div>
+                        <div>
+                          <h3 className="text-lg sm:text-xl font-bold font-satoshi text-white group-hover:text-red-400 transition-colors">
+                            {social.name}
+                          </h3>
+                          <p className="text-sm sm:text-base text-white/50 font-inter group-hover:text-white/70 transition-colors mt-0.5">
+                            {social.handle}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-lg sm:text-xl font-bold font-satoshi text-white group-hover:text-red-400 transition-colors">
-                          {social.name}
-                        </h3>
-                        <p className="text-sm sm:text-base text-white/50 font-inter group-hover:text-white/70 transition-colors mt-0.5">
-                          {social.handle}
-                        </p>
+                      <div className="w-9 h-9 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
+                        <ArrowRight size={16} className="text-white/50 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all" />
                       </div>
                     </div>
-                    <div className="w-9 h-9 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
-                      <ArrowRight size={16} className="text-white/50 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all" />
-                    </div>
-                  </div>
-                </GlassSurface>
-              </a>
-            );
-          })}
+                  </GlassSurface>
+                </a>
+              );
+            })}
+          </div>
+
+          {/* Mobile View: 3-row Infinite Alternating Carousel */}
+          <div className="block lg:hidden w-full relative py-1 overflow-hidden">
+            {/* Left & Right gradient edge fade masks */}
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#0f0f0f] to-transparent z-10" />
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#0f0f0f] to-transparent z-10" />
+
+            <div className="flex flex-col gap-2.5 py-1">
+              {/* Row 1: Left */}
+              <div className="overflow-hidden w-full flex">
+                <div className="flex gap-2.5 w-max animate-marquee-left marquee-pause">
+                  {[
+                    SOCIALS[1], SOCIALS[2], SOCIALS[0], SOCIALS[3],
+                    SOCIALS[1], SOCIALS[2], SOCIALS[0], SOCIALS[3],
+                  ].map((item, idx) => (
+                    <SocialPill key={`r1-${idx}`} item={item} />
+                  ))}
+                </div>
+              </div>
+
+              {/* Row 2: Right */}
+              <div className="overflow-hidden w-full flex">
+                <div className="flex gap-2.5 w-max animate-marquee-right marquee-pause">
+                  {[
+                    SOCIALS[3], SOCIALS[0], SOCIALS[2], SOCIALS[1],
+                    SOCIALS[3], SOCIALS[0], SOCIALS[2], SOCIALS[1],
+                  ].map((item, idx) => (
+                    <SocialPill key={`r2-${idx}`} item={item} />
+                  ))}
+                </div>
+              </div>
+
+              {/* Row 3: Left (faster) */}
+              <div className="overflow-hidden w-full flex">
+                <div className="flex gap-2.5 w-max animate-marquee-left-fast marquee-pause">
+                  {[
+                    SOCIALS[2], SOCIALS[3], SOCIALS[1], SOCIALS[0],
+                    SOCIALS[2], SOCIALS[3], SOCIALS[1], SOCIALS[0],
+                  ].map((item, idx) => (
+                    <SocialPill key={`r3-${idx}`} item={item} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
