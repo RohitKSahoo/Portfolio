@@ -220,7 +220,7 @@ export const ProfilePage = ({
 
   return (
     <div className="flex flex-col animate-in fade-in duration-500 font-inter w-full h-full flex-1">
-      <div className="relative flex-1 min-h-[calc(100dvh-140px)] sm:min-h-[calc(100dvh-170px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
+      <div className="relative flex-1 min-h-[calc(100dvh-170px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
         {/* CENTER AVATAR FIGURE - ANCHORED FIRMLY IN CENTER ON MOBILE, BOTTOM ON DESKTOP */}
         {typeof document !== 'undefined' && createPortal(
           <div 
@@ -346,7 +346,7 @@ export const ProfilePage = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 55, transition: { duration: 0.22, ease: [0.32, 0, 0.67, 0] } }}
           transition={{ duration: 0.45, ease: "easeOut" }}
-          className="relative z-10 flex-1 flex flex-col min-h-[calc(100dvh-140px)] sm:min-h-[calc(100dvh-170px)] lg:min-h-[calc(100vh-180px)] justify-between p-0 pointer-events-none"
+          className="relative z-10 flex-1 flex flex-col min-h-[calc(100dvh-170px)] lg:min-h-[calc(100vh-180px)] justify-between p-0 pointer-events-none"
         >
           <div className="flex flex-col lg:flex-row justify-between gap-3.5 sm:gap-6 lg:gap-8 items-start w-full px-0 pt-1 sm:pt-4 lg:pt-3">
             <div className="flex flex-col gap-2 sm:gap-3 lg:gap-3.5 w-full lg:max-w-md xl:max-w-lg text-left pointer-events-auto">
@@ -414,7 +414,7 @@ export const ProfilePage = ({
           </div>
 
           {/* BOTTOM REGION: NAME OVER FOG */}
-          <div className="mt-auto w-full flex flex-col items-center gap-0 pb-0 pt-0 sm:gap-1 sm:pb-2 pointer-events-none">
+          <div className="mt-auto w-full flex flex-col items-center gap-0 sm:gap-1 pb-3 sm:pb-2 mb-2 sm:mb-0 pointer-events-none">
             {/* INTRODUCTORY HANDWRITTEN KICKER ABOVE NAME */}
             <motion.span 
               initial={{ opacity: 0, y: 25 }}

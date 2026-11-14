@@ -285,7 +285,7 @@ function App() {
           ref={scrollContainerRef} 
           className={`px-4 sm:px-6 lg:px-8 pt-[74px] sm:pt-[92px] lg:pt-[112px] ${
             activeTab === 'profile' 
-              ? 'pb-14 sm:pb-20 lg:pb-24 h-[calc(100dvh-0px)] overflow-hidden flex flex-col' 
+              ? 'pb-16 sm:pb-20 lg:pb-24 h-[100dvh] overflow-hidden flex flex-col' 
               : 'pb-20 lg:pb-24'
           } pointer-events-none`} 
           style={{ WebkitOverflowScrolling: 'touch' }}
