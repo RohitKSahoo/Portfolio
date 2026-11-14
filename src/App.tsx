@@ -98,6 +98,26 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
+  // Lock mobile touch scrolling completely on Hero/Profile page so avatar and text stay locked in place
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const isMobile = window.innerWidth < 1024;
+    if (isMobile && activeTab === 'profile') {
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.style.height = '100%';
+      document.body.style.overflow = 'hidden';
+      document.body.style.height = '100%';
+      document.body.style.touchAction = 'none';
+      return () => {
+        document.documentElement.style.overflow = '';
+        document.documentElement.style.height = '';
+        document.body.style.overflow = '';
+        document.body.style.height = '';
+        document.body.style.touchAction = '';
+      };
+    }
+  }, [activeTab]);
+
   const handleTabChange = (nextTab: string) => {
     if (nextTab === activeTab) return;
 
@@ -200,7 +220,7 @@ function App() {
           ref={scrollContainerRef} 
           className={`px-4 sm:px-6 lg:px-8 pt-[74px] sm:pt-[92px] lg:pt-[112px] ${
             activeTab === 'profile' 
-              ? 'pb-14 sm:pb-20 lg:pb-24 h-[100dvh] sm:h-auto overflow-hidden' 
+              ? 'pb-14 sm:pb-20 lg:pb-24' 
               : 'pb-20 lg:pb-24'
           } pointer-events-none`} 
           style={{ WebkitOverflowScrolling: 'touch' }}

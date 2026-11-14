@@ -219,8 +219,8 @@ export const ProfilePage = ({
   const activeAvatarSrc = `/avatar-frames/dir_${isMobile ? 'center' : direction}.png?v=5`;
 
   return (
-    <div className="flex flex-col animate-in fade-in duration-500 font-inter w-full h-[calc(100dvh-150px)] sm:h-auto sm:min-h-[calc(100vh-180px)] overflow-hidden sm:overflow-visible">
-      <div className="relative w-full h-full border-none bg-transparent flex flex-col justify-between p-0 overflow-hidden sm:overflow-visible">
+    <div className="flex flex-col animate-in fade-in duration-500 font-inter w-full">
+      <div className="relative min-h-[calc(100dvh-170px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
         {/* CENTER AVATAR FIGURE - ANCHORED FIRMLY IN CENTER ON MOBILE, BOTTOM ON DESKTOP */}
         {typeof document !== 'undefined' && createPortal(
           <div 
@@ -268,7 +268,7 @@ export const ProfilePage = ({
              >
                 <motion.div
                   animate={{ 
-                    y: isMobile ? 32 : 0,
+                    y: isMobile ? 12 : 0,
                     scale: isMobile ? 0.98 : 1
                   }}
                   transition={{ duration: 0.4 }}
@@ -408,7 +408,7 @@ export const ProfilePage = ({
             {/* INTRODUCTORY HANDWRITTEN KICKER ABOVE NAME */}
             <motion.span 
               animate={{ 
-                y: isMobile ? 18 : (isDockVisible ? -25 : 65),
+                y: isMobile ? 0 : (isDockVisible ? -25 : 65),
                 opacity: 1
               }}
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
@@ -420,7 +420,7 @@ export const ProfilePage = ({
             {/* NAME BANNER */}
             <motion.div 
               animate={{ 
-                y: isMobile ? 18 : (isDockVisible ? -25 : 65),
+                y: isMobile ? 0 : (isDockVisible ? -25 : 65),
                 opacity: 1
               }}
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
