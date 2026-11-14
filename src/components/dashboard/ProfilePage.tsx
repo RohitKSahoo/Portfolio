@@ -424,7 +424,7 @@ export const ProfilePage = ({
               }}
               exit={{ opacity: 0, y: 35, transition: { duration: 0.18 } }}
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
-              className="font-amatic text-xl sm:text-2xl lg:text-3xl text-red-500 font-bold tracking-widest text-center pointer-events-auto select-none"
+              className="font-amatic text-[23px] sm:text-3xl lg:text-4xl text-red-500 font-bold tracking-widest text-center pointer-events-auto select-none"
             >
               Designing real-time architectures — I'm
             </motion.span>
@@ -440,13 +440,13 @@ export const ProfilePage = ({
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
               className="w-full pointer-events-auto"
             >
-              <div className="w-full h-[62px] sm:h-[80px] lg:h-[160px] flex items-center justify-center">
+              <div className="w-full h-[68px] sm:h-[84px] lg:h-[160px] flex items-center justify-center">
                 <TechText
                   key={isMobile ? "mobile" : "desktop"}
                   text={isMobile ? "ROHIT K. SAHOO" : "ROHIT KUMAR SAHOO"}
                   fontFamily="Satoshi, sans-serif"
                   fontWeight={800}
-                  fontSize={isMobile ? 38 : 130}
+                  fontSize={isMobile ? 42 : 130}
                   letterSpacing={-0.03}
                   color="#ffffff"
                   accentColor="#ef4444"
