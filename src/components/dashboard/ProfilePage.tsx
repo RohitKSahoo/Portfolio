@@ -193,11 +193,12 @@ export const ProfilePage = ({
   }, []);
 
   React.useEffect(() => {
-    if (isAvatarLoaded) {
+    // Only dispatch heavy multi-stage fluid shockwave burst on desktop GPUs to eliminate mobile load lag
+    if (isAvatarLoaded && !isMobile) {
       const timer = setTimeout(() => {
         window.dispatchEvent(
           new CustomEvent('liquid-ether-surge', {
-            detail: { origin: 'top-left', intensity: isMobile ? 1.2 : 1.6 }
+            detail: { origin: 'top-left', intensity: 1.4 }
           })
         );
       }, 100);
@@ -267,7 +268,7 @@ export const ProfilePage = ({
              >
                 <motion.div
                   animate={{ 
-                    y: isMobile ? 20 : 0,
+                    y: isMobile ? 65 : 0,
                     scale: isMobile ? 1.1 : 1
                   }}
                   transition={{ duration: 0.4 }}
@@ -339,7 +340,7 @@ export const ProfilePage = ({
         >
           <div className="flex flex-col lg:flex-row justify-between gap-3.5 sm:gap-6 lg:gap-8 items-start w-full px-0 pt-1 sm:pt-4 lg:pt-3">
             <div className="flex flex-col gap-2 sm:gap-3 lg:gap-3.5 w-full lg:max-w-md xl:max-w-lg text-left pointer-events-auto">
-              <h2 className="text-[clamp(2.5rem,9.6vw,4rem)] sm:text-6xl lg:text-[clamp(2.8rem,3.4vw,4.2rem)] xl:text-6xl font-extrabold font-satoshi text-white leading-[1.08] tracking-tight w-full">
+              <h2 className="text-[clamp(1.95rem,7.5vw,3.1rem)] sm:text-5xl lg:text-[clamp(2.8rem,3.4vw,4.2rem)] xl:text-6xl font-extrabold font-satoshi text-white leading-[1.12] tracking-tight w-full">
                 CS Undergrad & Systems Builder Based in <span className="text-red-500">India.</span>
               </h2>
             </div>
@@ -403,15 +404,15 @@ export const ProfilePage = ({
           </div>
 
           {/* BOTTOM REGION: NAME OVER FOG */}
-          <div className="mt-auto w-full flex flex-col items-center gap-0 sm:gap-1 pb-2 pt-1 pointer-events-none">
+          <div className="mt-auto w-full flex flex-col items-center gap-0 pb-0 pt-0 sm:gap-1 sm:pb-2 pointer-events-none">
             {/* INTRODUCTORY HANDWRITTEN KICKER ABOVE NAME */}
             <motion.span 
               animate={{ 
-                y: isMobile ? 0 : (isDockVisible ? -25 : 65),
+                y: isMobile ? 18 : (isDockVisible ? -25 : 65),
                 opacity: 1
               }}
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
-              className="font-amatic text-2xl sm:text-3xl lg:text-4xl text-red-500 font-bold tracking-widest text-center pointer-events-auto select-none"
+              className="font-amatic text-xl sm:text-2xl lg:text-3xl text-red-500 font-bold tracking-widest text-center pointer-events-auto select-none"
             >
               Designing real-time architectures — I'm
             </motion.span>
@@ -419,19 +420,19 @@ export const ProfilePage = ({
             {/* NAME BANNER */}
             <motion.div 
               animate={{ 
-                y: isMobile ? 0 : (isDockVisible ? -25 : 65),
+                y: isMobile ? 18 : (isDockVisible ? -25 : 65),
                 opacity: 1
               }}
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
               className="w-full pointer-events-auto"
             >
-              <div className="w-full h-[80px] sm:h-[96px] lg:h-[160px] flex items-center justify-center">
+              <div className="w-full h-[62px] sm:h-[80px] lg:h-[160px] flex items-center justify-center">
                 <TechText
                   key={isMobile ? "mobile" : "desktop"}
                   text={isMobile ? "ROHIT K. SAHOO" : "ROHIT KUMAR SAHOO"}
                   fontFamily="Satoshi, sans-serif"
                   fontWeight={800}
-                  fontSize={isMobile ? 48 : 130}
+                  fontSize={isMobile ? 38 : 130}
                   letterSpacing={-0.03}
                   color="#ffffff"
                   accentColor="#ef4444"
