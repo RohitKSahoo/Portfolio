@@ -452,6 +452,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
           {isMobile && (
             <div className={`w-full ${MOBILE_LANYARD_CONFIG.containerHeight} relative rounded-2xl overflow-hidden border border-white/10 bg-[#0d0e10]/80 shadow-[0_8px_32px_rgba(0,0,0,0.6)] shrink-0 mb-3 pointer-events-auto`}>
               <Lanyard
+                isMobile={true}
                 frontImage={frontTexture || undefined}
                 backImage={backTexture || undefined}
                 strapImage={strapTexture || undefined}

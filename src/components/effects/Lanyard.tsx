@@ -13,6 +13,7 @@ export interface LanyardProps {
   finish?: 'glossy' | 'matte' | 'holographic' | 'metallic';
   cornerRadius?: number;
   size?: number;
+  isMobile?: boolean;
   anchor?: 'left' | 'center' | 'right' | number;
   strapLength?: number;
   strapImage?: string | HTMLCanvasElement;
@@ -829,6 +830,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
   finish = 'glossy',
   cornerRadius = 0.1,
   size = 0.8,
+  isMobile = false,
   anchor = 'center',
   strapLength = 0.5,
   strapImage,
@@ -868,6 +870,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
     finish,
     cornerRadius,
     size,
+    isMobile,
     anchor,
     strapLength,
     strapImage,
@@ -1057,10 +1060,14 @@ export const Lanyard: React.FC<LanyardProps> = ({
     const frameView = () => {
       const s = settingsRef.current;
       const aspect = view.width / view.height;
-      let viewHeight = layout.height / clamp(s.size, 0.15, 0.9);
-      const fitFactor = s.orientation === 'landscape' ? 0.62 : 0.68;
-      const minimumWidth = layout.width / fitFactor;
-      if (viewHeight * aspect < minimumWidth) viewHeight = minimumWidth / aspect;
+      const isMob = !!s.isMobile;
+      const maxScale = isMob ? 3.0 : 0.9;
+      let viewHeight = layout.height / clamp(s.size, 0.15, maxScale);
+      if (!isMob) {
+        const fitFactor = s.orientation === 'landscape' ? 0.62 : 0.68;
+        const minimumWidth = layout.width / fitFactor;
+        if (viewHeight * aspect < minimumWidth) viewHeight = minimumWidth / aspect;
+      }
       const viewWidth = viewHeight * aspect;
       camera.aspect = aspect;
       camera.position.set(0, 0, viewHeight / 2 / Math.tan((FOV * Math.PI) / 360));
