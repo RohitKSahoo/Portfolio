@@ -98,7 +98,8 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
-  const [exitingFromExperience, setExitingFromExperience] = useState(false);
+  const [pendingTab, setPendingTab] = useState<string | null>(null);
+  const [isHistoryExiting, setIsHistoryExiting] = useState(false);
   const exitTimeoutRef = useRef<number | null>(null);
 
   // Lock mobile touch scrolling completely on Hero/Profile page so avatar and text stay locked in place
@@ -139,19 +140,33 @@ function App() {
     }
   }, [activeTab]);
 
+  const finalizeSwitchFromExperience = (targetTab: string) => {
+    if (exitTimeoutRef.current) {
+      clearTimeout(exitTimeoutRef.current);
+      exitTimeoutRef.current = null;
+    }
+    setIsHistoryExiting(false);
+    setPendingTab(null);
+    const prevIdx = TAB_ORDER.indexOf('experience');
+    const nextIdx = TAB_ORDER.indexOf(targetTab);
+    setDirection(nextIdx > prevIdx ? 1 : -1);
+    setActiveTab(targetTab);
+  };
+
   const handleTabChange = (nextTab: string) => {
-    if (nextTab === activeTab) return;
+    if (nextTab === activeTab || nextTab === pendingTab) return;
 
     if (activeTab === 'experience') {
-      // Trigger upward lanyard ceiling pull exit while switching
-      setExitingFromExperience(true);
+      // 1. Immediately indicate the targeted tab on dock
+      setPendingTab(nextTab);
+      // 2. Trigger upward lanyard ceiling pull exit before mounting new page
+      setIsHistoryExiting(true);
+
       if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
       exitTimeoutRef.current = window.setTimeout(() => {
-        setExitingFromExperience(false);
-      }, 400);
-    } else if (nextTab === 'experience') {
-      setExitingFromExperience(false);
-      if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
+        finalizeSwitchFromExperience(nextTab);
+      }, 310);
+      return;
     }
 
     const prevIdx = TAB_ORDER.indexOf(activeTab);
@@ -162,10 +177,13 @@ function App() {
   };
 
   const renderContent = () => {
+    // Only render new page components when lanyard exit has completed
+    const showNewPage = activeTab !== 'experience' && !isHistoryExiting;
+
     return (
       <div className={`w-full relative ${activeTab === 'profile' ? 'flex-1 flex flex-col' : ''}`}>
         <AnimatePresence mode="wait" custom={direction} initial={false}>
-          {activeTab !== 'experience' && (
+          {showNewPage && (
             <motion.div
               key={activeTab}
               custom={direction}
@@ -203,20 +221,20 @@ function App() {
 
         {/* PERSISTENT & PRE-WARMED 3D LANYARD / EXPERIENCE MODULE */}
         <div
-          className={`w-full ${(activeTab === 'experience' || exitingFromExperience) ? 'block' : 'hidden'}`}
+          className={`w-full ${(activeTab === 'experience' || isHistoryExiting) ? 'block' : 'hidden'}`}
           aria-hidden={activeTab !== 'experience'}
         >
           <Suspense fallback={null}>
-            {(shouldPreloadHistory || activeTab === 'experience' || exitingFromExperience) && (
+            {(shouldPreloadHistory || activeTab === 'experience' || isHistoryExiting) && (
               <HistoryPage 
-                isActive={activeTab === 'experience'}
-                isExiting={exitingFromExperience}
+                isActive={activeTab === 'experience' && !isHistoryExiting}
+                isExiting={isHistoryExiting}
                 onExitComplete={() => {
-                  if (exitTimeoutRef.current) {
-                    clearTimeout(exitTimeoutRef.current);
-                    exitTimeoutRef.current = null;
+                  if (pendingTab) {
+                    finalizeSwitchFromExperience(pendingTab);
+                  } else {
+                    setIsHistoryExiting(false);
                   }
-                  setExitingFromExperience(false);
                 }}
               />
             )}
@@ -232,7 +250,7 @@ function App() {
     }`}>
       {/* MAGNETIC DOCK NAVIGATION */}
       <SystemDock 
-        activeTab={activeTab} 
+        activeTab={pendingTab || activeTab} 
         setActiveTab={handleTabChange} 
         isDockVisible={isDockVisible}
         setIsDockVisible={setIsDockVisible}

@@ -1327,7 +1327,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
           exitStartTime = now;
           initialAnchorY = sim.anchor.y;
         }
-        const exitDuration = 340;
+        const exitDuration = 280;
         const elapsed = now - exitStartTime;
         const progress = Math.min(1, Math.max(0, elapsed / exitDuration));
 
