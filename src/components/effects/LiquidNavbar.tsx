@@ -2,7 +2,7 @@
 
 /**
  * Nimbus UI · Liquid Navbar — "Waterline"
- * Theme-adapted for Portfolio (Obsidian Glass & Crimson Accent)
+ * Theme-adapted for Portfolio (Obsidian Glass & Crimson Neon Accent)
  * No dependencies besides React.
  */
 
@@ -30,34 +30,67 @@ export type LiquidNavbarProps = {
   style?: React.CSSProperties;
 };
 
-const PAD = 14; // canvas bleed around the pill, for shadows and ripples
+/**
+ * ============================================================================
+ * DOCK CONFIGURATION VARIABLES
+ * You can easily tweak any of these variables anytime to customize the design:
+ * ============================================================================
+ */
+export const DOCK_CONFIG = {
+  // --- Dimensions & Shape ---
+  dockRadius: 18,               // Corner roundness of the dock (px). Set 999 for capsule, 16-20 for modern squircle
+  itemRadius: 13,               // Corner roundness of the active item border (px)
+  itemHeightDesktop: 44,        // Active item height on desktop (px)
+  itemHeightMobile: 42,         // Active item height on mobile (px)
+  itemPaddingDesktop: "0 17px", // Item padding on desktop
+  itemPaddingMobile: "0 14px",  // Item padding on mobile
 
-/* ---------- styles (adapted for portfolio dark cyberpunk theme) ---------- */
+  // --- Typography ---
+  fontSize: "12px",             // Font size for labels
+  fontWeight: 400,              // Font weight (400 = regular / less thick, 500 = medium, 600 = semibold)
+  letterSpacing: "0.12em",      // Spacing between letters
+
+  // --- Colors & Transparency ---
+  bgTint: "rgba(10, 10, 14, 0.82)",         // Dock background glass color
+  borderColor: "rgba(255, 255, 255, 0.12)",   // Outer dock border color
+  accentBorderColor: "#ef4444",               // Selected item border color (crimson red)
+  accentGlowColor: "rgba(239, 68, 68, 0.38)", // Selected item border outer glow
+  selectedFillOpacity: 0.0,                   // 0.0 = completely transparent inside, borders only
+  borderThickness: 1.5,                       // Active border thickness (px)
+  textDefault: "rgba(255, 255, 255, 0.55)",   // Inactive label/icon color
+  textHover: "#ffffff",                       // Hovered label color
+  textActive: "#ffffff",                      // Active label color
+
+  // --- Physics & Animation ---
+  springStiffness: 185,         // Speed of movement (higher = faster, lower = softer)
+  springDamping: 21,            // Oscillation damping (higher = less bounce, perfectly damped)
+  splitThreshold: 130,          // Distance before liquid stretches into droplets (px)
+};
+
+const PAD = 14; // canvas bleed around the pill for shadows and ripples
+
+/* ---------- styles ---------- */
 const NIMBUS_CSS = `
 .nimbus-nav {
-  --n-tint: rgba(14, 14, 18, 0.78);
-  --n-fg: #ffffff;
-  --n-fg-soft: rgba(255, 255, 255, 0.55);
-  --n-rim: rgba(255, 255, 255, 0.18);
-  --n-accent: #ef4444;
-  --n-accent-glow: rgba(239, 68, 68, 0.35);
+  --n-radius: ${DOCK_CONFIG.dockRadius}px;
+  --n-item-radius: ${DOCK_CONFIG.itemRadius}px;
+  --n-tint: ${DOCK_CONFIG.bgTint};
+  --n-fg: ${DOCK_CONFIG.textActive};
+  --n-fg-soft: ${DOCK_CONFIG.textDefault};
+  --n-rim: rgba(255, 255, 255, 0.14);
+  --n-accent: ${DOCK_CONFIG.accentBorderColor};
+  --n-glow: ${DOCK_CONFIG.accentGlowColor};
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 5px 6px;
-  border-radius: 999px;
+  gap: 4px;
+  padding: 6px 7px;
+  border-radius: var(--n-radius);
   isolation: isolate;
   font-family: ui-sans-serif, -apple-system, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-}
-.nimbus-nav[data-tone="dark"] {
-  --n-tint: rgba(10, 10, 12, 0.88);
-  --n-fg: #ffffff;
-  --n-fg-soft: rgba(255, 255, 255, 0.55);
-  --n-rim: rgba(255, 255, 255, 0.15);
 }
 .nimbus-glass {
   position: absolute;
@@ -68,8 +101,8 @@ const NIMBUS_CSS = `
   background: var(--n-tint);
   -webkit-backdrop-filter: blur(16px) saturate(1.3) brightness(1.05);
   backdrop-filter: blur(16px) saturate(1.3) brightness(1.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: inset 0 1px 1px var(--n-rim), 0 16px 36px -10px rgba(0, 0, 0, 0.8), 0 0 1px rgba(255, 255, 255, 0.2);
+  border: 1px solid ${DOCK_CONFIG.borderColor};
+  box-shadow: inset 0 1px 1px var(--n-rim), 0 16px 36px -10px rgba(0, 0, 0, 0.8), 0 0 1px rgba(255, 255, 255, 0.15);
 }
 .nimbus-nav[data-refract="on"] .nimbus-glass {
   -webkit-backdrop-filter: url(#nimbus-refract) blur(4px) saturate(1.3) brightness(1.05);
@@ -88,15 +121,16 @@ const NIMBUS_CSS = `
 .nimbus-drop {
   display: none;
   position: absolute;
-  top: 5px;
-  bottom: 5px;
+  top: 6px;
+  bottom: 6px;
   left: 0;
-  border-radius: 999px;
+  border-radius: var(--n-item-radius);
   z-index: -1;
   pointer-events: none;
   will-change: transform, width;
-  background: radial-gradient(120% 140% at 30% 0%, rgba(239, 68, 68, 0.4), rgba(239, 68, 68, 0.05) 55%), rgba(255, 255, 255, 0.12);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5), inset 0 -2px 6px rgba(239, 68, 68, 0.3), inset 0 0 0 1px rgba(239, 68, 68, 0.4), 0 4px 14px -3px rgba(239, 68, 68, 0.45);
+  background: transparent;
+  border: ${DOCK_CONFIG.borderThickness}px solid var(--n-accent);
+  box-shadow: 0 0 14px var(--n-glow), inset 0 0 6px rgba(239, 68, 68, 0.12);
 }
 .nimbus-nav[data-gl="off"] .nimbus-drop {
   display: block;
@@ -106,28 +140,27 @@ const NIMBUS_CSS = `
   z-index: 1;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 40px;
-  padding: 0 14px;
+  gap: 8px;
+  height: ${DOCK_CONFIG.itemHeightDesktop}px;
+  padding: ${DOCK_CONFIG.itemPaddingDesktop};
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--n-item-radius);
   background: none;
   color: var(--n-fg-soft);
   font-family: inherit;
-  font-weight: 500;
-  font-size: 13px;
+  font-weight: ${DOCK_CONFIG.fontWeight};
+  font-size: ${DOCK_CONFIG.fontSize};
   line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: ${DOCK_CONFIG.letterSpacing};
   text-decoration: none;
   cursor: pointer;
-  transition: color 0.22s, transform 0.18s;
+  transition: color 0.2s, transform 0.16s;
 }
-.nimbus-item:hover,
+.nimbus-item:hover {
+  color: ${DOCK_CONFIG.textHover};
+}
 .nimbus-item[aria-current="page"] {
   color: var(--n-fg);
-}
-.nimbus-item[aria-current="page"] {
-  color: #ffffff;
 }
 .nimbus-item:focus-visible {
   outline: 2px solid var(--n-accent);
@@ -141,25 +174,25 @@ const NIMBUS_CSS = `
   justify-content: center;
 }
 .nv-ico svg {
-  transition: transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1), stroke 0.22s;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.2s;
 }
 .nimbus-item[aria-current="page"] .nv-ico svg {
-  transform: translateY(-1px) scale(1.1);
+  transform: translateY(-0.5px) scale(1.08);
   stroke: var(--n-accent);
 }
 .nv-door {
   fill: transparent;
 }
 .nv-ico[data-fx="pop"] svg {
-  animation: nvPop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  animation: nvPop 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 @keyframes nvPop {
-  0% { transform: scale(0.72); }
-  60% { transform: scale(1.22); }
-  100% { transform: translateY(-1px) scale(1.1); }
+  0% { transform: scale(0.85); }
+  60% { transform: scale(1.16); }
+  100% { transform: translateY(-0.5px) scale(1.08); }
 }
 .nv-ico[data-fx="plane"] svg {
-  animation: nvPlane 1.15s cubic-bezier(0.55, 0, 0.3, 1) both;
+  animation: nvPlane 1.1s cubic-bezier(0.55, 0, 0.3, 1) both;
 }
 @keyframes nvPlane {
   0% { transform: none; }
@@ -168,52 +201,49 @@ const NIMBUS_CSS = `
   43% { transform: translate(-60px, 16px) rotate(-12deg) scale(0.9); opacity: 0; }
   58% { opacity: 1; }
   80% { transform: translate(3px, -1px) rotate(2deg); }
-  100% { transform: translateY(-1px) scale(1.1); }
+  100% { transform: translateY(-0.5px) scale(1.08); }
 }
 .nv-ico[data-fx="drop"] svg {
-  animation: nvDrop 0.95s cubic-bezier(0.4, 0, 0.3, 1) both;
+  animation: nvDrop 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
   transform-origin: 50% 100%;
 }
 @keyframes nvDrop {
   0% { transform: translateY(-1px); }
-  26% { transform: translateY(-13px) scale(0.88, 1.12); }
-  46% { transform: translateY(3px) scale(1.3, 0.68); }
-  62% { transform: translateY(-3px) scale(0.92, 1.08); }
-  80% { transform: translateY(0) scale(1.04, 0.97); }
-  100% { transform: translateY(-1px) scale(1.1); }
+  30% { transform: translateY(-8px) scale(0.92, 1.08); }
+  60% { transform: translateY(2px) scale(1.15, 0.85); }
+  100% { transform: translateY(-0.5px) scale(1.08); }
 }
 .nv-ico[data-fx="spin"] svg {
-  animation: nvSpin 1s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  animation: nvSpin 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 @keyframes nvSpin {
   0% { transform: perspective(80px) rotateY(0); }
-  100% { transform: perspective(80px) rotateY(360deg) translateY(-1px) scale(1.1); }
+  100% { transform: perspective(80px) rotateY(360deg) translateY(-0.5px) scale(1.08); }
 }
 .nv-ico[data-fx="glow"] svg {
-  animation: nvHop 0.8s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+  animation: nvHop 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
   transform-origin: 50% 100%;
 }
 @keyframes nvHop {
   0% { transform: none; }
-  30% { transform: translateY(-5px) scale(1.04, 0.96); }
-  55% { transform: translateY(0) scale(1.12, 0.88); }
-  75% { transform: translateY(-2px) scale(0.98, 1.04); }
-  100% { transform: translateY(-1px) scale(1.1); }
+  40% { transform: translateY(-4px) scale(1.05, 0.95); }
+  75% { transform: translateY(1px) scale(1.08, 0.92); }
+  100% { transform: translateY(-0.5px) scale(1.08); }
 }
 .nv-ico[data-fx="wave"] svg {
-  animation: nvWave 0.9s ease-in-out both;
+  animation: nvWave 0.75s ease-in-out both;
   transform-origin: 50% 92%;
 }
 @keyframes nvWave {
   0% { transform: none; }
-  20% { transform: rotate(-15deg); }
-  40% { transform: rotate(12deg); }
-  60% { transform: rotate(-8deg); }
-  80% { transform: rotate(4deg); }
-  100% { transform: translateY(-1px) scale(1.1); }
+  25% { transform: rotate(-12deg); }
+  50% { transform: rotate(10deg); }
+  75% { transform: rotate(-5deg); }
+  100% { transform: translateY(-0.5px) scale(1.08); }
 }
 .nimbus-nav[data-compact="true"] .nimbus-item {
-  padding: 0 14px;
+  height: ${DOCK_CONFIG.itemHeightMobile}px;
+  padding: ${DOCK_CONFIG.itemPaddingMobile};
 }
 .nimbus-nav[data-compact="true"] .nimbus-label {
   position: absolute;
@@ -223,9 +253,10 @@ const NIMBUS_CSS = `
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .nimbus-nav:not([data-compact="false"]) .nimbus-item {
-    padding: 0 14px;
+    height: ${DOCK_CONFIG.itemHeightMobile}px;
+    padding: ${DOCK_CONFIG.itemPaddingMobile};
   }
   .nimbus-nav:not([data-compact="false"]) .nimbus-label {
     position: absolute;
@@ -247,7 +278,7 @@ const NIMBUS_CSS = `
 }
 `;
 
-/* ---------- the water shader (adapted to obsidian glass + red water drop) ---------- */
+/* ---------- shader: transparent inside + glowing red borders & rounded squircle corners ---------- */
 const VERT = `attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}`;
 const FRAG = `precision highp float;
 uniform vec2 uRes;uniform float uDpr;uniform float uTime;uniform vec4 uPill;
@@ -255,41 +286,26 @@ uniform vec4 uBlob[6];uniform float uSy[6];uniform vec4 uRip[6];uniform vec3 uMo
 float sdRB(vec2 p,vec2 b,float r){vec2 q=abs(p)-b+r;return length(max(q,0.))+min(max(q.x,q.y),0.)-r;}
 float sdCap(vec2 p,vec4 B,float sy){p-=B.xy;p.y/=sy;p.x=max(abs(p.x)-B.z,0.);return(length(p)-B.w)*min(1.,sy);}
 float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
-float dropD(vec2 p){float d=1e4;for(int i=0;i<6;i++){if(uBlob[i].w>.5){d=smin(d,sdCap(p,uBlob[i],uSy[i]),13.);}}return d;}
-float pillD(vec2 p){vec2 h=uPill.zw*.5;return sdRB(p-uPill.xy-h,h,h.y);}
-float lens(float d,float w){float t=clamp(-d/w,0.,1.);return sqrt(1.-(1.-t)*(1.-t));}
-float waves(vec2 p){float w=0.;
- for(int i=0;i<6;i++){vec4 R=uRip[i];if(R.w>0.){float x=length(p-R.xy)-R.z*240.;w+=R.w*exp(-R.z*1.7)*sin(x*.3)*exp(-x*x/700.);}}
- vec2 m=p-uMouse.xy;w+=uMouse.z*3.6*exp(-dot(m,m)/1000.);
- w+=uAmb*(sin(p.x*.05+uTime*1.2)*.45+sin(p.x*.13-uTime*.85+p.y*.2)*.25);return w;}
-float H(vec2 p){float dp=pillD(p);return lens(dp,uPill.w*.36)*2.4+lens(dropD(p),11.)*7.5+waves(p)*smoothstep(0.,7.,-dp);}
-float caus(vec2 p,float t){vec2 q=p;float c=0.;for(int i=0;i<3;i++){q+=vec2(sin(q.y*1.1+t),cos(q.x*1.3-t*.7))*.6;c+=1./(1.+16.*abs(sin(q.x)*sin(q.y)));}return c/3.;}
+float dropD(vec2 p){float d=1e4;for(int i=0;i<6;i++){if(uBlob[i].w>.5){d=smin(d,sdCap(p,uBlob[i],uSy[i]),11.);}}return d;}
+// Modern squircle corners for dock outline (radius ~18px)
+float pillD(vec2 p){vec2 h=uPill.zw*.5;return sdRB(p-uPill.xy-h,h,min(18.0,h.y));}
 void main(){
  vec2 p=vec2(gl_FragCoord.x,uRes.y*uDpr-gl_FragCoord.y)/uDpr;
  float dp=pillD(p);float dd=dropD(p);
- float h0=H(p);vec3 n=normalize(vec3(h0-H(p+vec2(1.,0.)),h0-H(p+vec2(0.,1.)),1.));
- vec3 V=vec3(0.,0.,1.);
- float spec=pow(max(dot(reflect(-normalize(vec3(-.45,-.8,.85)),n),V),0.),70.);
- float spec2=pow(max(dot(reflect(-normalize(vec3(.6,.75,.7)),n),V),0.),22.)*.3;
- float fres=clamp((1.-n.z)*4.,0.,1.);
- vec3 irid=.5+.5*cos(6.2831*(vec3(0.,.08,.15)+fres*.85+p.x*.0028+uTime*.035));
- float pm=smoothstep(1.,-1.,dp);float dm=smoothstep(1.,-1.,dd)*smoothstep(1.,-2.,dp);
- float sh=smoothstep(9.,-9.,dropD(p-vec2(0.,5.)))*(1.-dm)*pm*(.14+.08*uDark);
- vec3 c=vec3(0.18,.02,.02)*sh;float a=sh;
- float pa=clamp(pm*(fres*.35+spec*.7+spec2*.5),0.,1.);
- c=mix(vec3(1.),irid,.35*fres)*pa+c*(1.-pa);a=pa+a*(1.-pa);
- float th=lens(dd,11.);
- float cs=caus((p+n.xy*th*18.)*.085,uTime*.9);
- vec3 tint=mix(vec3(.95,.25,.25),vec3(.85,.18,.18),uDark);
- float rim=dm*(1.-smoothstep(0.,8.,-dd));
- float cres=dm*smoothstep(.12,.55,dot(n.xy,normalize(vec2(.55,.85))))*smoothstep(0.,3.,-dd);
- float body=.5+.5*clamp(-n.y*3.,-1.,1.);
- float da=dm*(.32+.18*body)*(1.-.25*uDark);vec3 dc=mix(tint,vec3(1.,.7,.7),body*.5);
- float la=rim*.28;vec3 lc=mix(vec3(.9,.2,.2),vec3(1.,.3,.3),uDark);dc=lc*la+dc*da*(1.-la);da=la+da*(1.-la);
- la=clamp(cres*.7+smoothstep(.6,1.,cs)*.28*th*dm,0.,1.);dc=vec3(1.)*la+dc*(1.-la);da=la+da*(1.-la);
- la=clamp(dm*(spec*1.2+spec2*.5),0.,1.);dc=vec3(1.)*la+dc*(1.-la);da=la+da*(1.-la);
- la=dm*smoothstep(-2.,0.,dd)*.4;dc=mix(vec3(1.),irid,.35)*la+dc*(1.-la);da=la+da*(1.-la);
- c=dc+c*(1.-da);a=da+a*(1.-da);
+ float pm=smoothstep(1.,-1.,dp);
+ if(pm<=0.001){gl_FragColor=vec4(0.);return;}
+
+ // Crimson Red Border: transparent inside, red outline with soft outer glow
+ float border=smoothstep(2.3,0.5,abs(dd+0.6))*pm;
+ float glow=exp(-max(0.0,dd)*0.32)*pm*0.42;
+ float borderAlpha=clamp(border*0.95+glow*0.5,0.0,1.0);
+ vec3 redAccent=vec3(0.94,0.27,0.27); // #ef4444
+ vec3 borderColor=mix(redAccent,vec3(1.0,0.45,0.45),border*0.35);
+
+ // Very subtle lens shadow under the pill rim
+ float rimAlpha=smoothstep(1.,-2.,dp)*(1.0-smoothstep(0.,2.5,-dp))*0.18;
+ vec3 c=mix(vec3(0.),borderColor,borderAlpha);
+ float a=max(rimAlpha*0.2,borderAlpha);
  gl_FragColor=vec4(c,a);
 }`;
 
@@ -303,10 +319,10 @@ function makeState() {
     b: { x: 0, v: 0 } as Body,
     sy: { s: 1, v: 0 },
     lead: 0 as 0 | 1,
-    lagFrom: 0,
+    lagTimer: 0,
     sats: [] as Sat[],
     rips: [] as Rip[],
-    t: { x: 0, cy: 0, q: 0, r: 21 },
+    t: { x: 0, cy: 0, q: 0, r: DOCK_CONFIG.itemRadius },
     q: 0,
     mouse: { x: 0, y: 0, s: 0, on: false },
     moving: false,
@@ -377,12 +393,11 @@ export const LiquidNavbar: React.FC<LiquidNavbarProps> = ({
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const dropRef = React.useRef<HTMLSpanElement>(null);
   const itemRefs = React.useRef<(HTMLElement | null)[]>([]);
-  const iconRefs = React.useRef<(HTMLSpanElement | null)[]>([]);
   const audio = React.useRef<AudioContext | null>(null);
   const st = React.useRef(makeState());
   const [gl, setGl] = React.useState<"on" | "off">("on");
   const [refract, setRefract] = React.useState(false);
-  const [fx, setFx] = React.useState({ i: -1, n: 0 });
+  const [activeFxIdx, setActiveFxIdx] = React.useState(-1);
   const dark = tone === "dark" ? 1 : 0;
   const darkRef = React.useRef(dark);
   darkRef.current = dark;
@@ -393,7 +408,7 @@ export const LiquidNavbar: React.FC<LiquidNavbarProps> = ({
     const T = s.t;
     const sep = Math.abs(s.a.x - s.b.x);
     const thin = Math.min(sep / (2 * (s.q + T.r) || 1), 1);
-    const r = T.r * (1 - 0.3 * thin);
+    const r = T.r * (1 - 0.25 * thin);
     if (s.glc) {
       const { gl: g, u } = s.glc;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -406,7 +421,7 @@ export const LiquidNavbar: React.FC<LiquidNavbarProps> = ({
       const sy = new Float32Array(6).fill(1);
       const head = s.lead === 0 ? s.a : s.b;
       const tail = s.lead === 0 ? s.b : s.a;
-      blobs.set([head.x, T.cy, s.q * (1 - 0.25 * thin), T.r * (1 - 0.12 * thin), tail.x, T.cy, s.q * (1 - 0.8 * thin), T.r * (1 - 0.5 * thin)], 0);
+      blobs.set([head.x, T.cy, s.q * (1 - 0.2 * thin), T.r * (1 - 0.1 * thin), tail.x, T.cy, s.q * (1 - 0.75 * thin), T.r * (1 - 0.45 * thin)], 0);
       sy[0] = sy[1] = s.sy.s;
       s.sats.slice(0, 4).forEach((d, i) => blobs.set([d.x, d.y, 0, d.r], 8 + i * 4));
       g.uniform4fv(u.uBlob, blobs);
@@ -428,77 +443,85 @@ export const LiquidNavbar: React.FC<LiquidNavbarProps> = ({
     }
   }, []);
 
-  /* ---- physics ---- */
+  /* ---- smooth physics (eliminates lag discontinuity & jitter) ---- */
   const step = React.useCallback((dt: number, now: number) => {
     const s = st.current;
     const T = s.t;
     s.time += dt;
-    s.q += (T.q - s.q) * Math.min(1, dt * 12);
+    s.q += (T.q - s.q) * Math.min(1, dt * 14);
     const bodies = [s.a, s.b];
     let still = true;
+
     if (s.reduce) {
       s.a.x = s.b.x = T.x;
       s.a.v = s.b.v = 0;
       s.sy.s = 1;
       s.sats = [];
     } else {
+      // Smooth continuous tension follow instead of abrupt force multiplier jump
       bodies.forEach((B, i) => {
-        const lead = i === s.lead;
-        const k = lead ? 210 : 72;
-        const c = lead ? 25 : 13;
-        const f = !lead && now < s.lagFrom ? 0.08 : 1;
-        B.v += (k * (T.x - B.x) - c * B.v) * dt * f;
+        const isLead = i === s.lead;
+        const k = isLead ? DOCK_CONFIG.springStiffness : DOCK_CONFIG.springStiffness * 0.45;
+        const c = isLead ? DOCK_CONFIG.springDamping : DOCK_CONFIG.springDamping * 0.75;
+        
+        // Continuous smooth tension factor
+        const elapsed = (now - s.lagTimer) / 1000;
+        const ramp = isLead ? 1 : Math.min(1, 0.2 + elapsed * 3.5);
+        
+        B.v += (k * (T.x - B.x) - c * B.v) * dt * ramp;
         B.x += B.v * dt;
-        const lo = PAD + 6 + s.q + T.r - 3;
-        const hi = PAD + s.w - 6 - s.q - T.r + 3;
+
+        const lo = PAD + 5 + s.q + T.r;
+        const hi = PAD + s.w - 5 - s.q - T.r;
         if (B.x < lo || B.x > hi) {
-          s.sy.v -= Math.min(Math.abs(B.v), 900) * 0.0016;
           B.x = Math.max(lo, Math.min(hi, B.x));
-          B.v *= -0.25;
+          B.v *= -0.15;
         }
-        if (Math.abs(T.x - B.x) > 0.3 || Math.abs(B.v) > 3) still = false;
+        if (Math.abs(T.x - B.x) > 0.25 || Math.abs(B.v) > 2) still = false;
       });
+
       const L = bodies[s.lead];
-      const syT = 1 - 0.2 * Math.min(Math.abs(L.v) / 1500, 1);
-      s.sy.v += (280 * (syT - s.sy.s) - 9 * s.sy.v) * dt;
+      const syT = 1 - 0.15 * Math.min(Math.abs(L.v) / 1400, 1);
+      s.sy.v += (260 * (syT - s.sy.s) - 12 * s.sy.v) * dt;
       s.sy.s += s.sy.v * dt;
       if (Math.abs(s.sy.s - 1) > 0.002 || Math.abs(s.sy.v) > 0.02) still = false;
 
+      // Only split on long jumps (distance > DOCK_CONFIG.splitThreshold) to avoid jitter on adjacent tabs
       const sep = Math.abs(s.a.x - s.b.x);
-      const r = T.r * (1 - 0.3 * Math.min(sep / (2 * (T.q + T.r) || 1), 1));
-      if (!s.split && s.moving && sep - 2 * T.q - 2 * r > -6) {
+      if (!s.split && s.moving && sep > DOCK_CONFIG.splitThreshold) {
         s.split = true;
         const lo = bodies[1 - s.lead];
         const hi = bodies[s.lead];
-        [0.3, 0.5, 0.72].forEach((t, j) => {
+        [0.35, 0.65].forEach((t, j) => {
           s.sats.push({
-            x: lo.x + (hi.x - lo.x) * t + (Math.random() - 0.5) * 6,
-            y: T.cy + (Math.random() - 0.5) * 10,
-            vx: (lo.v + hi.v) * 0.45,
-            vy: (Math.random() - 0.5) * 60,
-            r: 5 + Math.random() * 3 - j * 0.5,
-            k: 70 + Math.random() * 90,
+            x: lo.x + (hi.x - lo.x) * t,
+            y: T.cy,
+            vx: (lo.v + hi.v) * 0.4,
+            vy: (j === 0 ? -1 : 1) * 15,
+            r: 4.5,
+            k: 80,
           });
         });
       }
+
       s.sats = s.sats.filter((d) => {
-        d.vx += (d.k * (T.x - d.x) - 9 * d.vx) * dt;
-        d.vy += (90 * (T.cy - d.y) - 7 * d.vy) * dt;
+        d.vx += (d.k * (T.x - d.x) - 10 * d.vx) * dt;
+        d.vy += (90 * (T.cy - d.y) - 8 * d.vy) * dt;
         d.x += d.vx * dt;
         d.y += d.vy * dt;
-        d.x = Math.max(PAD + 8 + d.r, Math.min(PAD + s.w - 8 - d.r, d.x));
-        d.y = Math.max(T.cy - T.r + d.r, Math.min(T.cy + T.r - d.r, d.y));
-        if (Math.abs(T.x - d.x) < T.q + T.r * 0.5) d.r -= dt * 26;
-        return d.r > 0.6;
+        if (Math.abs(T.x - d.x) < T.q + T.r * 0.6) d.r -= dt * 28;
+        return d.r > 0.8;
       });
       if (s.sats.length) still = false;
     }
+
     if (s.moving && still) {
       s.moving = false;
-      if (s.split || !s.reduce) s.rips.push({ x: T.x, y: T.cy, age: 0, amp: s.split ? 1.2 : 0.7 });
+      if (s.split || !s.reduce) s.rips.push({ x: T.x, y: T.cy, age: 0, amp: s.split ? 1.0 : 0.55 });
     }
+
     s.rips.forEach((p) => (p.age += dt));
-    s.rips = s.rips.filter((p) => p.age < 2.4);
+    s.rips = s.rips.filter((p) => p.age < 2.0);
     const target = s.mouse.on ? 1 : 0;
     s.mouse.s += (target - s.mouse.s) * Math.min(1, dt * 7);
   }, []);
@@ -528,7 +551,7 @@ export const LiquidNavbar: React.FC<LiquidNavbarProps> = ({
     s.w = nav.offsetWidth;
     s.h = nav.offsetHeight;
     const T = s.t;
-    T.r = el.offsetHeight / 2;
+    T.r = DOCK_CONFIG.itemRadius;
     T.q = Math.max(0, el.offsetWidth / 2 - T.r);
     T.cy = PAD + el.offsetTop + el.offsetHeight / 2;
     const nx = PAD + el.offsetLeft + el.offsetWidth / 2;
@@ -538,7 +561,7 @@ export const LiquidNavbar: React.FC<LiquidNavbarProps> = ({
       s.ready = true;
     } else if (Math.abs(nx - T.x) > 0.5) {
       s.lead = Math.abs(nx - s.a.x) <= Math.abs(nx - s.b.x) ? 0 : 1;
-      s.lagFrom = performance.now() + 70;
+      s.lagTimer = performance.now();
       s.moving = true;
       s.split = false;
     }
@@ -628,13 +651,6 @@ export const LiquidNavbar: React.FC<LiquidNavbarProps> = ({
     loop();
   };
 
-  const iconCenter = (i: number) => {
-    const el = iconRefs.current[i];
-    if (!el) return null;
-    const b = el.getBoundingClientRect();
-    return local(b.left + b.width / 2, b.top + b.height / 2);
-  };
-
   const plip = () => {
     if (!sound) return;
     try {
@@ -656,12 +672,8 @@ export const LiquidNavbar: React.FC<LiquidNavbarProps> = ({
   };
 
   const select = (i: number) => {
-    const kind = items[i]?.fx ?? (items[i]?.icon ? "pop" : "none");
-    setFx({ i, n: fx.n + 1 });
+    setActiveFxIdx(i);
     plip();
-    const c = iconCenter(i);
-    if (c && kind === "drop") setTimeout(() => ripple(c.x, st.current.t.cy, 1.4), 430);
-    if (c && kind === "plane") ripple(c.x, c.y, 0.6);
     if (i !== current) {
       if (active === undefined) setInner(i);
       onChange?.(i, items[i]);
@@ -703,7 +715,7 @@ export const LiquidNavbar: React.FC<LiquidNavbarProps> = ({
       }}
       onPointerDown={(e) => {
         const p = local(e.clientX, e.clientY);
-        ripple(p.x, p.y, 0.8);
+        ripple(p.x, p.y, 0.6);
       }}
       style={style}
     >
@@ -720,23 +732,26 @@ export const LiquidNavbar: React.FC<LiquidNavbarProps> = ({
       <span className="nimbus-drop" ref={dropRef} aria-hidden="true" />
       {items.map((it, i) => {
         const kind = it.fx ?? "pop";
-        const playing = fx.i === i && kind !== "none";
+        const isCurrent = i === current;
+        const isPlaying = activeFxIdx === i && kind !== "none";
         const props = {
           ref: (el: HTMLElement | null) => {
             itemRefs.current[i] = el;
           },
           className: "nimbus-item",
-          "aria-current": i === current ? ("page" as const) : undefined,
+          "aria-current": isCurrent ? ("page" as const) : undefined,
           onClick: () => select(i),
         };
         const content = (
           <>
             {it.icon && (
-              <span className="nv-ico" key={playing ? fx.n : 0} data-fx={playing ? kind : undefined} ref={(el) => { iconRefs.current[i] = el; }}>
+              <span className="nv-ico" data-fx={isPlaying ? kind : undefined}>
                 {it.icon}
               </span>
             )}
-            <span className="nimbus-label font-mono uppercase tracking-wider text-[11px] font-semibold">{it.label}</span>
+            <span className="nimbus-label font-mono uppercase tracking-[0.12em] text-[12px] font-normal">
+              {it.label}
+            </span>
           </>
         );
         return it.href ? (

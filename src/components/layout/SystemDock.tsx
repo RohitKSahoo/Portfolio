@@ -60,25 +60,25 @@ export const SystemDock: React.FC<DockProps> = ({
     {
       id: 'profile',
       label: 'HOME',
-      icon: <User size={18} strokeWidth={2.2} />,
+      icon: <User size={20} strokeWidth={2.0} />,
       fx: 'glow'
     },
     {
       id: 'projects',
       label: 'PROJECTS',
-      icon: <Database size={18} strokeWidth={2.2} />,
+      icon: <Database size={20} strokeWidth={2.0} />,
       fx: 'pop'
     },
     {
       id: 'experience',
       label: 'EXPERIENCE',
-      icon: <Briefcase size={18} strokeWidth={2.2} />,
+      icon: <Briefcase size={20} strokeWidth={2.0} />,
       fx: 'wave'
     },
     {
       id: 'contact',
       label: 'CONTACT',
-      icon: <Mail size={18} strokeWidth={2.2} />,
+      icon: <Mail size={20} strokeWidth={2.0} />,
       fx: 'drop'
     }
   ], []);
