@@ -155,11 +155,11 @@ function getInitialTextures() {
 // ============================================================
 export const MOBILE_LANYARD_CONFIG = {
   // Height of the mobile card container (Tailwind classes)
-  containerHeight: 'h-[270px] sm:h-[310px]',
+  containerHeight: 'h-[230px] sm:h-[310px]',
   // Scale factor of the 3D badge card (e.g. 0.62 = default, 0.78 = bigger, 0.90 = extra large)
-  size: 0.78,
+  size: 0.9,
   // Length of the hanging strap (smaller value hangs higher up inside the box)
-  strapLength: 0.13,
+  strapLength: 0.05,
   // Horizontal center point (0.5 = center)
   anchor: 0.5,
 };
@@ -401,7 +401,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
   }, [githubStats, assetsReady]);
 
   return (
-    <div className="w-full min-h-[calc(100vh-160px)] lg:min-h-[750px] flex flex-col gap-6 relative overflow-visible font-inter">
+    <div className="w-full min-h-0 lg:min-h-[750px] flex flex-col gap-4 lg:gap-6 relative overflow-visible font-inter">
       
       {/* FULL-VIEWPORT 3D LANYARD (Desktop only, spans right half of viewport) */}
       {!isMobile && typeof document !== 'undefined' && createPortal(
@@ -445,7 +445,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
           initial={{ opacity: 0, y: 70 }}
           animate={isExiting ? { opacity: 0, y: 40, transition: { duration: 0.2, ease: 'easeIn' } } : { opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 220, damping: 26, mass: 0.9, delay: 0.05 }}
-          className="lg:col-span-5 xl:col-span-6 flex flex-col gap-6 py-2 overflow-y-auto max-h-[calc(100vh-140px)] pr-3 no-scrollbar pointer-events-auto pb-24"
+          className="lg:col-span-5 xl:col-span-6 flex flex-col gap-4 sm:gap-6 py-2 overflow-y-auto lg:max-h-[calc(100vh-140px)] pr-1 sm:pr-3 no-scrollbar pointer-events-auto pb-2 lg:pb-20"
         >
 
           {/* Mobile Lanyard Top Container (Mobile only: lanyard inside top card above experiences) */}
@@ -506,7 +506,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
                 </div>
                 
                 {/* Expandable Content Card */}
-                <div className="flex-1 pb-4 min-w-0">
+                <div className={`flex-1 ${isLast ? 'pb-0' : 'pb-3 sm:pb-4'} min-w-0`}>
                   {/* Clickable Header */}
                   <div 
                     onClick={() => toggleExpand(item.id)}
