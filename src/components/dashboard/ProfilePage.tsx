@@ -345,7 +345,7 @@ export const ProfilePage = ({
             </div>
 
             <div className="flex flex-col gap-3 sm:gap-6 lg:gap-6 w-full lg:w-auto lg:text-right lg:items-end pointer-events-auto">
-              <p className="text-xs sm:text-sm lg:text-base text-white/70 font-medium leading-relaxed w-full max-w-none lg:max-w-xs xl:max-w-sm font-inter">
+              <p className="hidden lg:block text-xs sm:text-sm lg:text-base text-white/70 font-medium leading-relaxed w-full max-w-none lg:max-w-xs xl:max-w-sm font-inter">
                 Exploring real-time systems, backend architectures, and unconventional ideas.
               </p>
               

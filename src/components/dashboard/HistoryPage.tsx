@@ -164,11 +164,13 @@ export const MOBILE_LANYARD_CONFIG = {
 interface HistoryPageProps {
   isExiting?: boolean;
   onExitComplete?: () => void;
+  isActive?: boolean;
 }
 
 export const HistoryPage: React.FC<HistoryPageProps> = ({
   isExiting = false,
-  onExitComplete
+  onExitComplete,
+  isActive = true
 }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>(() => {
@@ -402,7 +404,9 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       
       {/* FULL-VIEWPORT 3D LANYARD (Desktop only, spans right half of viewport) */}
       {!isMobile && typeof document !== 'undefined' && createPortal(
-        <div className="hidden lg:block fixed inset-0 w-screen h-screen z-[5] pointer-events-auto overflow-hidden">
+        <div className={`hidden lg:block fixed inset-0 w-screen h-screen z-[5] overflow-hidden transition-opacity duration-300 ${
+          isActive && !isExiting ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none'
+        }`}>
           <Lanyard
             frontImage={frontTexture || undefined}
             backImage={backTexture || undefined}
@@ -421,7 +425,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
             damping={0.2}
             elasticity={0.9}
             breeze={0.92}
-            interactive={!isExiting}
+            interactive={isActive && !isExiting}
             intro={true}
             introDirection="top"
             githubUrl="https://github.com/RohitKSahoo"
@@ -439,15 +443,15 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
         
         {/* Left Column (5/12 or 6/12 on XL) - Timeline sliding smoothly up from bottom edge, and down on exit */}
         <motion.div 
-          initial={{ opacity: 0, y: 70 }}
-          animate={isExiting ? { opacity: 0, y: 40, transition: { duration: 0.2, ease: 'easeIn' } } : { opacity: 1, y: 0 }}
+          initial={false}
+          animate={isActive && !isExiting ? { opacity: 1, y: 0 } : { opacity: 0, y: 40, transition: { duration: 0.2, ease: 'easeIn' } }}
           transition={{ type: "spring", stiffness: 220, damping: 26, mass: 0.9, delay: 0.05 }}
           className="lg:col-span-5 xl:col-span-6 flex flex-col gap-4 sm:gap-6 py-2 overflow-y-auto lg:max-h-[calc(100vh-140px)] pr-1 sm:pr-3 no-scrollbar pointer-events-auto pb-2 lg:pb-20"
         >
 
           {/* Mobile Lanyard Top Container (Mobile only: lanyard inside top card above experiences) */}
           {isMobile && (
-            <div className={`w-full ${MOBILE_LANYARD_CONFIG.containerHeight} relative rounded-2xl overflow-hidden border border-white/10 bg-[#0d0e10]/80 shadow-[0_8px_32px_rgba(0,0,0,0.6)] shrink-0 mb-3 pointer-events-auto`}>
+            <div className={`w-full ${MOBILE_LANYARD_CONFIG.containerHeight} relative rounded-2xl overflow-hidden border border-white/10 bg-[#0d0e10]/80 shadow-[0_8px_32px_rgba(0,0,0,0.6)] shrink-0 mb-3 pointer-events-auto ${isActive ? 'block' : 'hidden'}`}>
               <Lanyard
                 isMobile={true}
                 frontImage={frontTexture || undefined}
@@ -467,7 +471,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
                 damping={0.2}
                 elasticity={0.9}
                 breeze={0.5}
-                interactive={!isExiting}
+                interactive={isActive && !isExiting}
                 intro={true}
                 introDirection="top"
                 githubUrl="https://github.com/RohitKSahoo"

@@ -62,12 +62,21 @@ function App() {
   const [isDockVisible, setIsDockVisible] = useState(false);
   const [isCVModalOpen, setIsCVModalOpen] = useState(false);
   const [cvTriggerRect, setCvTriggerRect] = useState<DOMRect | null>(null);
+  const [shouldPreloadHistory, setShouldPreloadHistory] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleOpenCV = (rect?: DOMRect | null) => {
     setCvTriggerRect(rect || null);
     setIsCVModalOpen(true);
   };
+
+  // Background pre-warm 3D Lanyard & History WebGL context 600ms after load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShouldPreloadHistory(true);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Background prefetch all page chunks during idle time for instantaneous tab switching
   useEffect(() => {
@@ -101,41 +110,56 @@ function App() {
 
   const renderContent = () => {
     return (
-      <AnimatePresence mode="wait" custom={direction} initial={false}>
-        <motion.div
-          key={activeTab}
-          custom={direction}
-          variants={pageVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          className="w-full"
+      <div className="w-full relative">
+        <AnimatePresence mode="wait" custom={direction} initial={false}>
+          {activeTab !== 'experience' && (
+            <motion.div
+              key={activeTab}
+              custom={direction}
+              variants={pageVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="w-full"
+            >
+              <Suspense fallback={null}>
+                {(() => {
+                  switch (activeTab) {
+                    case 'profile': return (
+                      <ProfilePage 
+                        onExploreProjects={() => handleTabChange('projects')} 
+                        isDockVisible={isDockVisible}
+                        onViewCV={handleOpenCV}
+                      />
+                    );
+                    case 'projects': return <RegistryPage />;
+                    case 'contact': return <ContactPage />;
+                    default: return (
+                      <ProfilePage 
+                        onExploreProjects={() => handleTabChange('projects')} 
+                        isDockVisible={isDockVisible}
+                        onViewCV={handleOpenCV}
+                      />
+                    );
+                  }
+                })()}
+              </Suspense>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* PERSISTENT & PRE-WARMED 3D LANYARD / EXPERIENCE MODULE */}
+        <div
+          className={`w-full ${activeTab === 'experience' ? 'block' : 'hidden'}`}
+          aria-hidden={activeTab !== 'experience'}
         >
           <Suspense fallback={null}>
-            {(() => {
-              switch (activeTab) {
-                case 'profile': return (
-                  <ProfilePage 
-                    onExploreProjects={() => handleTabChange('projects')} 
-                    isDockVisible={isDockVisible}
-                    onViewCV={handleOpenCV}
-                  />
-                );
-                case 'projects': return <RegistryPage />;
-                case 'experience': return <HistoryPage />;
-                case 'contact': return <ContactPage />;
-                default: return (
-                  <ProfilePage 
-                    onExploreProjects={() => handleTabChange('projects')} 
-                    isDockVisible={isDockVisible}
-                    onViewCV={handleOpenCV}
-                  />
-                );
-              }
-            })()}
+            {(shouldPreloadHistory || activeTab === 'experience') && (
+              <HistoryPage isActive={activeTab === 'experience'} />
+            )}
           </Suspense>
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      </div>
     );
   };
 
