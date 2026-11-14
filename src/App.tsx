@@ -25,28 +25,23 @@ const TAB_ORDER = ['profile', 'projects', 'experience', 'contact'];
 
 const pageVariants = {
   enter: {
-    y: 65,
+    y: 35,
     opacity: 0,
-    scale: 0.98,
   },
   center: {
     y: 0,
     opacity: 1,
-    scale: 1,
     transition: {
       y: { type: 'spring', stiffness: 280, damping: 28, mass: 0.85 },
-      opacity: { duration: 0.24, ease: 'easeOut' },
-      scale: { duration: 0.24, ease: 'easeOut' },
+      opacity: { duration: 0.22, ease: 'easeOut' },
     },
   },
   exit: {
-    y: 65,
+    y: 35,
     opacity: 0,
-    scale: 0.98,
     transition: {
-      y: { duration: 0.22, ease: [0.32, 0, 0.67, 0] },
-      opacity: { duration: 0.18, ease: 'linear' },
-      scale: { duration: 0.22, ease: 'easeIn' },
+      y: { duration: 0.2, ease: [0.32, 0, 0.67, 0] },
+      opacity: { duration: 0.16, ease: 'linear' },
     },
   },
 };

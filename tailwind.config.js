@@ -19,6 +19,7 @@ export default {
         satoshi: ['Satoshi', 'var(--font-heading)', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
         amatic: ['"Amatic SC"', 'cursive', 'sans-serif'],
+        alex: ['"Alex Brush"', 'cursive', 'sans-serif'],
       },
     },
   },

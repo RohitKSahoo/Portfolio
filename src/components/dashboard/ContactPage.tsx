@@ -47,7 +47,7 @@ export const ContactPage = () => {
 
   const fullText1 = "Let's build";
   const fullText2 = "something";
-  const fullText3 = "extraordinary.";
+  const fullText3 = "Extraordinary.";
 
   const [text1, setText1] = useState('');
   const [text2, setText2] = useState('');
@@ -174,8 +174,16 @@ export const ContactPage = () => {
                 <VariableProximity label={text1} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />{' '}
                 <VariableProximity label={text2} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
               </span>
-              <span className="text-red-500 text-[clamp(2.65rem,11.8vw,4.6rem)] sm:text-6xl lg:text-[clamp(3.4rem,5.2vw,5.5rem)] leading-[1.02] sm:leading-[1.08] block">
-                <VariableProximity label={text3} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
+              <span className="text-red-500 font-alex font-normal text-[clamp(3.8rem,16.5vw,6.5rem)] sm:text-7xl lg:text-[clamp(4.8rem,7.5vw,7.8rem)] leading-[0.98] sm:leading-[1] block -mt-1 sm:-mt-2">
+                <VariableProximity 
+                  label={text3} 
+                  containerRef={containerRef} 
+                  radius={110} 
+                  falloff="linear" 
+                  fromFontVariationSettings="'wght' 400, 'opsz' 9" 
+                  toFontVariationSettings="'wght' 1000, 'opsz' 40"
+                  className="font-alex"
+                />
               </span>
             </h2>
             <p className="text-xs sm:text-sm lg:text-base text-white/60 max-w-xl font-inter leading-relaxed mb-3 sm:mb-4">
