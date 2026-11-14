@@ -157,11 +157,11 @@ export const SystemDock: React.FC<DockProps> = ({
           {isMobile && activeTab === 'profile' && (
             <motion.div
               key="mobile-dock-cv"
-              initial={{ y: 65, opacity: 0, scale: 0.92 }}
+              initial={{ y: 75, opacity: 0, scale: 0.92 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: 65, opacity: 0, scale: 0.92 }}
+              exit={{ y: 75, opacity: 0, scale: 0.92 }}
               transition={{ duration: 0.35, ease: [0.32, 0, 0.67, 0] }}
-              className="absolute left-[calc(100%+8px)] bottom-0.5 sm:bottom-1 pointer-events-auto shrink-0"
+              className="fixed right-3 sm:right-6 bottom-3 sm:bottom-6 pointer-events-auto shrink-0 z-[201]"
             >
               <button
                 onClick={(e) => onViewCV?.(e.currentTarget.getBoundingClientRect())}

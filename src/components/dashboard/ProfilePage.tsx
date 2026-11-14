@@ -101,6 +101,35 @@ export const ProfilePage = ({
   const [isAvatarLoaded, setIsAvatarLoaded] = React.useState(false);
   const [direction, setDirection] = React.useState<Direction>('center');
 
+  const fullSubtitle = "Exploring real-time systems, backend architectures, and unconventional ideas.";
+  const [typedSubtitle, setTypedSubtitle] = React.useState('');
+  const [isTyping, setIsTyping] = React.useState(true);
+
+  React.useEffect(() => {
+    let index = 0;
+    setTypedSubtitle('');
+    setIsTyping(true);
+    const startDelay = 450;
+    let timer: any;
+
+    const timeout = setTimeout(() => {
+      timer = setInterval(() => {
+        index++;
+        if (index <= fullSubtitle.length) {
+          setTypedSubtitle(fullSubtitle.slice(0, index));
+        } else {
+          setIsTyping(false);
+          clearInterval(timer);
+        }
+      }, 35);
+    }, startDelay);
+
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(timer);
+    };
+  }, []);
+
   const avatarFigureRef = React.useRef<HTMLDivElement>(null);
 
   const handleViewCV = (e?: React.MouseEvent<HTMLElement>) => {
@@ -339,7 +368,7 @@ export const ProfilePage = ({
         >
           <div className="flex flex-col lg:flex-row justify-between gap-3.5 sm:gap-6 lg:gap-8 items-start w-full px-0 pt-1 sm:pt-4 lg:pt-3">
             <div className="flex flex-col gap-2 sm:gap-3 lg:gap-3.5 w-full lg:max-w-md xl:max-w-lg text-left pointer-events-auto">
-              <h2 className="text-[clamp(1.75rem,6.8vw,2.5rem)] sm:text-4xl lg:text-[clamp(2.1rem,2.7vw,3.15rem)] xl:text-5xl font-bold font-satoshi text-white leading-[1.16] tracking-tight w-full">
+              <h2 className="text-[clamp(2.15rem,8.4vw,3.3rem)] sm:text-5xl lg:text-[clamp(2.4rem,3vw,3.5rem)] xl:text-5xl font-bold font-satoshi text-white leading-[1.12] tracking-tight w-full">
                 CS Undergrad & Systems Builder Based in <span className="text-red-500">India.</span>
               </h2>
             </div>
@@ -445,9 +474,12 @@ export const ProfilePage = ({
               </div>
             </motion.div>
 
-            {/* CALLIGRAPHY SUBTITLE BELOW NAME ON MOBILE */}
-            <p className="block lg:hidden text-center text-lg sm:text-xl text-white/90 font-calligraphy tracking-wide px-4 py-1 leading-snug pointer-events-auto">
-              Exploring real-time systems, backend architectures, and unconventional ideas.
+            {/* CALLIGRAPHY SUBTITLE WITH TYPEWRITER EFFECT BELOW NAME ON MOBILE */}
+            <p className="block lg:hidden text-center text-[1.32rem] sm:text-2xl text-white/95 font-calligraphy tracking-wider px-4 py-1 leading-snug pointer-events-auto min-h-[3.2rem]">
+              <span>{typedSubtitle}</span>
+              {isTyping && (
+                <span className="inline-block w-[2px] h-[1.1em] ml-1 bg-red-500 animate-pulse align-middle" />
+              )}
             </p>
           </div>
         </motion.div>
