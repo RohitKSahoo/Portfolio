@@ -101,35 +101,6 @@ export const ProfilePage = ({
   const [isAvatarLoaded, setIsAvatarLoaded] = React.useState(false);
   const [direction, setDirection] = React.useState<Direction>('center');
 
-  const fullSubtitle = "Exploring real-time systems, backend architectures, and unconventional ideas.";
-  const [typedSubtitle, setTypedSubtitle] = React.useState('');
-  const [isTyping, setIsTyping] = React.useState(true);
-
-  React.useEffect(() => {
-    let index = 0;
-    setTypedSubtitle('');
-    setIsTyping(true);
-    const startDelay = 450;
-    let timer: any;
-
-    const timeout = setTimeout(() => {
-      timer = setInterval(() => {
-        index++;
-        if (index <= fullSubtitle.length) {
-          setTypedSubtitle(fullSubtitle.slice(0, index));
-        } else {
-          setIsTyping(false);
-          clearInterval(timer);
-        }
-      }, 35);
-    }, startDelay);
-
-    return () => {
-      clearTimeout(timeout);
-      clearInterval(timer);
-    };
-  }, []);
-
   const avatarFigureRef = React.useRef<HTMLDivElement>(null);
 
   const handleViewCV = (e?: React.MouseEvent<HTMLElement>) => {
@@ -368,13 +339,16 @@ export const ProfilePage = ({
         >
           <div className="flex flex-col lg:flex-row justify-between gap-3.5 sm:gap-6 lg:gap-8 items-start w-full px-0 pt-1 sm:pt-4 lg:pt-3">
             <div className="flex flex-col gap-2 sm:gap-3 lg:gap-3.5 w-full lg:max-w-md xl:max-w-lg text-left pointer-events-auto">
+              <span className="font-amatic text-3xl sm:text-4xl lg:text-5xl text-red-500 font-bold tracking-widest block leading-none">
+                Hi, I'm Rohit Kumar Sahoo
+              </span>
               <h2 className="text-[clamp(2.5rem,9.6vw,4rem)] sm:text-6xl lg:text-[clamp(2.8rem,3.4vw,4.2rem)] xl:text-6xl font-extrabold font-satoshi text-white leading-[1.08] tracking-tight w-full">
                 CS Undergrad & Systems Builder Based in <span className="text-red-500">India.</span>
               </h2>
             </div>
 
             <div className="flex flex-col gap-3 sm:gap-6 lg:gap-6 w-full lg:w-auto lg:text-right lg:items-end pointer-events-auto">
-              <p className="hidden lg:block text-xs sm:text-sm lg:text-base text-white/70 font-medium leading-relaxed w-full max-w-none lg:max-w-xs xl:max-w-sm font-inter">
+              <p className="text-xs sm:text-sm lg:text-base text-white/70 font-medium leading-relaxed w-full max-w-none lg:max-w-xs xl:max-w-sm font-inter">
                 Exploring real-time systems, backend architectures, and unconventional ideas.
               </p>
               
@@ -442,7 +416,7 @@ export const ProfilePage = ({
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
               className="w-full pointer-events-auto"
             >
-              <div className="w-full h-[64px] sm:h-[90px] lg:h-[160px] flex items-center justify-center">
+              <div className="w-full h-[80px] sm:h-[96px] lg:h-[160px] flex items-center justify-center">
                 <TechText
                   key={isMobile ? "mobile" : "desktop"}
                   text={isMobile ? "ROHIT K. SAHOO" : "ROHIT KUMAR SAHOO"}
@@ -453,18 +427,18 @@ export const ProfilePage = ({
                   color="#ffffff"
                   accentColor="#ef4444"
                   reveal="letter"
-                  dashLength={isMobile ? 0 : 4}
-                  dashGap={isMobile ? 0 : 2}
-                  lineStyle={isMobile ? 'solid' : 'dashed'}
-                  specks={isMobile ? 0 : 15}
+                  dashLength={4}
+                  dashGap={2}
+                  lineStyle="dashed"
+                  specks={isMobile ? 12 : 15}
                   intro="scramble"
-                  introDuration={isMobile ? 1.6 : 2.2}
-                  clickKick={!isMobile}
+                  introDuration={isMobile ? 1.8 : 2.2}
+                  clickKick={true}
                   draggable={!isMobile}
                   selection={!isMobile}
-                  labels={!isMobile}
+                  labels={true}
                   guides={false}
-                  sweep={!isMobile}
+                  sweep={true}
                   speed={1}
                   endDot={true}
                   dotColor="#ef4444"
@@ -473,14 +447,6 @@ export const ProfilePage = ({
                 />
               </div>
             </motion.div>
-
-            {/* SUBTITLE WITH TYPEWRITER EFFECT BELOW NAME ON MOBILE */}
-            <p className="block lg:hidden text-center text-xs sm:text-sm text-white/70 font-inter font-medium leading-relaxed px-4 py-1 pointer-events-auto min-h-[2.4rem]">
-              <span>{typedSubtitle}</span>
-              {isTyping && (
-                <span className="inline-block w-[1.5px] h-[1em] ml-1 bg-red-500 animate-pulse align-middle" />
-              )}
-            </p>
           </div>
         </motion.div>
       </div>
