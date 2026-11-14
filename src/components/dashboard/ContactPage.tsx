@@ -35,26 +35,28 @@ const SOCIALS = [
   },
 ];
 
-const SocialPill = ({ item }: { item: (typeof SOCIALS)[number] }) => {
+const StrapItem = ({ item }: { item: (typeof SOCIALS)[number] }) => {
   const Icon = item.icon;
   return (
     <a
       href={item.href}
       {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-      className="group flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-white/[0.04] hover:bg-red-500/[0.08] border border-white/10 hover:border-red-500/50 shadow-[0_2px_10px_rgba(0,0,0,0.4)] active:scale-95 transition-all shrink-0 cursor-pointer text-left"
+      className="group flex items-center gap-3.5 px-6 py-3 w-[260px] sm:w-[300px] shrink-0 border-r border-white/10 hover:border-red-500/40 hover:bg-red-500/[0.08] active:bg-red-500/[0.12] transition-colors cursor-pointer text-left select-none relative"
     >
-      <div className="p-1.5 bg-red-500/10 text-red-500 rounded-lg group-hover:bg-red-500/20 group-hover:scale-105 transition-all shrink-0">
+      <div className="p-2 bg-red-500/10 text-red-500 rounded-lg group-hover:bg-red-500/20 group-hover:scale-105 transition-all shrink-0">
         <Icon size={16} />
       </div>
-      <div className="flex flex-col min-w-0 pr-1">
-        <span className="text-xs font-bold font-satoshi text-white group-hover:text-red-400 transition-colors leading-tight">
+      <div className="flex flex-col min-w-0 flex-1 pr-2">
+        <span className="text-xs font-bold font-satoshi text-white group-hover:text-red-400 transition-colors leading-tight truncate">
           {item.name}
         </span>
-        <span className="text-[11px] text-white/50 font-inter group-hover:text-white/70 transition-colors leading-tight truncate max-w-[130px]">
+        <span className="text-[11px] text-white/50 font-inter group-hover:text-white/70 transition-colors leading-tight truncate mt-0.5">
           {item.handle}
         </span>
       </div>
-      <ArrowRight size={12} className="text-white/40 group-hover:text-red-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
+      <ArrowRight size={13} className="text-white/30 group-hover:text-red-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-auto" />
+      {/* Small division indicator line at the right edge */}
+      <div className="absolute right-0 top-2.5 bottom-2.5 w-[1px] bg-white/10 group-hover:bg-red-500/30 transition-colors" />
     </a>
   );
 };
@@ -192,14 +194,14 @@ export const ContactPage = () => {
         <div className="lg:col-span-7 flex flex-col justify-between py-0">
           <div className="relative">
 
-            <h2 ref={containerRef} className="text-4xl sm:text-6xl lg:text-[clamp(3.2rem,5.2vw,5.5rem)] font-extrabold font-satoshi tracking-tight leading-none mb-3 text-white mt-1 break-words">
+            <h2 ref={containerRef} className="text-[clamp(2.85rem,11.8vw,5.5rem)] sm:text-7xl lg:text-[clamp(3.4rem,5.2vw,5.5rem)] font-extrabold font-satoshi tracking-tight leading-[0.95] mb-4 text-white mt-1 break-words">
               <VariableProximity label={text1} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
               <VariableProximity label={text2} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
               <span className="text-red-500">
                 <VariableProximity label={text3} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
               </span>
             </h2>
-            <p className="text-base text-white/60 max-w-xl font-inter leading-relaxed mb-[28px]">
+            <p className="text-sm sm:text-base text-white/60 max-w-xl font-inter leading-relaxed mb-6">
               I'm always open to collaborations, exciting projects, and impactful ideas.
             </p>
 
@@ -212,28 +214,12 @@ export const ContactPage = () => {
               
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="group relative block focus:outline-none cursor-pointer rounded-full overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                className="group relative flex items-center justify-between gap-4 px-6 py-2.5 rounded-full border border-red-500/40 hover:border-red-500/80 bg-transparent hover:bg-red-500/[0.08] text-white font-bold font-satoshi text-base transition-all duration-300 shadow-[0_0_16px_rgba(239,68,68,0.2)] hover:shadow-[0_0_26px_rgba(239,68,68,0.4)] cursor-pointer active:scale-95"
               >
-                <GlassSurface
-                  width="auto"
-                  height={50}
-                  borderRadius={25}
-                  distortionScale={-90}
-                  displace={0.3}
-                  backgroundOpacity={0.14}
-                  saturation={1.2}
-                  redOffset={18}
-                  greenOffset={5}
-                  blueOffset={10}
-                  className="border border-red-500/40 group-hover:border-red-500/80 shadow-[0_0_20px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_28px_rgba(239,68,68,0.45)] transition-all"
-                >
-                  <div className="flex items-center justify-between gap-4 px-6 py-1.5 text-white font-bold font-satoshi text-base">
-                    <span className="group-hover:text-red-400 transition-colors">Send a Message</span>
-                    <div className="w-7 h-7 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
-                      <ArrowRight size={14} className="text-white/50 group-hover:text-red-500 transition-all" />
-                    </div>
-                  </div>
-                </GlassSurface>
+                <span className="group-hover:text-red-400 transition-colors">Send a Message</span>
+                <div className="w-7 h-7 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
+                  <ArrowRight size={14} className="text-white/50 group-hover:text-red-500 transition-all" />
+                </div>
               </button>
             </div>
           </div>
@@ -294,45 +280,45 @@ export const ContactPage = () => {
             })}
           </div>
 
-          {/* Mobile View: 3-row Infinite Alternating Carousel */}
-          <div className="block lg:hidden w-full relative py-1 overflow-hidden">
+          {/* Mobile View: 3-row Infinite Continuous Strap Ticker - Edge to Edge */}
+          <div className="block lg:hidden w-screen relative left-1/2 -translate-x-1/2 py-2 overflow-hidden">
             {/* Left & Right gradient edge fade masks */}
-            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#0f0f0f] to-transparent z-10" />
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#0f0f0f] to-transparent z-10" />
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-[#0f0f0f] to-transparent z-10" />
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-[#0f0f0f] to-transparent z-10" />
 
             <div className="flex flex-col gap-2.5 py-1">
               {/* Row 1: Left */}
-              <div className="overflow-hidden w-full flex">
-                <div className="flex gap-2.5 w-max animate-marquee-left marquee-pause">
+              <div className="overflow-hidden w-full flex border-y border-white/10 bg-white/[0.025]">
+                <div className="flex w-max animate-marquee-left marquee-pause">
                   {[
                     SOCIALS[1], SOCIALS[2], SOCIALS[0], SOCIALS[3],
                     SOCIALS[1], SOCIALS[2], SOCIALS[0], SOCIALS[3],
                   ].map((item, idx) => (
-                    <SocialPill key={`r1-${idx}`} item={item} />
+                    <StrapItem key={`r1-${idx}`} item={item} />
                   ))}
                 </div>
               </div>
 
               {/* Row 2: Right */}
-              <div className="overflow-hidden w-full flex">
-                <div className="flex gap-2.5 w-max animate-marquee-right marquee-pause">
+              <div className="overflow-hidden w-full flex border-y border-white/10 bg-white/[0.025]">
+                <div className="flex w-max animate-marquee-right marquee-pause">
                   {[
                     SOCIALS[3], SOCIALS[0], SOCIALS[2], SOCIALS[1],
                     SOCIALS[3], SOCIALS[0], SOCIALS[2], SOCIALS[1],
                   ].map((item, idx) => (
-                    <SocialPill key={`r2-${idx}`} item={item} />
+                    <StrapItem key={`r2-${idx}`} item={item} />
                   ))}
                 </div>
               </div>
 
               {/* Row 3: Left (faster) */}
-              <div className="overflow-hidden w-full flex">
-                <div className="flex gap-2.5 w-max animate-marquee-left-fast marquee-pause">
+              <div className="overflow-hidden w-full flex border-y border-white/10 bg-white/[0.025]">
+                <div className="flex w-max animate-marquee-left-fast marquee-pause">
                   {[
                     SOCIALS[2], SOCIALS[3], SOCIALS[1], SOCIALS[0],
                     SOCIALS[2], SOCIALS[3], SOCIALS[1], SOCIALS[0],
                   ].map((item, idx) => (
-                    <SocialPill key={`r3-${idx}`} item={item} />
+                    <StrapItem key={`r3-${idx}`} item={item} />
                   ))}
                 </div>
               </div>
