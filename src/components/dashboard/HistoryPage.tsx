@@ -179,7 +179,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       multiplyy: true,
       papercycle: !isSmall,
       cttc: !isSmall,
-      vssut: !isSmall,
+      vssut: false,
     };
   });
 
