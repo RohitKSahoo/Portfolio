@@ -339,9 +339,6 @@ export const ProfilePage = ({
         >
           <div className="flex flex-col lg:flex-row justify-between gap-3.5 sm:gap-6 lg:gap-8 items-start w-full px-0 pt-1 sm:pt-4 lg:pt-3">
             <div className="flex flex-col gap-2 sm:gap-3 lg:gap-3.5 w-full lg:max-w-md xl:max-w-lg text-left pointer-events-auto">
-              <span className="font-amatic text-3xl sm:text-4xl lg:text-5xl text-red-500 font-bold tracking-widest block leading-none">
-                Hi, I'm Rohit Kumar Sahoo
-              </span>
               <h2 className="text-[clamp(2.5rem,9.6vw,4rem)] sm:text-6xl lg:text-[clamp(2.8rem,3.4vw,4.2rem)] xl:text-6xl font-extrabold font-satoshi text-white leading-[1.08] tracking-tight w-full">
                 CS Undergrad & Systems Builder Based in <span className="text-red-500">India.</span>
               </h2>
@@ -405,8 +402,20 @@ export const ProfilePage = ({
             </div>
           </div>
 
-          {/* BOTTOM REGION: NAME OVER FOG + FULL-WIDTH MOBILE CV CTA */}
-          <div className="mt-auto w-full flex flex-col items-center gap-2 sm:gap-3 pb-2 pt-1 pointer-events-none">
+          {/* BOTTOM REGION: NAME OVER FOG */}
+          <div className="mt-auto w-full flex flex-col items-center gap-0 sm:gap-1 pb-2 pt-1 pointer-events-none">
+            {/* INTRODUCTORY HANDWRITTEN KICKER ABOVE NAME */}
+            <motion.span 
+              animate={{ 
+                y: isMobile ? 0 : (isDockVisible ? -25 : 65),
+                opacity: 1
+              }}
+              transition={{ type: "spring", stiffness: 200, damping: 30 }}
+              className="font-amatic text-2xl sm:text-3xl lg:text-4xl text-red-500 font-bold tracking-widest text-center pointer-events-auto select-none"
+            >
+              Hey there, I'm
+            </motion.span>
+
             {/* NAME BANNER */}
             <motion.div 
               animate={{ 
