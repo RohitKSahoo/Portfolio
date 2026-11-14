@@ -347,7 +347,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
           initial={{ opacity: 0, y: 70 }}
           animate={isExiting ? { opacity: 0, y: 40, transition: { duration: 0.2, ease: 'easeIn' } } : { opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 220, damping: 26, mass: 0.9, delay: 0.05 }}
-          className="lg:col-span-5 xl:col-span-6 flex flex-col gap-8 py-2 overflow-y-auto max-h-[calc(100vh-140px)] pr-3 custom-scrollbar pointer-events-auto pb-20"
+          className="lg:col-span-5 xl:col-span-6 flex flex-col gap-8 py-2 overflow-y-auto max-h-[calc(100vh-140px)] pr-3 no-scrollbar pointer-events-auto pb-20"
         >
 
           {/* Timeline Item 1: Multiplyy */}

@@ -119,6 +119,14 @@
 ::-webkit-scrollbar-thumb { background: var(--border-muted); }
 ::-webkit-scrollbar-thumb:hover { background: var(--border-active); }
 
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @keyframes shimmer {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
