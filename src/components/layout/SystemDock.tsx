@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Briefcase, Database, Mail, FileText } from 'lucide-react';
 import { LiquidNavbar, LiquidNavItem } from '../effects/LiquidNavbar';
@@ -26,6 +26,21 @@ export const SystemDock: React.FC<DockProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const dockRef = useRef<HTMLDivElement>(null);
+  const [dockHeight, setDockHeight] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!dockRef.current) return;
+    const updateHeight = () => {
+      if (dockRef.current) {
+        setDockHeight(dockRef.current.offsetHeight);
+      }
+    };
+    updateHeight();
+    const ro = new ResizeObserver(updateHeight);
+    ro.observe(dockRef.current);
+    return () => ro.disconnect();
+  }, [isMobile]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
@@ -112,15 +127,21 @@ export const SystemDock: React.FC<DockProps> = ({
         setIsDockVisible(false);
       }}
     >
-      <div className="relative flex items-center justify-center pointer-events-none">
+      <motion.div 
+        layout="position"
+        transition={{ type: 'spring', stiffness: 280, damping: 28 }}
+        className="relative flex items-center justify-center gap-2 pointer-events-none"
+      >
         <motion.div
+          layout="position"
+          ref={dockRef}
           initial={{ y: 90, opacity: 0 }}
           animate={{
             y: isDockVisible || isHovered || isMobile ? 0 : 70,
             opacity: 1,
           }}
           transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-          className="pointer-events-auto"
+          className="pointer-events-auto shrink-0"
         >
           {USE_GOOEY_NAV ? (
             <GooeyNav
@@ -153,29 +174,31 @@ export const SystemDock: React.FC<DockProps> = ({
         </motion.div>
 
         {/* Mobile Explore CV CTA matching dock aesthetic and positioned right next to it */}
-        <AnimatePresence>
+        <AnimatePresence mode="popLayout">
           {isMobile && activeTab === 'profile' && (
             <motion.div
               key="mobile-dock-cv"
-              initial={{ y: 65, opacity: 0, scale: 0.9 }}
+              layout="position"
+              initial={{ y: 45, opacity: 0, scale: 0.85 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: 65, opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.35, ease: [0.32, 0, 0.67, 0] }}
-              className="absolute left-[calc(100%+8px)] bottom-0 pointer-events-auto shrink-0"
+              exit={{ y: 45, opacity: 0, scale: 0.85 }}
+              transition={{ type: 'spring', stiffness: 280, damping: 28 }}
+              className="pointer-events-auto shrink-0"
             >
               <button
                 onClick={(e) => onViewCV?.(e.currentTarget.getBoundingClientRect())}
-                className="group flex items-center justify-center gap-1.5 h-[50px] px-4 rounded-full border border-white/[0.08] bg-[rgba(38,35,46,0.66)] backdrop-blur-[20px] backdrop-saturate-[1.6] shadow-[0_22px_44px_-20px_rgba(0,0,0,0.8),0_6px_16px_-8px_rgba(0,0,0,0.5)] active:scale-95 hover:border-red-500/40 transition-all cursor-pointer text-white/90 hover:text-white"
+                style={dockHeight ? { height: `${dockHeight}px` } : undefined}
+                className="group flex items-center justify-center gap-1.5 h-[50px] px-3.5 rounded-full border border-white/[0.08] bg-[rgba(38,35,46,0.66)] backdrop-blur-[20px] backdrop-saturate-[1.6] shadow-[0_22px_44px_-20px_rgba(0,0,0,0.8),0_6px_16px_-8px_rgba(0,0,0,0.5)] active:scale-95 hover:border-red-500/40 transition-all cursor-pointer text-white/90 hover:text-white"
                 title="Explore CV"
                 aria-label="Explore CV"
               >
-                <FileText size={18} strokeWidth={2.0} className="text-white/70 group-hover:text-red-500 transition-colors shrink-0" />
+                <FileText size={17} strokeWidth={2.0} className="text-white/70 group-hover:text-red-500 transition-colors shrink-0" />
                 <span className="text-xs font-semibold font-satoshi uppercase tracking-wider">CV</span>
               </button>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </motion.div>
     </div>
   );
 };

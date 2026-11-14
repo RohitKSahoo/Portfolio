@@ -70,11 +70,11 @@ function App() {
     setIsCVModalOpen(true);
   };
 
-  // Background pre-warm 3D Lanyard & History WebGL context 600ms after load
+  // Background pre-warm 3D Lanyard & History WebGL context well after home page settles
   useEffect(() => {
     const timer = setTimeout(() => {
       setShouldPreloadHistory(true);
-    }, 600);
+    }, 3500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -196,7 +196,15 @@ function App() {
         />
 
         {/* ACTIVE MODULE VIEWPORT */}
-        <div ref={scrollContainerRef} className="px-4 sm:px-6 lg:px-8 pt-[78px] sm:pt-[92px] lg:pt-[112px] pb-20 lg:pb-24 pointer-events-none" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div 
+          ref={scrollContainerRef} 
+          className={`px-4 sm:px-6 lg:px-8 pt-[74px] sm:pt-[92px] lg:pt-[112px] ${
+            activeTab === 'profile' 
+              ? 'pb-14 sm:pb-20 lg:pb-24 h-[100dvh] sm:h-auto overflow-hidden' 
+              : 'pb-20 lg:pb-24'
+          } pointer-events-none`} 
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           <div className="max-w-[1600px] w-full mx-auto pointer-events-none">
              {renderContent()}
           </div>

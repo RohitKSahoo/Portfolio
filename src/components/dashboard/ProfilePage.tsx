@@ -219,8 +219,8 @@ export const ProfilePage = ({
   const activeAvatarSrc = `/avatar-frames/dir_${isMobile ? 'center' : direction}.png?v=5`;
 
   return (
-    <div className="flex flex-col gap-10 animate-in fade-in duration-500 font-inter">
-      <div className="relative min-h-[calc(100dvh-170px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
+    <div className="flex flex-col animate-in fade-in duration-500 font-inter w-full h-[calc(100dvh-150px)] sm:h-auto sm:min-h-[calc(100vh-180px)] overflow-hidden sm:overflow-visible">
+      <div className="relative w-full h-full border-none bg-transparent flex flex-col justify-between p-0 overflow-hidden sm:overflow-visible">
         {/* CENTER AVATAR FIGURE - ANCHORED FIRMLY IN CENTER ON MOBILE, BOTTOM ON DESKTOP */}
         {typeof document !== 'undefined' && createPortal(
           <div 
@@ -268,8 +268,8 @@ export const ProfilePage = ({
              >
                 <motion.div
                   animate={{ 
-                    y: isMobile ? 65 : 0,
-                    scale: isMobile ? 1.1 : 1
+                    y: isMobile ? 32 : 0,
+                    scale: isMobile ? 0.98 : 1
                   }}
                   transition={{ duration: 0.4 }}
                   className={
