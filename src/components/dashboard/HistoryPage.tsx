@@ -149,6 +149,21 @@ function getInitialTextures() {
   return { front: cachedFrontTexture, back: cachedBackTexture, strap: cachedStrapTexture };
 };
 
+// ============================================================
+// MOBILE LANYARD SIZING & TUNING CONFIGURATION
+// Edit these values to fine-tune the badge appearance on mobile:
+// ============================================================
+export const MOBILE_LANYARD_CONFIG = {
+  // Height of the mobile card container (Tailwind classes)
+  containerHeight: 'h-[270px] sm:h-[310px]',
+  // Scale factor of the 3D badge card (e.g. 0.62 = default, 0.78 = bigger, 0.90 = extra large)
+  size: 0.78,
+  // Length of the hanging strap (smaller value hangs higher up inside the box)
+  strapLength: 0.13,
+  // Horizontal center point (0.5 = center)
+  anchor: 0.5,
+};
+
 interface HistoryPageProps {
   isExiting?: boolean;
   onExitComplete?: () => void;
@@ -435,11 +450,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
 
           {/* Mobile Lanyard Top Container (Mobile only: lanyard inside top card above experiences) */}
           {isMobile && (
-            <div className="w-full h-[240px] sm:h-[280px] relative rounded-2xl overflow-hidden border border-white/10 bg-[#0d0e10]/80 shadow-[0_8px_32px_rgba(0,0,0,0.6)] shrink-0 mb-2 pointer-events-auto">
-              <div className="absolute top-2.5 left-3.5 z-10 flex items-center gap-2 pointer-events-none">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-[10px] font-mono uppercase tracking-widest text-white/40">INTERACTIVE BADGE</span>
-              </div>
+            <div className={`w-full ${MOBILE_LANYARD_CONFIG.containerHeight} relative rounded-2xl overflow-hidden border border-white/10 bg-[#0d0e10]/80 shadow-[0_8px_32px_rgba(0,0,0,0.6)] shrink-0 mb-3 pointer-events-auto`}>
               <Lanyard
                 frontImage={frontTexture || undefined}
                 backImage={backTexture || undefined}
@@ -451,13 +462,13 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
                 finish="metallic"
                 orientation="landscape"
                 cornerRadius={0.1}
-                size={0.62}
-                anchor={0.5}
-                strapLength={0.17}
+                size={MOBILE_LANYARD_CONFIG.size}
+                anchor={MOBILE_LANYARD_CONFIG.anchor}
+                strapLength={MOBILE_LANYARD_CONFIG.strapLength}
                 gravity={0.65}
                 damping={0.2}
                 elasticity={0.9}
-                breeze={0.92}
+                breeze={0.5}
                 interactive={!isExiting}
                 intro={true}
                 introDirection="top"
