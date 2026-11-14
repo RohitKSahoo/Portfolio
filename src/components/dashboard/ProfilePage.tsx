@@ -413,7 +413,7 @@ export const ProfilePage = ({
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
               className="font-amatic text-2xl sm:text-3xl lg:text-4xl text-red-500 font-bold tracking-widest text-center pointer-events-auto select-none"
             >
-              Hey there, I'm
+              Designing real-time architectures — I'm
             </motion.span>
 
             {/* NAME BANNER */}

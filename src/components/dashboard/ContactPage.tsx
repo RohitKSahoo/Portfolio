@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Github, Linkedin, Send, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
+import { Mail, Github, Linkedin, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
 import VariableProximity from '../effects/VariableProximity';
 import GlassSurface from '../effects/GlassSurface';
+import { SocialsAccordion } from './SocialsAccordion';
 
 const SOCIALS = [
   {
@@ -34,32 +35,6 @@ const SOCIALS = [
     external: true,
   },
 ];
-
-const StrapItem = ({ item }: { item: (typeof SOCIALS)[number] }) => {
-  const Icon = item.icon;
-  return (
-    <a
-      href={item.href}
-      {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-      className="group flex items-center gap-3.5 px-6 py-3 w-[260px] sm:w-[300px] shrink-0 border-r border-white/10 hover:border-red-500/40 hover:bg-red-500/[0.08] active:bg-red-500/[0.12] transition-colors cursor-pointer text-left select-none relative"
-    >
-      <div className="p-2 bg-red-500/10 text-red-500 rounded-lg group-hover:bg-red-500/20 group-hover:scale-105 transition-all shrink-0">
-        <Icon size={16} />
-      </div>
-      <div className="flex flex-col min-w-0 flex-1 pr-2">
-        <span className="text-xs font-bold font-satoshi text-white group-hover:text-red-400 transition-colors leading-tight truncate">
-          {item.name}
-        </span>
-        <span className="text-[11px] text-white/50 font-inter group-hover:text-white/70 transition-colors leading-tight truncate mt-0.5">
-          {item.handle}
-        </span>
-      </div>
-      <ArrowRight size={13} className="text-white/30 group-hover:text-red-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-auto" />
-      {/* Small division indicator line at the right edge */}
-      <div className="absolute right-0 top-2.5 bottom-2.5 w-[1px] bg-white/10 group-hover:bg-red-500/30 transition-colors" />
-    </a>
-  );
-};
 
 export const ContactPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -232,7 +207,7 @@ export const ContactPage = () => {
             <div className="w-12 h-0.5 bg-red-500 mt-1" />
           </div>
 
-          {/* Desktop View: Static Glass Cards */}
+          {/* Desktop View: Static Glass Cards (Original Design) */}
           <div className="hidden lg:flex flex-col gap-6">
             {SOCIALS.map((social) => {
               const Icon = social.icon;
@@ -280,49 +255,9 @@ export const ContactPage = () => {
             })}
           </div>
 
-          {/* Mobile View: 3-row Infinite Continuous Strap Ticker - Edge to Edge */}
-          <div className="block lg:hidden w-screen relative left-1/2 -translate-x-1/2 py-2 overflow-hidden">
-            {/* Left & Right gradient edge fade masks */}
-            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-[#0f0f0f] to-transparent z-10" />
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-[#0f0f0f] to-transparent z-10" />
-
-            <div className="flex flex-col gap-2.5 py-1">
-              {/* Row 1: Left */}
-              <div className="overflow-hidden w-full flex border-y border-white/10 bg-white/[0.025]">
-                <div className="flex w-max animate-marquee-left marquee-pause">
-                  {[
-                    SOCIALS[1], SOCIALS[2], SOCIALS[0], SOCIALS[3],
-                    SOCIALS[1], SOCIALS[2], SOCIALS[0], SOCIALS[3],
-                  ].map((item, idx) => (
-                    <StrapItem key={`r1-${idx}`} item={item} />
-                  ))}
-                </div>
-              </div>
-
-              {/* Row 2: Right */}
-              <div className="overflow-hidden w-full flex border-y border-white/10 bg-white/[0.025]">
-                <div className="flex w-max animate-marquee-right marquee-pause">
-                  {[
-                    SOCIALS[3], SOCIALS[0], SOCIALS[2], SOCIALS[1],
-                    SOCIALS[3], SOCIALS[0], SOCIALS[2], SOCIALS[1],
-                  ].map((item, idx) => (
-                    <StrapItem key={`r2-${idx}`} item={item} />
-                  ))}
-                </div>
-              </div>
-
-              {/* Row 3: Left (faster) */}
-              <div className="overflow-hidden w-full flex border-y border-white/10 bg-white/[0.025]">
-                <div className="flex w-max animate-marquee-left-fast marquee-pause">
-                  {[
-                    SOCIALS[2], SOCIALS[3], SOCIALS[1], SOCIALS[0],
-                    SOCIALS[2], SOCIALS[3], SOCIALS[1], SOCIALS[0],
-                  ].map((item, idx) => (
-                    <StrapItem key={`r3-${idx}`} item={item} />
-                  ))}
-                </div>
-              </div>
-            </div>
+          {/* Mobile View: Accordion OS Socials Deck */}
+          <div className="block lg:hidden w-full pb-4">
+            <SocialsAccordion defaultOpen={0} autoplay={false} />
           </div>
         </div>
       </div>
