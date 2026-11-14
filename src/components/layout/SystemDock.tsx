@@ -2,6 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { User, Briefcase, Database, Mail } from 'lucide-react';
 import { LiquidNavbar, LiquidNavItem } from '../effects/LiquidNavbar';
+import GooeyNav from '../effects/GooeyNav';
+
+// Set to true to use React Bits GooeyNav, false to use LiquidNavbar
+const USE_GOOEY_NAV = true;
 
 interface DockProps {
   activeTab: string;
@@ -83,6 +87,13 @@ export const SystemDock: React.FC<DockProps> = ({
     }
   ], []);
 
+  const gooeyNavItems = useMemo(() => [
+    { label: 'HOME', icon: <User size={18} strokeWidth={2.0} /> },
+    { label: 'PROJECTS', icon: <Database size={18} strokeWidth={2.0} /> },
+    { label: 'EXPERIENCE', icon: <Briefcase size={18} strokeWidth={2.0} /> },
+    { label: 'CONTACT', icon: <Mail size={18} strokeWidth={2.0} /> },
+  ], []);
+
   const handleNavChange = (index: number) => {
     const target = TAB_ORDER[index];
     if (target && target !== activeTab) {
@@ -108,14 +119,34 @@ export const SystemDock: React.FC<DockProps> = ({
         transition={{ type: 'spring', stiffness: 280, damping: 28 }}
         className="pointer-events-auto"
       >
-        <LiquidNavbar
-          items={navItems}
-          active={activeIndex}
-          onChange={handleNavChange}
-          tone="dark"
-          compact={isMobile}
-          sound={false}
-        />
+        {USE_GOOEY_NAV ? (
+          <GooeyNav
+            items={gooeyNavItems}
+            activeIndex={activeIndex}
+            onChange={(index) => handleNavChange(index)}
+            theme="dark"
+            color="#ef4444"
+            colors={["#ef4444", "#f87171", "#dc2626"]}
+            size={isMobile ? "sm" : "lg"}
+            frame={true}
+            particleCount={15}
+            spread={56}
+            animationTime={600}
+            timeVariance={300}
+            gooeyness={0.5}
+            wobble={0.5}
+            hoverEffect={true}
+          />
+        ) : (
+          <LiquidNavbar
+            items={navItems}
+            active={activeIndex}
+            onChange={handleNavChange}
+            tone="dark"
+            compact={isMobile}
+            sound={false}
+          />
+        )}
       </motion.div>
     </div>
   );
