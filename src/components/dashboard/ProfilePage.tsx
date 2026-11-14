@@ -226,13 +226,13 @@ export const ProfilePage = ({
       const timer = setTimeout(() => {
         window.dispatchEvent(
           new CustomEvent('liquid-ether-surge', {
-            detail: { origin: 'top-left', intensity: 5 }
+            detail: { origin: 'top-left', intensity: isMobile ? 1.2 : 1.6 }
           })
         );
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [isAvatarLoaded]);
+  }, [isAvatarLoaded, isMobile]);
 
   React.useEffect(() => {
     if (isExiting) {
@@ -368,7 +368,7 @@ export const ProfilePage = ({
         >
           <div className="flex flex-col lg:flex-row justify-between gap-3.5 sm:gap-6 lg:gap-8 items-start w-full px-0 pt-1 sm:pt-4 lg:pt-3">
             <div className="flex flex-col gap-2 sm:gap-3 lg:gap-3.5 w-full lg:max-w-md xl:max-w-lg text-left pointer-events-auto">
-              <h2 className="text-[clamp(2.15rem,8.4vw,3.3rem)] sm:text-5xl lg:text-[clamp(2.4rem,3vw,3.5rem)] xl:text-5xl font-bold font-satoshi text-white leading-[1.12] tracking-tight w-full">
+              <h2 className="text-[clamp(2.5rem,9.6vw,4rem)] sm:text-6xl lg:text-[clamp(2.8rem,3.4vw,4.2rem)] xl:text-6xl font-extrabold font-satoshi text-white leading-[1.08] tracking-tight w-full">
                 CS Undergrad & Systems Builder Based in <span className="text-red-500">India.</span>
               </h2>
             </div>

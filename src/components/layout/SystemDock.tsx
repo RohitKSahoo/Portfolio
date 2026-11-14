@@ -152,25 +152,25 @@ export const SystemDock: React.FC<DockProps> = ({
           )}
         </motion.div>
 
-        {/* Mobile Explore CV CTA on right side of dock */}
+        {/* Mobile Explore CV CTA matching dock aesthetic and positioned right next to it */}
         <AnimatePresence>
           {isMobile && activeTab === 'profile' && (
             <motion.div
               key="mobile-dock-cv"
-              initial={{ y: 75, opacity: 0, scale: 0.92 }}
+              initial={{ y: 65, opacity: 0, scale: 0.9 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: 75, opacity: 0, scale: 0.92 }}
+              exit={{ y: 65, opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.35, ease: [0.32, 0, 0.67, 0] }}
-              className="fixed right-3 sm:right-6 bottom-3 sm:bottom-6 pointer-events-auto shrink-0 z-[201]"
+              className="absolute left-[calc(100%+8px)] bottom-0 pointer-events-auto shrink-0"
             >
               <button
                 onClick={(e) => onViewCV?.(e.currentTarget.getBoundingClientRect())}
-                className="flex items-center gap-1.5 h-[44px] px-3.5 rounded-full bg-[#16161a] border border-white/20 hover:border-red-500/60 active:border-red-500 text-white shadow-[0_4px_16px_rgba(0,0,0,0.6)] active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+                className="group flex items-center justify-center gap-1.5 h-[50px] px-4 rounded-full border border-white/[0.08] bg-[rgba(38,35,46,0.66)] backdrop-blur-[20px] backdrop-saturate-[1.6] shadow-[0_22px_44px_-20px_rgba(0,0,0,0.8),0_6px_16px_-8px_rgba(0,0,0,0.5)] active:scale-95 hover:border-red-500/40 transition-all cursor-pointer text-white/90 hover:text-white"
                 title="Explore CV"
                 aria-label="Explore CV"
               >
-                <FileText size={15} className="text-red-500 shrink-0" />
-                <span className="text-xs font-bold font-satoshi uppercase tracking-wider">CV</span>
+                <FileText size={18} strokeWidth={2.0} className="text-white/70 group-hover:text-red-500 transition-colors shrink-0" />
+                <span className="text-xs font-semibold font-satoshi uppercase tracking-wider">CV</span>
               </button>
             </motion.div>
           )}
