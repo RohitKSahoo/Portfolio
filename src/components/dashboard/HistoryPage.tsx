@@ -199,6 +199,15 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
 
   const [githubStats, setGithubStats] = useState(DEFAULT_GITHUB_STATS);
   const [assetsReady, setAssetsReady] = useState(false);
+  const [dropCount, setDropCount] = useState(0);
+  const wasActiveRef = useRef(false);
+
+  useEffect(() => {
+    if (isActive && !wasActiveRef.current) {
+      setDropCount(c => c + 1);
+    }
+    wasActiveRef.current = isActive;
+  }, [isActive]);
 
   const initial = getInitialTextures();
   const [frontTexture, setFrontTexture] = useState<HTMLCanvasElement | null>(initial.front);
@@ -426,8 +435,9 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
             elasticity={0.9}
             breeze={0.92}
             interactive={isActive && !isExiting}
-            intro={true}
+            intro={isActive}
             introDirection="top"
+            triggerDrop={dropCount}
             githubUrl="https://github.com/RohitKSahoo"
             companies={DEFAULT_COMPANIES}
             isExiting={isExiting}
@@ -472,8 +482,9 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
                 elasticity={0.9}
                 breeze={0.5}
                 interactive={isActive && !isExiting}
-                intro={true}
+                intro={isActive}
                 introDirection="top"
+                triggerDrop={dropCount}
                 githubUrl="https://github.com/RohitKSahoo"
                 companies={DEFAULT_COMPANIES}
                 isExiting={isExiting}
