@@ -24,31 +24,31 @@ const LIQUID_COLORS = ['#5227FF', '#FF9FFC', '#B497CF'];
 const TAB_ORDER = ['profile', 'projects', 'experience', 'contact'];
 
 const pageVariants = {
-  enter: (direction: number) => ({
-    y: direction >= 0 ? 55 : -55,
+  enter: {
+    y: 65,
     opacity: 0,
-    scale: 0.97,
-  }),
+    scale: 0.98,
+  },
   center: {
     y: 0,
     opacity: 1,
     scale: 1,
     transition: {
       y: { type: 'spring', stiffness: 280, damping: 28, mass: 0.85 },
-      opacity: { duration: 0.22, ease: 'easeOut' },
-      scale: { duration: 0.22, ease: 'easeOut' },
+      opacity: { duration: 0.24, ease: 'easeOut' },
+      scale: { duration: 0.24, ease: 'easeOut' },
     },
   },
-  exit: (direction: number) => ({
-    y: direction >= 0 ? 45 : -45,
+  exit: {
+    y: 65,
     opacity: 0,
-    scale: 0.95,
+    scale: 0.98,
     transition: {
-      y: { duration: 0.18, ease: [0.32, 0, 0.67, 0] },
-      opacity: { duration: 0.15, ease: 'linear' },
-      scale: { duration: 0.18, ease: 'easeIn' },
+      y: { duration: 0.22, ease: [0.32, 0, 0.67, 0] },
+      opacity: { duration: 0.18, ease: 'linear' },
+      scale: { duration: 0.22, ease: 'easeIn' },
     },
-  }),
+  },
 };
 
 function App() {

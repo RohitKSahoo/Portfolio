@@ -233,27 +233,35 @@ export const ProfilePage = ({
           >
              <motion.div 
                ref={avatarFigureRef}
-               initial={
-                 isMobile
-                   ? { opacity: 0, scale: 0.92, y: 12 }
-                   : { opacity: 0, y: '85%' }
-               }
+               initial={{
+                 opacity: 0,
+                 y: isMobile ? 130 : '85%',
+                 scale: isMobile ? 0.92 : 1
+               }}
                animate={
-                 isExiting 
-                   ? { opacity: 0, ...(isMobile ? { scale: 0.94 } : { y: '85%' }) } 
-                   : isAvatarLoaded 
+                 isAvatarLoaded 
                    ? { 
                        opacity: 1, 
                        scale: 1,
                        y: 0,
                      } 
-                   : { opacity: 0, ...(isMobile ? { scale: 0.92, y: 12 } : { y: '85%' }) }
+                   : { 
+                       opacity: 0, 
+                       scale: isMobile ? 0.92 : 1, 
+                       y: isMobile ? 130 : '85%' 
+                     }
                }
-               transition={
-                 isExiting
-                   ? { duration: 0.5, ease: [0.16, 1, 0.3, 1] }
-                   : { duration: 1.15, ease: [0.16, 1, 0.3, 1], delay: 0.08 }
-               }
+               exit={{
+                 opacity: 0,
+                 y: isMobile ? 130 : '85%',
+                 scale: isMobile ? 0.94 : 1,
+                 transition: { duration: 0.35, ease: [0.32, 0, 0.67, 0] }
+               }}
+               transition={{
+                 duration: 1.1,
+                 ease: [0.16, 1, 0.3, 1],
+                 delay: 0.08
+               }}
                onAnimationComplete={() => {
                  if (isExiting) {
                    onExitComplete?.();
@@ -334,7 +342,9 @@ export const ProfilePage = ({
         )}
 
         <motion.div 
-          animate={{ opacity: isExiting ? 0 : 1, y: isExiting ? 20 : 0 }}
+          initial={{ opacity: 0, y: 45 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 55, transition: { duration: 0.22, ease: [0.32, 0, 0.67, 0] } }}
           transition={{ duration: 0.45, ease: "easeOut" }}
           className="relative z-10 flex flex-col min-h-[inherit] justify-between p-0 pointer-events-none"
         >
@@ -407,10 +417,12 @@ export const ProfilePage = ({
           <div className="mt-auto w-full flex flex-col items-center gap-0 pb-0 pt-0 sm:gap-1 sm:pb-2 pointer-events-none">
             {/* INTRODUCTORY HANDWRITTEN KICKER ABOVE NAME */}
             <motion.span 
+              initial={{ opacity: 0, y: 25 }}
               animate={{ 
                 y: isMobile ? 0 : (isDockVisible ? -25 : 65),
                 opacity: 1
               }}
+              exit={{ opacity: 0, y: 35, transition: { duration: 0.18 } }}
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
               className="font-amatic text-xl sm:text-2xl lg:text-3xl text-red-500 font-bold tracking-widest text-center pointer-events-auto select-none"
             >
@@ -419,10 +431,12 @@ export const ProfilePage = ({
 
             {/* NAME BANNER */}
             <motion.div 
+              initial={{ opacity: 0, y: 30 }}
               animate={{ 
                 y: isMobile ? 0 : (isDockVisible ? -25 : 65),
                 opacity: 1
               }}
+              exit={{ opacity: 0, y: 45, transition: { duration: 0.2 } }}
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
               className="w-full pointer-events-auto"
             >
