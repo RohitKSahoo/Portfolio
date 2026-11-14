@@ -5,17 +5,18 @@ import './Lanyard.css';
 const globalImageCache = new Map<string, Promise<HTMLImageElement | null>>();
 
 export interface LanyardProps {
-  frontImage?: string;
-  backImage?: string;
+  frontImage?: string | HTMLCanvasElement;
+  backImage?: string | HTMLCanvasElement;
   imageFit?: 'cover' | 'contain';
   cardColor?: string;
   orientation?: 'portrait' | 'landscape';
   finish?: 'glossy' | 'matte' | 'holographic' | 'metallic';
   cornerRadius?: number;
   size?: number;
+  isMobile?: boolean;
   anchor?: 'left' | 'center' | 'right' | number;
   strapLength?: number;
-  strapImage?: string;
+  strapImage?: string | HTMLCanvasElement;
   strapColor?: string;
   strapWidth?: number;
   metal?: 'graphite' | 'silver' | 'gold';
@@ -239,9 +240,10 @@ const traceRoundedRect = (
   path.bezierCurveTo(x, y + k, x + k, y, x + r, y);
 };
 
-const loadImage = (cache: Map<string, Promise<HTMLImageElement | null>>, url?: string): Promise<HTMLImageElement | null> => {
-  if (!url) return Promise.resolve(null);
-  const cached = cache.get(url);
+const loadImage = (cache: Map<string, Promise<HTMLImageElement | null>>, source?: string | HTMLCanvasElement): Promise<HTMLImageElement | HTMLCanvasElement | null> => {
+  if (!source) return Promise.resolve(null);
+  if (typeof source !== 'string') return Promise.resolve(source);
+  const cached = cache.get(source);
   if (cached) return cached;
   const promise = new Promise<HTMLImageElement | null>(resolve => {
     const image = new Image();
@@ -249,9 +251,9 @@ const loadImage = (cache: Map<string, Promise<HTMLImageElement | null>>, url?: s
     image.decoding = 'async';
     image.onload = () => resolve(image);
     image.onerror = () => resolve(null);
-    image.src = url;
+    image.src = source;
   });
-  cache.set(url, promise);
+  cache.set(source, promise);
   return promise;
 };
 
@@ -476,7 +478,7 @@ const getWeaveTexture = () => {
 
 const drawFitted = (
   ctx: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: HTMLImageElement | HTMLCanvasElement,
   width: number,
   height: number,
   fit: 'cover' | 'contain'
@@ -489,7 +491,7 @@ const drawFitted = (
 
 const paintFace = (
   canvas: HTMLCanvasElement,
-  image: HTMLImageElement | null,
+  image: HTMLImageElement | HTMLCanvasElement | null,
   color: [number, number, number],
   fit: 'cover' | 'contain'
 ) => {
@@ -502,7 +504,7 @@ const paintFace = (
 
 const paintStrap = (
   canvas: HTMLCanvasElement,
-  image: HTMLImageElement | null,
+  image: HTMLImageElement | HTMLCanvasElement | null,
   color: [number, number, number]
 ) => {
   const across = 192;
@@ -828,6 +830,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
   finish = 'glossy',
   cornerRadius = 0.1,
   size = 0.8,
+  isMobile = false,
   anchor = 'center',
   strapLength = 0.5,
   strapImage,
@@ -867,6 +870,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
     finish,
     cornerRadius,
     size,
+    isMobile,
     anchor,
     strapLength,
     strapImage,
@@ -925,7 +929,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
     scene.add(keyLight, fillLight);
 
     const imageCache = globalImageCache;
-    const images: { front: HTMLImageElement | null; back: HTMLImageElement | null; strap: HTMLImageElement | null } = {
+    const images: { front: HTMLImageElement | HTMLCanvasElement | null; back: HTMLImageElement | HTMLCanvasElement | null; strap: HTMLImageElement | HTMLCanvasElement | null } = {
       front: null,
       back: null,
       strap: null
@@ -1056,10 +1060,14 @@ export const Lanyard: React.FC<LanyardProps> = ({
     const frameView = () => {
       const s = settingsRef.current;
       const aspect = view.width / view.height;
-      let viewHeight = layout.height / clamp(s.size, 0.15, 0.9);
-      const fitFactor = s.orientation === 'landscape' ? 0.62 : 0.68;
-      const minimumWidth = layout.width / fitFactor;
-      if (viewHeight * aspect < minimumWidth) viewHeight = minimumWidth / aspect;
+      const isMob = !!s.isMobile;
+      const maxScale = isMob ? 3.0 : 0.9;
+      let viewHeight = layout.height / clamp(s.size, 0.15, maxScale);
+      if (!isMob) {
+        const fitFactor = s.orientation === 'landscape' ? 0.62 : 0.68;
+        const minimumWidth = layout.width / fitFactor;
+        if (viewHeight * aspect < minimumWidth) viewHeight = minimumWidth / aspect;
+      }
       const viewWidth = viewHeight * aspect;
       camera.aspect = aspect;
       camera.position.set(0, 0, viewHeight / 2 / Math.tan((FOV * Math.PI) / 360));
@@ -1072,7 +1080,8 @@ export const Lanyard: React.FC<LanyardProps> = ({
       const anchorRatio = typeof s.anchor === 'number' ? s.anchor : (ANCHORS[s.anchor] ?? 0.5);
       const anchorX = (anchorRatio - 0.5) * viewWidth;
       const anchorY = viewHeight / 2 + 0.2;
-      const cardTop = viewHeight / 2 - viewHeight * mix(0.12, 0.42, clamp(s.strapLength, 0, 1));
+      const strapMin = isMob ? -0.04 : 0.12;
+      const cardTop = viewHeight / 2 - viewHeight * mix(strapMin, 0.42, clamp(s.strapLength, 0, 1));
       const hangTop = cardTop + (layout.hangY - layout.height / 2);
       sim.anchor.set(anchorX, anchorY, 0);
       configureSimulation(sim, layout, anchorY - hangTop);
@@ -1109,8 +1118,14 @@ export const Lanyard: React.FC<LanyardProps> = ({
         }
       }
 
-      const imageKey = `${s.frontImage}|${s.backImage}|${s.strapImage}`;
-      if (imageKey !== applied.imageKey) {
+      if (
+        s.frontImage !== applied.frontImage ||
+        s.backImage !== applied.backImage ||
+        s.strapImage !== applied.strapImage
+      ) {
+        applied.frontImage = s.frontImage;
+        applied.backImage = s.backImage;
+        applied.strapImage = s.strapImage;
         const token = ++imageToken;
         Promise.all([
           loadImage(imageCache, s.frontImage),
@@ -1155,7 +1170,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
       }
       canvas.style.touchAction = s.interactive ? 'pan-y' : 'auto';
 
-      applied = { layoutKey, framingKey, imageKey, faceKey, strapColor: s.strapColor, strapScale };
+      applied = { layoutKey, framingKey, frontImage: s.frontImage, backImage: s.backImage, strapImage: s.strapImage, faceKey, strapColor: s.strapColor, strapScale };
       start();
     };
 

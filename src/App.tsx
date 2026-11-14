@@ -3,6 +3,7 @@ import { Header } from './components/layout/Header';
 import { ProfilePage } from './components/dashboard/ProfilePage';
 import LiquidEther from './components/effects/LiquidEther';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CVViewerModal } from './components/CVViewerModal';
 
 import './styles/index.css';
 
@@ -57,12 +58,25 @@ function App() {
     }
     return 'profile';
   });
-  const [pendingTab, setPendingTab] = useState<string | null>(null);
   const [direction, setDirection] = useState<number>(0);
-  const [isProfileExiting, setIsProfileExiting] = useState(false);
-  const [isHistoryExiting, setIsHistoryExiting] = useState(false);
   const [isDockVisible, setIsDockVisible] = useState(false);
+  const [isCVModalOpen, setIsCVModalOpen] = useState(false);
+  const [cvTriggerRect, setCvTriggerRect] = useState<DOMRect | null>(null);
+  const [shouldPreloadHistory, setShouldPreloadHistory] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleOpenCV = (rect?: DOMRect | null) => {
+    setCvTriggerRect(rect || null);
+    setIsCVModalOpen(true);
+  };
+
+  // Background pre-warm 3D Lanyard & History WebGL context 600ms after load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShouldPreloadHistory(true);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Background prefetch all page chunks during idle time for instantaneous tab switching
   useEffect(() => {
@@ -84,117 +98,68 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
 
-  const handleProfileExitComplete = () => {
-    if (pendingTab) {
-      const prevIdx = TAB_ORDER.indexOf(activeTab);
-      const nextIdx = TAB_ORDER.indexOf(pendingTab);
-      setDirection(nextIdx > prevIdx ? 1 : -1);
-      setActiveTab(pendingTab);
-      setPendingTab(null);
-    }
-    setIsProfileExiting(false);
-  };
-
-  const handleHistoryExitComplete = () => {
-    if (pendingTab) {
-      const prevIdx = TAB_ORDER.indexOf(activeTab);
-      const nextIdx = TAB_ORDER.indexOf(pendingTab);
-      setDirection(nextIdx > prevIdx ? 1 : -1);
-      setActiveTab(pendingTab);
-      setPendingTab(null);
-    }
-    setIsHistoryExiting(false);
-  };
-
   const handleTabChange = (nextTab: string) => {
-    if (nextTab === (pendingTab || activeTab)) return;
+    if (nextTab === activeTab) return;
 
     const prevIdx = TAB_ORDER.indexOf(activeTab);
     const nextIdx = TAB_ORDER.indexOf(nextTab);
     const newDir = nextIdx > prevIdx ? 1 : -1;
     setDirection(newDir);
-
-    if (isProfileExiting || isHistoryExiting) {
-      setPendingTab(nextTab);
-      return;
-    }
-
-    if (activeTab === 'profile' && nextTab !== 'profile') {
-      // Trigger avatar reverse slide-down exit animation before transitioning
-      setPendingTab(nextTab);
-      setIsProfileExiting(true);
-    } else if (activeTab === 'experience' && nextTab !== 'experience') {
-      // Trigger lanyard pull-up exit animation before transitioning
-      setPendingTab(nextTab);
-      setIsHistoryExiting(true);
-    } else {
-      setActiveTab(nextTab);
-    }
+    setActiveTab(nextTab);
   };
-
-  // Safety fallback in case animation completion event is dropped
-  useEffect(() => {
-    if (isProfileExiting) {
-      const fallbackTimer = setTimeout(() => {
-        handleProfileExitComplete();
-      }, 750);
-      return () => clearTimeout(fallbackTimer);
-    }
-  }, [isProfileExiting, pendingTab]);
-
-  useEffect(() => {
-    if (isHistoryExiting) {
-      const fallbackTimer = setTimeout(() => {
-        handleHistoryExitComplete();
-      }, 650);
-      return () => clearTimeout(fallbackTimer);
-    }
-  }, [isHistoryExiting, pendingTab]);
 
   const renderContent = () => {
     return (
-      <AnimatePresence mode="wait" custom={direction} initial={false}>
-        <motion.div
-          key={activeTab}
-          custom={direction}
-          variants={pageVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          className="w-full"
+      <div className="w-full relative">
+        <AnimatePresence mode="wait" custom={direction} initial={false}>
+          {activeTab !== 'experience' && (
+            <motion.div
+              key={activeTab}
+              custom={direction}
+              variants={pageVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="w-full"
+            >
+              <Suspense fallback={null}>
+                {(() => {
+                  switch (activeTab) {
+                    case 'profile': return (
+                      <ProfilePage 
+                        onExploreProjects={() => handleTabChange('projects')} 
+                        isDockVisible={isDockVisible}
+                        onViewCV={handleOpenCV}
+                      />
+                    );
+                    case 'projects': return <RegistryPage />;
+                    case 'contact': return <ContactPage />;
+                    default: return (
+                      <ProfilePage 
+                        onExploreProjects={() => handleTabChange('projects')} 
+                        isDockVisible={isDockVisible}
+                        onViewCV={handleOpenCV}
+                      />
+                    );
+                  }
+                })()}
+              </Suspense>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* PERSISTENT & PRE-WARMED 3D LANYARD / EXPERIENCE MODULE */}
+        <div
+          className={`w-full ${activeTab === 'experience' ? 'block' : 'hidden'}`}
+          aria-hidden={activeTab !== 'experience'}
         >
           <Suspense fallback={null}>
-            {(() => {
-              switch (activeTab) {
-                case 'profile': return (
-                  <ProfilePage 
-                    onExploreProjects={() => handleTabChange('projects')} 
-                    isDockVisible={isDockVisible}
-                    isExiting={isProfileExiting}
-                    onExitComplete={handleProfileExitComplete}
-                  />
-                );
-                case 'projects': return <RegistryPage />;
-                case 'experience': return (
-                  <HistoryPage 
-                    isExiting={isHistoryExiting}
-                    onExitComplete={handleHistoryExitComplete}
-                  />
-                );
-                case 'contact': return <ContactPage />;
-                default: return (
-                  <ProfilePage 
-                    onExploreProjects={() => handleTabChange('projects')} 
-                    isDockVisible={isDockVisible}
-                    isExiting={isProfileExiting}
-                    onExitComplete={handleProfileExitComplete}
-                  />
-                );
-              }
-            })()}
+            {(shouldPreloadHistory || activeTab === 'experience') && (
+              <HistoryPage isActive={activeTab === 'experience'} />
+            )}
           </Suspense>
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      </div>
     );
   };
 
@@ -202,10 +167,11 @@ function App() {
     <div className="min-h-screen selection:bg-[var(--theme-accent)] selection:text-white antialiased relative transition-colors overflow-x-clip">
       {/* MAGNETIC DOCK NAVIGATION */}
       <SystemDock 
-        activeTab={pendingTab || activeTab} 
+        activeTab={activeTab} 
         setActiveTab={handleTabChange} 
         isDockVisible={isDockVisible}
         setIsDockVisible={setIsDockVisible}
+        onViewCV={handleOpenCV}
       />
 
       {/* LIQUID ETHER FLUID SIMULATION BACKGROUND */}
@@ -236,6 +202,15 @@ function App() {
           </div>
         </div>
       </main>
+
+      {/* Windows 11 Document Viewer Window */}
+      <CVViewerModal 
+        isOpen={isCVModalOpen} 
+        onClose={() => setIsCVModalOpen(false)} 
+        triggerRect={cvTriggerRect}
+        pdfUrl="/rohitkumarsahoo_cv.pdf"
+        downloadFilename="rohitkumarsahoo_cv.pdf"
+      />
     </div>
   );
 }

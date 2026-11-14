@@ -16,17 +16,38 @@ interface CVViewerModalProps {
   onClose: () => void;
   pdfUrl?: string;
   downloadFilename?: string;
+  triggerRect?: DOMRect | null;
 }
 
 export const CVViewerModal: React.FC<CVViewerModalProps> = ({
   isOpen,
   onClose,
   pdfUrl = '/rohitkumarsahoo_cv.pdf',
-  downloadFilename = 'rohitkumarsahoo_cv.pdf'
+  downloadFilename = 'rohitkumarsahoo_cv.pdf',
+  triggerRect = null
 }) => {
   const [isMaximized, setIsMaximized] = useState(false);
   const [justDownloaded, setJustDownloaded] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(100);
+
+  // Measure expansion origin delta relative to screen center
+  const originDelta = React.useMemo(() => {
+    if (triggerRect && typeof window !== 'undefined') {
+      const btnCenterX = triggerRect.left + triggerRect.width / 2;
+      const btnCenterY = triggerRect.top + triggerRect.height / 2;
+      const screenCenterX = window.innerWidth / 2;
+      const screenCenterY = window.innerHeight / 2;
+      
+      const dx = btnCenterX - screenCenterX;
+      const dy = btnCenterY - screenCenterY;
+      
+      const targetW = Math.min(window.innerWidth * 0.94, 1024);
+      const scale = Math.min(Math.max(triggerRect.width / targetW, 0.22), 0.55);
+      
+      return { x: dx, y: dy, scale };
+    }
+    return { x: 0, y: 16, scale: 0.94 };
+  }, [triggerRect]);
 
   // Close on Escape key press
   useEffect(() => {
@@ -100,18 +121,48 @@ export const CVViewerModal: React.FC<CVViewerModalProps> = ({
             className="fixed inset-0 bg-black/70 backdrop-blur-sm pointer-events-auto cursor-pointer"
           />
 
-          {/* Windows 11 Window Frame */}
+          {/* Windows 11 Window Frame - Smooth 60fps GPU Composited Morph */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.94, y: 16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.94, y: 16 }}
-            transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-            className={`relative z-10 w-full pointer-events-auto bg-[#202020]/95 backdrop-blur-2xl border border-white/[0.14] rounded-xl shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_1px_rgba(255,255,255,0.2)] flex flex-col overflow-hidden transition-all duration-300 font-sans ${
+            initial={{ 
+              opacity: 0, 
+              scale: originDelta.scale,
+              x: originDelta.x, 
+              y: originDelta.y
+            }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1,
+              x: 0, 
+              y: 0,
+              transition: {
+                duration: 0.32,
+                ease: [0.16, 1, 0.3, 1]
+              }
+            }}
+            exit={{ 
+              opacity: 0, 
+              scale: originDelta.scale,
+              x: originDelta.x, 
+              y: originDelta.y,
+              transition: {
+                duration: 0.2,
+                ease: [0.32, 0, 0.67, 0]
+              }
+            }}
+            className={`relative z-10 w-full pointer-events-auto bg-[#1c1c1c] border border-white/[0.14] rounded-xl shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_1px_rgba(255,255,255,0.2)] flex flex-col overflow-hidden font-sans transform-gpu will-change-transform ${
               isMaximized 
                 ? 'h-[97vh] max-w-[98vw] rounded-none' 
-                : 'h-[88vh] max-w-5xl'
+                : 'max-h-[92dvh] sm:max-h-[88vh] h-auto max-w-5xl'
             }`}
           >
+            {/* Inner Content - Fades In as Window Expands */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.16, delay: 0.08 }}
+              className="flex flex-col flex-1 min-h-0 w-full overflow-hidden"
+            >
             {/* Windows 11 Title Bar */}
             <div className="h-10 sm:h-11 bg-[#1f1f1f] border-b border-white/[0.08] flex items-center justify-between pl-3 pr-0 shrink-0">
               {/* Left: App Icon & File Name */}
@@ -256,7 +307,9 @@ export const CVViewerModal: React.FC<CVViewerModalProps> = ({
             </div>
 
             {/* Document Workspace: Flawless Native Document Preview */}
-            <div className="relative flex-1 w-full bg-[#181818] overflow-auto flex justify-center items-start p-3 sm:p-6 lg:p-8">
+            <div className={`relative w-full bg-[#181818] overflow-auto flex justify-center items-start p-2.5 sm:p-5 lg:p-6 ${
+              isMaximized ? 'flex-1' : 'max-h-[calc(92dvh-104px)] sm:max-h-[calc(88vh-108px)]'
+            }`}>
               <motion.div 
                 style={{ width: `${zoomLevel}%`, maxWidth: isMaximized ? '1100px' : '900px' }}
                 className="bg-white rounded-sm shadow-[0_12px_45px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.08)] overflow-hidden transition-all duration-150 origin-top"
@@ -284,6 +337,7 @@ export const CVViewerModal: React.FC<CVViewerModalProps> = ({
                 <span>{downloadFilename}</span>
               </div>
             </div>
+            </motion.div>
           </motion.div>
         </div>
       )}

@@ -1,8 +1,75 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 import { Lanyard } from '../effects/Lanyard';
 import { generateFrontBadge, generateBackBadge, generateStrapImage, DEFAULT_COMPANIES } from '../effects/badgeGenerator';
+
+interface TimelineItem {
+  id: string;
+  period: string;
+  sub: string;
+  title: string;
+  tags: string[];
+  category: string;
+  points: (string | React.ReactNode)[];
+  isCurrent?: boolean;
+}
+
+const TIMELINE_DATA: TimelineItem[] = [
+  {
+    id: 'multiplyy',
+    period: 'AUG 2026 — PRESENT',
+    sub: '· 4 mos · Remote',
+    title: 'Full Stack Developer',
+    tags: ['Multiplyy', 'Internship', 'Remote'],
+    category: '# WORKSPACE & SYSTEM ARCHITECTURE',
+    isCurrent: true,
+    points: [
+      'Building high-performance full-stack web architectures and scalable systems.',
+      'Developing responsive frontend interfaces and robust backend service layers.'
+    ]
+  },
+  {
+    id: 'papercycle',
+    period: 'MAY 2026 — JUL 2026',
+    sub: '· 3 mos · Remote',
+    title: 'Full Stack Developer',
+    tags: ['Papercycle', 'Internship', 'Bhubaneswar'],
+    category: '# FULL STACK & MOBILE DEVELOPMENT',
+    points: [
+      <>Develop and maintain full-stack applications using <strong className="text-white font-medium">NestJS</strong>, <strong className="text-white font-medium">PostgreSQL</strong>, and <strong className="text-white font-medium">Next.js</strong>.</>,
+      <>Build responsive UIs using <strong className="text-white font-medium">Tailwind CSS</strong> and manage application state with <strong className="text-white font-medium">Redux</strong>.</>,
+      <>Design and integrate <strong className="text-white font-medium">RESTful APIs</strong> across frontend and backend systems.</>,
+      <>Develop cross-platform mobile applications using <strong className="text-white font-medium">Flutter</strong>.</>,
+      'Collaborate on team projects, participate in code reviews, and deliver tasks within deadlines.'
+    ]
+  },
+  {
+    id: 'cttc',
+    period: 'MAY 2025 — JUN 2025',
+    sub: '· 2 mos · On-site',
+    title: 'AI/ML Intern',
+    tags: ['CTTC Bhubaneswar', 'On-site'],
+    category: '# COMPUTER VISION & DEEP LEARNING',
+    points: [
+      'Applied deep learning techniques to practical AI problems, focusing on model training and performance evaluation.',
+      <>Designed an <strong className="text-white font-medium">AI face detection system</strong>.</>
+    ]
+  },
+  {
+    id: 'vssut',
+    period: '2023 — PRESENT',
+    sub: '· B.Tech CSE',
+    title: 'Computer Science Student',
+    tags: ['VSSUT', 'B.Tech CSE'],
+    category: '# ACADEMIC FOUNDATION',
+    points: [
+      <>3rd-year Computer Science student at <strong className="text-white font-medium">Veer Surendra Sai University of Technology</strong> (VSSUT).</>,
+      'Focusing on Data Structures, Algorithms, Operating Systems, and Distributed Systems while engineering real-world products.'
+    ]
+  }
+];
 
 const DEFAULT_GITHUB_STATS = {
   projects: '23',
@@ -12,9 +79,9 @@ const DEFAULT_GITHUB_STATS = {
   languagesList: ['Kotlin', 'Java', 'TypeScript', 'JavaScript', 'Python', 'HTML', 'CSS']
 };
 
-let cachedFrontTexture = '';
-let cachedBackTexture = '';
-let cachedStrapTexture = '';
+let cachedFrontTexture: HTMLCanvasElement | null = null;
+let cachedBackTexture: HTMLCanvasElement | null = null;
+let cachedStrapTexture: HTMLCanvasElement | null = null;
 let preloadedAvatar: HTMLImageElement | null = null;
 const preloadedLogos: Record<string, HTMLImageElement> = {};
 
@@ -26,7 +93,7 @@ if (typeof window !== 'undefined') {
     preloadedAvatar = av;
   };
 
-  ['/papercycle.png', '/enigma.png'].forEach(src => {
+  ['/papercycle.png', '/enigma.png', '/cttc.png', '/multiplyy.svg'].forEach(src => {
     const lg = new Image();
     lg.crossOrigin = 'anonymous';
     lg.src = src;
@@ -44,7 +111,7 @@ if (typeof window !== 'undefined') {
 }
 
 function getInitialTextures() {
-  if (typeof window === 'undefined') return { front: '', back: '', strap: '' };
+  if (typeof window === 'undefined') return { front: null, back: null, strap: null };
   if (!cachedFrontTexture) {
     cachedStrapTexture = generateStrapImage();
     cachedFrontTexture = generateFrontBadge({
@@ -82,16 +149,46 @@ function getInitialTextures() {
   return { front: cachedFrontTexture, back: cachedBackTexture, strap: cachedStrapTexture };
 };
 
+// ============================================================
+// MOBILE LANYARD SIZING & TUNING CONFIGURATION
+// Edit these values to fine-tune the badge appearance on mobile:
+// ============================================================
+export const MOBILE_LANYARD_CONFIG = {
+  // Height of the mobile card container (Tailwind classes)
+  containerHeight: 'h-[280px] sm:h-[310px]',
+  size: 0.80,        // <-- You can now set 1.0, 1.2, 1.5, etc.
+  strapLength: 0.25, // Smaller value hangs higher up if the card gets tall
+  anchor: 0.5,
+};
+
 interface HistoryPageProps {
   isExiting?: boolean;
   onExitComplete?: () => void;
+  isActive?: boolean;
 }
 
 export const HistoryPage: React.FC<HistoryPageProps> = ({
   isExiting = false,
-  onExitComplete
+  onExitComplete,
+  isActive = true
 }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>(() => {
+    const isSmall = typeof window !== 'undefined' && window.innerWidth < 1024;
+    return {
+      multiplyy: true,
+      papercycle: !isSmall,
+      cttc: !isSmall,
+      vssut: !isSmall,
+    };
+  });
+
+  const toggleExpand = (id: string) => {
+    setExpandedIds(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -104,9 +201,9 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
   const [assetsReady, setAssetsReady] = useState(false);
 
   const initial = getInitialTextures();
-  const [frontTexture, setFrontTexture] = useState<string>(initial.front);
-  const [backTexture, setBackTexture] = useState<string>(initial.back);
-  const [strapTexture, setStrapTexture] = useState<string>(initial.strap);
+  const [frontTexture, setFrontTexture] = useState<HTMLCanvasElement | null>(initial.front);
+  const [backTexture, setBackTexture] = useState<HTMLCanvasElement | null>(initial.back);
+  const [strapTexture, setStrapTexture] = useState<HTMLCanvasElement | null>(initial.strap);
 
   const initialKey = `${DEFAULT_GITHUB_STATS.since}|${DEFAULT_GITHUB_STATS.projects}|${DEFAULT_GITHUB_STATS.technologies}|${DEFAULT_GITHUB_STATS.commits}|${DEFAULT_GITHUB_STATS.languagesList.join(',')}|${preloadedAvatar ? '1' : '0'}`;
   const lastGeneratedKeyRef = useRef<string>(cachedFrontTexture ? initialKey : '');
@@ -127,7 +224,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
           img.onerror = () => res(null);
         });
 
-    const logosPromises = ['/papercycle.png', '/enigma.png'].map(src => {
+    const logosPromises = ['/papercycle.png', '/enigma.png', '/cttc.png', '/multiplyy.svg'].map(src => {
       if (preloadedLogos[src] && preloadedLogos[src].complete) return Promise.resolve();
       return new Promise<void>(res => {
         const img = new Image();
@@ -303,14 +400,17 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
   }, [githubStats, assetsReady]);
 
   return (
-    <div className="w-full min-h-[calc(100vh-160px)] lg:min-h-[750px] flex flex-col gap-6 relative overflow-visible font-inter">
+    <div className="w-full min-h-0 lg:min-h-[750px] flex flex-col gap-4 lg:gap-6 relative overflow-visible font-inter">
       
-      {/* FULL-VIEWPORT 3D LANYARD (Attached to top edge, spans entire viewport, zero loader delay) */}
-      {typeof document !== 'undefined' && createPortal(
-        <div className="fixed inset-0 w-screen h-screen z-[5] pointer-events-auto overflow-hidden">
+      {/* FULL-VIEWPORT 3D LANYARD (Desktop only, spans right half of viewport) */}
+      {!isMobile && typeof document !== 'undefined' && createPortal(
+        <div className={`hidden lg:block fixed inset-0 w-screen h-screen z-[5] overflow-hidden transition-opacity duration-300 ${
+          isActive && !isExiting ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none'
+        }`}>
           <Lanyard
-            frontImage={frontTexture}
-            backImage={backTexture}
+            frontImage={frontTexture || undefined}
+            backImage={backTexture || undefined}
+            strapImage={strapTexture || undefined}
             cardColor="#0d0e10"
             strapColor="#0a0a0c"
             strapWidth={0.55}
@@ -318,14 +418,14 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
             finish="metallic"
             orientation="landscape"
             cornerRadius={0.1}
-            size={isMobile ? 0.46 : 0.60}
-            anchor={isMobile ? 0.5 : 0.7}
-            strapLength={isMobile ? 0.25 : 0.27}
+            size={0.58}
+            anchor={0.735}
+            strapLength={0.27}
             gravity={0.65}
             damping={0.2}
             elasticity={0.9}
             breeze={0.92}
-            interactive={!isExiting}
+            interactive={isActive && !isExiting}
             intro={true}
             introDirection="top"
             githubUrl="https://github.com/RohitKSahoo"
@@ -341,82 +441,151 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       {/* Main Content Grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10 pointer-events-none">
         
-        {/* Left Column (5/12) - Timeline sliding smoothly up from bottom edge, and down on exit */}
+        {/* Left Column (5/12 or 6/12 on XL) - Timeline sliding smoothly up from bottom edge, and down on exit */}
         <motion.div 
-          initial={{ opacity: 0, y: 70 }}
-          animate={isExiting ? { opacity: 0, y: 40, transition: { duration: 0.2, ease: 'easeIn' } } : { opacity: 1, y: 0 }}
+          initial={false}
+          animate={isActive && !isExiting ? { opacity: 1, y: 0 } : { opacity: 0, y: 40, transition: { duration: 0.2, ease: 'easeIn' } }}
           transition={{ type: "spring", stiffness: 220, damping: 26, mass: 0.9, delay: 0.05 }}
-          className="lg:col-span-5 flex flex-col gap-10 py-2 overflow-y-auto pr-2 pointer-events-none"
+          className="lg:col-span-5 xl:col-span-6 flex flex-col gap-4 sm:gap-6 py-2 overflow-y-auto lg:max-h-[calc(100vh-140px)] pr-1 sm:pr-3 no-scrollbar pointer-events-auto pb-2 lg:pb-20"
         >
 
-          {/* Timeline Item 1 */}
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 220, damping: 26, delay: 0.12 }}
-            className="flex gap-6 group pointer-events-auto select-text"
-          >
-            <div className="flex flex-col items-center mt-1 shrink-0">
-              <div className="w-5 h-5 rounded-sm border border-red-500 bg-[#0d0d0d] flex items-center justify-center">
-                <div className="w-2 h-2 bg-red-500 rounded-sm" />
-              </div>
-              <div className="w-[1px] h-full bg-white/10 my-2" />
+          {/* Mobile Lanyard Top Container (Mobile only: lanyard inside top card above experiences) */}
+          {isMobile && (
+            <div className={`w-full ${MOBILE_LANYARD_CONFIG.containerHeight} relative rounded-2xl overflow-hidden border border-white/10 bg-[#0d0e10]/80 shadow-[0_8px_32px_rgba(0,0,0,0.6)] shrink-0 mb-3 pointer-events-auto ${isActive ? 'block' : 'hidden'}`}>
+              <Lanyard
+                isMobile={true}
+                frontImage={frontTexture || undefined}
+                backImage={backTexture || undefined}
+                strapImage={strapTexture || undefined}
+                cardColor="#0d0e10"
+                strapColor="#0a0a0c"
+                strapWidth={0.55}
+                metal="silver"
+                finish="metallic"
+                orientation="landscape"
+                cornerRadius={0.1}
+                size={MOBILE_LANYARD_CONFIG.size}
+                anchor={MOBILE_LANYARD_CONFIG.anchor}
+                strapLength={MOBILE_LANYARD_CONFIG.strapLength}
+                gravity={0.65}
+                damping={0.2}
+                elasticity={0.9}
+                breeze={0.5}
+                interactive={isActive && !isExiting}
+                intro={true}
+                introDirection="top"
+                githubUrl="https://github.com/RohitKSahoo"
+                companies={DEFAULT_COMPANIES}
+                isExiting={isExiting}
+                className="w-full h-full"
+              />
             </div>
-            
-            <div className="flex-1 pb-10">
-              <span className="text-sm font-satoshi text-red-500 font-bold tracking-wider">2025 — PRESENT</span>
-              <div className="flex items-center gap-4 mt-1 mb-3">
-                <h3 className="text-3xl font-bold font-satoshi text-white tracking-tight">Computer Science Student</h3>
-                <div className="flex gap-1.5">
-                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">CSE</span>
-                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Learning</span>
-                </div>
-              </div>
-              <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># ACADEMIC JOURNEY</span>
-              <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
-                <li><strong className="text-white font-medium">3rd-year</strong> Computer Science student at <strong className="text-white font-medium">Veer Surendra Sai University of Technology</strong> (VSSUT).</li>
-                <li>Focusing on mastering core CS fundamentals while building practical software solutions.</li>
-              </ul>
-            </div>
-          </motion.div>
+          )}
 
-          {/* Timeline Item 2 */}
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 220, damping: 26, delay: 0.22 }}
-            className="flex gap-6 group pointer-events-auto select-text"
-          >
-            <div className="flex flex-col items-center mt-1 shrink-0">
-              <div className="w-5 h-5 rounded-sm border border-white/20 bg-[#0d0d0d] flex items-center justify-center">
-                <div className="w-2 h-2 bg-white/20 rounded-sm" />
-              </div>
-              <div className="w-[1px] h-full bg-white/10 my-2 opacity-0" />
-            </div>
-            
-            <div className="flex-1">
-              <span className="text-sm font-satoshi text-white/40 font-bold tracking-wider">2025 — PRESENT</span>
-              <div className="flex items-center gap-4 mt-1 mb-3">
-                <h3 className="text-3xl font-bold font-satoshi text-white/80 tracking-tight">Exploring Development</h3>
-                <div className="flex gap-1.5">
-                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">AI</span>
-                  <span className="text-[0.75rem] font-satoshi font-medium border border-white/10 px-2 py-0.5 rounded text-white/50 uppercase tracking-wider">Android</span>
+          {/* Expandable Timeline Items */}
+          {TIMELINE_DATA.map((item, index) => {
+            const isExpanded = !!expandedIds[item.id];
+            const isLast = index === TIMELINE_DATA.length - 1;
+
+            return (
+              <motion.div 
+                key={item.id}
+                initial={{ opacity: 0, y: 35 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 220, damping: 26, delay: 0.08 * (index + 1) }}
+                className="flex gap-4 sm:gap-6 group pointer-events-auto select-text"
+              >
+                {/* Node & Line */}
+                <div className="flex flex-col items-center mt-1.5 shrink-0">
+                  <div className={`w-5 h-5 rounded-sm border flex items-center justify-center ${
+                    item.isCurrent 
+                      ? 'border-red-500 bg-[#0d0d0d] shadow-[0_0_8px_rgba(239,68,68,0.4)]' 
+                      : 'border-white/20 bg-[#0d0d0d]'
+                  }`}>
+                    <div className={`w-2 h-2 rounded-sm ${item.isCurrent ? 'bg-red-500' : 'bg-white/20'}`} />
+                  </div>
+                  {!isLast && <div className="w-[1px] h-full bg-white/10 my-2" />}
                 </div>
-              </div>
-              <span className="text-sm font-satoshi text-red-500/80 font-bold block mb-2 tracking-wider"># HOBBY PROJECTS</span>
-              <ul className="text-base text-white/60 space-y-3 list-disc list-inside font-inter">
-                <li><strong className="text-white font-medium">Browser Extensions & Web Animations:</strong> Explored building privacy-focused dashboards with WebGL rendering.</li>
-                <li><strong className="text-white font-medium">Edge AI & Audio Processing:</strong> Implemented low-latency voice activity detection on Android.</li>
-                <li><strong className="text-white font-medium">Automation & CLI Tools:</strong> Developed tools to automate Git operations and commit generation using AI.</li>
-                <li><strong className="text-white font-medium">Real-time Systems & Security:</strong> Built live location and audio streaming architectures for personal safety.</li>
-                <li><strong className="text-white font-medium">Location-Based Services:</strong> Explored geofencing APIs to automate system settings based on location.</li>
-              </ul>
-            </div>
-          </motion.div>
+                
+                {/* Expandable Content Card */}
+                <div className={`flex-1 ${isLast ? 'pb-0' : 'pb-3 sm:pb-4'} min-w-0`}>
+                  {/* Clickable Header */}
+                  <div 
+                    onClick={() => toggleExpand(item.id)}
+                    className="cursor-pointer select-none group/header flex items-start justify-between gap-3 p-1.5 -m-1.5 rounded-lg hover:bg-white/[0.03] transition-colors"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleExpand(item.id); } }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`text-sm font-satoshi font-bold tracking-wider ${item.isCurrent ? 'text-red-500' : 'text-white/50'}`}>
+                          {item.period}
+                        </span>
+                        <span className="text-xs text-white/40 font-mono">{item.sub}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2.5 mt-1 mb-1.5 flex-wrap">
+                        <h3 className="text-xl sm:text-2xl font-bold font-satoshi text-white tracking-tight group-hover/header:text-red-400 transition-colors">
+                          {item.title}
+                        </h3>
+                        <div className="flex gap-1.5 flex-wrap">
+                          {item.tags.map((tag, tIdx) => (
+                            <span 
+                              key={tIdx} 
+                              className={`text-[0.7rem] font-satoshi font-medium border px-2 py-0.5 rounded uppercase tracking-wider ${
+                                tag === 'Internship' 
+                                  ? 'border-red-500/30 bg-red-500/10 text-red-400' 
+                                  : 'border-white/10 text-white/60'
+                              }`}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Expand / Collapse Chevron */}
+                    <div className="p-1.5 rounded-md border border-white/10 bg-white/5 text-white/50 group-hover/header:text-white group-hover/header:border-white/20 transition-all shrink-0 mt-1">
+                      <ChevronDown 
+                        size={16} 
+                        className={`transition-transform duration-200 ${isExpanded ? 'rotate-180 text-red-400' : ''}`} 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Expandable Details */}
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.22, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pt-2 pb-1">
+                          <span className="text-xs font-mono text-red-500/80 font-bold block mb-2 tracking-wider">
+                            {item.category}
+                          </span>
+                          <ul className="text-sm sm:text-base text-white/65 space-y-2 list-disc list-inside font-inter leading-relaxed">
+                            {item.points.map((pt, pIdx) => (
+                              <li key={pIdx}>{pt}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
-        {/* Right Column (7/12) - Transparent to allow clicking & interacting with the 3D Lanyard */}
-        <div className="hidden lg:block lg:col-span-7 pointer-events-none" />
+        {/* Right Column (7/12 or 6/12 on XL) - Transparent to allow clicking & interacting with the 3D Lanyard */}
+        <div className="hidden lg:block lg:col-span-7 xl:col-span-6 pointer-events-none" />
       </div>
 
     </div>

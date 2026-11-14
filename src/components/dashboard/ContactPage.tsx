@@ -1,8 +1,40 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Github, Linkedin, Send, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
+import { Mail, Github, Linkedin, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
 import VariableProximity from '../effects/VariableProximity';
 import GlassSurface from '../effects/GlassSurface';
+import { SocialsAccordion } from './SocialsAccordion';
+
+const SOCIALS = [
+  {
+    name: 'Email',
+    handle: 'rohitkumarsahoo37@gmail.com',
+    href: 'mailto:rohitkumarsahoo37@gmail.com',
+    icon: Mail,
+    external: false,
+  },
+  {
+    name: 'GitHub',
+    handle: 'github.com/RohitKSahoo',
+    href: 'https://github.com/RohitKSahoo',
+    icon: Github,
+    external: true,
+  },
+  {
+    name: 'LinkedIn',
+    handle: 'linkedin.com/in/rohitksahoo',
+    href: 'https://linkedin.com/in/rohitksahoo',
+    icon: Linkedin,
+    external: true,
+  },
+  {
+    name: 'Instagram',
+    handle: '@rohitks.2407',
+    href: 'https://www.instagram.com/rohitks.2407?igsh=MTU4c3hhMGI1eXdqMQ==',
+    icon: Instagram,
+    external: true,
+  },
+];
 
 export const ContactPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -137,14 +169,14 @@ export const ContactPage = () => {
         <div className="lg:col-span-7 flex flex-col justify-between py-0">
           <div className="relative">
 
-            <h2 ref={containerRef} className="text-4xl sm:text-6xl lg:text-[clamp(3.2rem,5.2vw,5.5rem)] font-extrabold font-satoshi tracking-tight leading-none mb-3 text-white mt-1 break-words">
+            <h2 ref={containerRef} className="text-[clamp(2.85rem,11.8vw,5.5rem)] sm:text-7xl lg:text-[clamp(3.4rem,5.2vw,5.5rem)] font-extrabold font-satoshi tracking-tight leading-[0.95] mb-4 text-white mt-1 break-words">
               <VariableProximity label={text1} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
               <VariableProximity label={text2} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
               <span className="text-red-500">
                 <VariableProximity label={text3} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
               </span>
             </h2>
-            <p className="text-base text-white/60 max-w-xl font-inter leading-relaxed mb-[28px]">
+            <p className="text-sm sm:text-base text-white/60 max-w-xl font-inter leading-relaxed mb-6">
               I'm always open to collaborations, exciting projects, and impactful ideas.
             </p>
 
@@ -157,28 +189,12 @@ export const ContactPage = () => {
               
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="group relative block focus:outline-none cursor-pointer rounded-full overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                className="group relative flex items-center justify-between gap-4 px-6 py-2.5 rounded-full border border-red-500/40 hover:border-red-500/80 bg-transparent hover:bg-red-500/[0.08] text-white font-bold font-satoshi text-base transition-all duration-300 shadow-[0_0_16px_rgba(239,68,68,0.2)] hover:shadow-[0_0_26px_rgba(239,68,68,0.4)] cursor-pointer active:scale-95"
               >
-                <GlassSurface
-                  width="auto"
-                  height={50}
-                  borderRadius={25}
-                  distortionScale={-90}
-                  displace={0.3}
-                  backgroundOpacity={0.14}
-                  saturation={1.2}
-                  redOffset={18}
-                  greenOffset={5}
-                  blueOffset={10}
-                  className="border border-red-500/40 group-hover:border-red-500/80 shadow-[0_0_20px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_28px_rgba(239,68,68,0.45)] transition-all"
-                >
-                  <div className="flex items-center justify-between gap-4 px-6 py-1.5 text-white font-bold font-satoshi text-base">
-                    <span className="group-hover:text-red-400 transition-colors">Send a Message</span>
-                    <div className="w-7 h-7 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
-                      <ArrowRight size={14} className="text-white/50 group-hover:text-red-500 transition-all" />
-                    </div>
-                  </div>
-                </GlassSurface>
+                <span className="group-hover:text-red-400 transition-colors">Send a Message</span>
+                <div className="w-7 h-7 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
+                  <ArrowRight size={14} className="text-white/50 group-hover:text-red-500 transition-all" />
+                </div>
               </button>
             </div>
           </div>
@@ -191,79 +207,58 @@ export const ContactPage = () => {
             <div className="w-12 h-0.5 bg-red-500 mt-1" />
           </div>
 
-          {[
-            {
-              name: 'Email',
-              handle: 'rohitkumarsahoo37@gmail.com',
-              href: 'mailto:rohitkumarsahoo37@gmail.com',
-              icon: Mail,
-              external: false,
-            },
-            {
-              name: 'GitHub',
-              handle: 'github.com/RohitKSahoo',
-              href: 'https://github.com/RohitKSahoo',
-              icon: Github,
-              external: true,
-            },
-            {
-              name: 'LinkedIn',
-              handle: 'linkedin.com/in/rohitksahoo',
-              href: 'https://linkedin.com/in/rohitksahoo',
-              icon: Linkedin,
-              external: true,
-            },
-            {
-              name: 'Instagram',
-              handle: '@rohitks.2407',
-              href: 'https://www.instagram.com/rohitks.2407?igsh=MTU4c3hhMGI1eXdqMQ==',
-              icon: Instagram,
-              external: true,
-            },
-          ].map((social) => {
-            const Icon = social.icon;
-            return (
-              <a
-                key={social.name}
-                href={social.href}
-                {...(social.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                className="group relative block focus:outline-none cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
-              >
-                <GlassSurface
-                  width="100%"
-                  height="auto"
-                  borderRadius={14}
-                  distortionScale={-100}
-                  displace={0.2}
-                  backgroundOpacity={0}
-                  saturation={1.1}
-                  redOffset={8}
-                  greenOffset={4}
-                  blueOffset={12}
-                  className="w-full border border-white/10 group-hover:border-red-500/40 shadow-[0_4px_20px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(239,68,68,0.15)] transition-all"
+          {/* Desktop View: Static Glass Cards (Original Design) */}
+          <div className="hidden lg:flex flex-col gap-6">
+            {SOCIALS.map((social) => {
+              const Icon = social.icon;
+              return (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  {...(social.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className="group relative block focus:outline-none cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
                 >
-                  <div className="p-5 sm:p-6 w-full flex items-center justify-between">
-                    <div className="flex items-center gap-5">
-                      <div className="p-4 bg-red-500/10 text-red-500 rounded-xl group-hover:bg-red-500/20 group-hover:scale-105 transition-all">
-                        <Icon size={26} />
+                  <GlassSurface
+                    width="100%"
+                    height="auto"
+                    borderRadius={14}
+                    distortionScale={-100}
+                    displace={0.2}
+                    backgroundOpacity={0}
+                    saturation={1.1}
+                    redOffset={8}
+                    greenOffset={4}
+                    blueOffset={12}
+                    className="w-full border border-white/10 group-hover:border-red-500/40 shadow-[0_4px_20px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(239,68,68,0.15)] transition-all"
+                  >
+                    <div className="p-5 sm:p-6 w-full flex items-center justify-between">
+                      <div className="flex items-center gap-5">
+                        <div className="p-4 bg-red-500/10 text-red-500 rounded-xl group-hover:bg-red-500/20 group-hover:scale-105 transition-all">
+                          <Icon size={26} />
+                        </div>
+                        <div>
+                          <h3 className="text-lg sm:text-xl font-bold font-satoshi text-white group-hover:text-red-400 transition-colors">
+                            {social.name}
+                          </h3>
+                          <p className="text-sm sm:text-base text-white/50 font-inter group-hover:text-white/70 transition-colors mt-0.5">
+                            {social.handle}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-lg sm:text-xl font-bold font-satoshi text-white group-hover:text-red-400 transition-colors">
-                          {social.name}
-                        </h3>
-                        <p className="text-sm sm:text-base text-white/50 font-inter group-hover:text-white/70 transition-colors mt-0.5">
-                          {social.handle}
-                        </p>
+                      <div className="w-9 h-9 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
+                        <ArrowRight size={16} className="text-white/50 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all" />
                       </div>
                     </div>
-                    <div className="w-9 h-9 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
-                      <ArrowRight size={16} className="text-white/50 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all" />
-                    </div>
-                  </div>
-                </GlassSurface>
-              </a>
-            );
-          })}
+                  </GlassSurface>
+                </a>
+              );
+            })}
+          </div>
+
+          {/* Mobile View: Accordion OS Socials Deck */}
+          <div className="block lg:hidden w-full pb-4">
+            <SocialsAccordion defaultOpen={0} autoplay={false} />
+          </div>
         </div>
       </div>
 
