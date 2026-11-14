@@ -139,3 +139,17 @@
   }
 }
 
+@media (max-width: 767px) {
+  .gooey-nav__label {
+    display: none !important;
+  }
+  .gooey-nav__link {
+    gap: 0;
+    padding: 9px 15px;
+  }
+  .gooey-nav__icon svg {
+    width: 1.25em;
+    height: 1.25em;
+  }
+}
+

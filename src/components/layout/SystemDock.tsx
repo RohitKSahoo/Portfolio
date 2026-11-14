@@ -88,11 +88,11 @@ export const SystemDock: React.FC<DockProps> = ({
   ], []);
 
   const gooeyNavItems = useMemo(() => [
-    { label: 'HOME', icon: <User size={18} strokeWidth={2.0} /> },
-    { label: 'PROJECTS', icon: <Database size={18} strokeWidth={2.0} /> },
-    { label: 'EXPERIENCE', icon: <Briefcase size={18} strokeWidth={2.0} /> },
-    { label: 'CONTACT', icon: <Mail size={18} strokeWidth={2.0} /> },
-  ], []);
+    { label: isMobile ? '' : 'HOME', icon: <User size={isMobile ? 20 : 18} strokeWidth={2.0} /> },
+    { label: isMobile ? '' : 'PROJECTS', icon: <Database size={isMobile ? 20 : 18} strokeWidth={2.0} /> },
+    { label: isMobile ? '' : 'EXPERIENCE', icon: <Briefcase size={isMobile ? 20 : 18} strokeWidth={2.0} /> },
+    { label: isMobile ? '' : 'CONTACT', icon: <Mail size={isMobile ? 20 : 18} strokeWidth={2.0} /> },
+  ], [isMobile]);
 
   const handleNavChange = (index: number) => {
     const target = TAB_ORDER[index];
@@ -126,15 +126,15 @@ export const SystemDock: React.FC<DockProps> = ({
             onChange={(index) => handleNavChange(index)}
             theme="dark"
             color="#ef4444"
-            colors={["#ef4444", "#f87171", "#dc2626"]}
-            size={isMobile ? "sm" : "lg"}
+            colors={["#ef4444", "#f8717186", "#dc2626"]}
+            size={isMobile ? "lg" : "lg"}
             frame={true}
-            particleCount={15}
-            spread={56}
+            particleCount={10}
+            spread={50}
             animationTime={600}
             timeVariance={300}
-            gooeyness={0.5}
-            wobble={0.5}
+            gooeyness={0.3}
+            wobble={0.9}
             hoverEffect={true}
           />
         ) : (
