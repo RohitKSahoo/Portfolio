@@ -1037,33 +1037,35 @@ export const TechText: React.FC<TechTextProps> = ({
           ctx.fillText(charToShow, glyph.x + glyph.offset.x, view.baseline + glyph.offset.y);
           ctx.restore();
 
-          // Draw the red selection box border around this randomizing letter
-          const bx1 = crisp(glyph.box.x1 + glyph.offset.x - 5);
-          const by1 = crisp(glyph.box.y1 + glyph.offset.y - 5);
-          const bx2 = crisp(glyph.box.x2 + glyph.offset.x + 5);
-          const by2 = crisp(glyph.box.y2 + glyph.offset.y + 5);
-          const bw = bx2 - bx1;
-          const bh = by2 - by1;
+          // Draw the red selection box border around this randomizing letter (desktop only / when selection is enabled)
+          if (s.selection) {
+            const bx1 = crisp(glyph.box.x1 + glyph.offset.x - 5);
+            const by1 = crisp(glyph.box.y1 + glyph.offset.y - 5);
+            const bx2 = crisp(glyph.box.x2 + glyph.offset.x + 5);
+            const by2 = crisp(glyph.box.y2 + glyph.offset.y + 5);
+            const bw = bx2 - bx1;
+            const bh = by2 - by1;
 
-          ctx.save();
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          ctx.strokeStyle = accent;
-          ctx.fillStyle = accent;
-          ctx.lineWidth = 1.5;
-          ctx.globalAlpha = 0.85;
-          ctx.strokeRect(bx1, by1, bw, bh);
+            ctx.save();
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.strokeStyle = accent;
+            ctx.fillStyle = accent;
+            ctx.lineWidth = 1.5;
+            ctx.globalAlpha = 0.85;
+            ctx.strokeRect(bx1, by1, bw, bh);
 
-          // 4 red corner tick squares
-          const cs = 4;
-          for (const [cx, cy] of [
-            [bx1, by1],
-            [bx2, by1],
-            [bx2, by2],
-            [bx1, by2]
-          ]) {
-            ctx.fillRect(Math.round(cx - cs / 2), Math.round(cy - cs / 2), cs, cs);
+            // 4 red corner tick squares
+            const cs = 4;
+            for (const [cx, cy] of [
+              [bx1, by1],
+              [bx2, by1],
+              [bx2, by2],
+              [bx1, by2]
+            ]) {
+              ctx.fillRect(Math.round(cx - cs / 2), Math.round(cy - cs / 2), cs, cs);
+            }
+            ctx.restore();
           }
-          ctx.restore();
           ctx.setTransform(1, 0, 0, 1, 0, 0);
 
           ctx.globalAlpha = 1;
