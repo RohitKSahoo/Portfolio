@@ -86,12 +86,14 @@ export const ProfilePage = ({
   onExploreProjects, 
   isDockVisible = false,
   isExiting = false,
-  onExitComplete
+  onExitComplete,
+  onViewCV
 }: { 
   onExploreProjects?: () => void,
   isDockVisible?: boolean,
   isExiting?: boolean,
-  onExitComplete?: () => void
+  onExitComplete?: () => void,
+  onViewCV?: (rect?: DOMRect | null) => void
 }) => {
   const [isMobile, setIsMobile] = React.useState(false);
   const [isCVModalOpen, setIsCVModalOpen] = React.useState(false);
@@ -102,10 +104,13 @@ export const ProfilePage = ({
   const avatarFigureRef = React.useRef<HTMLDivElement>(null);
 
   const handleViewCV = (e?: React.MouseEvent<HTMLElement>) => {
-    if (e && e.currentTarget) {
-      setCvTriggerRect(e.currentTarget.getBoundingClientRect());
+    const rect = e && e.currentTarget ? e.currentTarget.getBoundingClientRect() : null;
+    if (onViewCV) {
+      onViewCV(rect);
+    } else {
+      setCvTriggerRect(rect);
+      setIsCVModalOpen(true);
     }
-    setIsCVModalOpen(true);
   };
 
   // Preload directional frames (desktop only) vs single center frame (mobile)
@@ -340,7 +345,7 @@ export const ProfilePage = ({
             </div>
 
             <div className="flex flex-col gap-3 sm:gap-6 lg:gap-6 w-full lg:w-auto lg:text-right lg:items-end pointer-events-auto">
-              <p className="text-xs sm:text-sm lg:text-base text-white/70 font-medium leading-relaxed w-full max-w-none lg:max-w-xs xl:max-w-sm font-inter">
+              <p className="hidden lg:block text-xs sm:text-sm lg:text-base text-white/70 font-medium leading-relaxed w-full max-w-none lg:max-w-xs xl:max-w-sm font-inter">
                 Exploring real-time systems, backend architectures, and unconventional ideas.
               </p>
               
@@ -440,32 +445,10 @@ export const ProfilePage = ({
               </div>
             </motion.div>
 
-            {/* MOBILE ONLY: EXPLORE CV SPREAD ACROSS SCREEN WIDTH */}
-            <div className="w-full lg:hidden pointer-events-auto">
-              <button 
-                onClick={handleViewCV}
-                className="group relative block w-full focus:outline-none cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.98]"
-              >
-                <GlassSurface
-                  width="100%"
-                  height={48}
-                  borderRadius={12}
-                  distortionScale={-100}
-                  displace={0.2}
-                  backgroundOpacity={0}
-                  saturation={1.0}
-                  redOffset={5}
-                  greenOffset={5}
-                  blueOffset={15}
-                  className="w-full border border-white/15 group-hover:border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.6)] transition-all bg-white/[0.04]"
-                >
-                  <div className="flex items-center justify-center gap-3 px-6 w-full text-white font-bold font-satoshi text-xs sm:text-sm uppercase tracking-wider transition-colors">
-                    <span>Explore CV</span>
-                    <FileText size={16} className="text-white/80 group-hover:text-red-500 transition-colors" />
-                  </div>
-                </GlassSurface>
-              </button>
-            </div>
+            {/* CALLIGRAPHY SUBTITLE BELOW NAME ON MOBILE */}
+            <p className="block lg:hidden text-center text-lg sm:text-xl text-white/90 font-calligraphy tracking-wide px-4 py-1 leading-snug pointer-events-auto">
+              Exploring real-time systems, backend architectures, and unconventional ideas.
+            </p>
           </div>
         </motion.div>
       </div>

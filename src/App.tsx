@@ -3,6 +3,7 @@ import { Header } from './components/layout/Header';
 import { ProfilePage } from './components/dashboard/ProfilePage';
 import LiquidEther from './components/effects/LiquidEther';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CVViewerModal } from './components/CVViewerModal';
 
 import './styles/index.css';
 
@@ -59,7 +60,14 @@ function App() {
   });
   const [direction, setDirection] = useState<number>(0);
   const [isDockVisible, setIsDockVisible] = useState(false);
+  const [isCVModalOpen, setIsCVModalOpen] = useState(false);
+  const [cvTriggerRect, setCvTriggerRect] = useState<DOMRect | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleOpenCV = (rect?: DOMRect | null) => {
+    setCvTriggerRect(rect || null);
+    setIsCVModalOpen(true);
+  };
 
   // Background prefetch all page chunks during idle time for instantaneous tab switching
   useEffect(() => {
@@ -110,6 +118,7 @@ function App() {
                   <ProfilePage 
                     onExploreProjects={() => handleTabChange('projects')} 
                     isDockVisible={isDockVisible}
+                    onViewCV={handleOpenCV}
                   />
                 );
                 case 'projects': return <RegistryPage />;
@@ -119,6 +128,7 @@ function App() {
                   <ProfilePage 
                     onExploreProjects={() => handleTabChange('projects')} 
                     isDockVisible={isDockVisible}
+                    onViewCV={handleOpenCV}
                   />
                 );
               }
@@ -137,6 +147,7 @@ function App() {
         setActiveTab={handleTabChange} 
         isDockVisible={isDockVisible}
         setIsDockVisible={setIsDockVisible}
+        onViewCV={handleOpenCV}
       />
 
       {/* LIQUID ETHER FLUID SIMULATION BACKGROUND */}
@@ -167,6 +178,15 @@ function App() {
           </div>
         </div>
       </main>
+
+      {/* Windows 11 Document Viewer Window */}
+      <CVViewerModal 
+        isOpen={isCVModalOpen} 
+        onClose={() => setIsCVModalOpen(false)} 
+        triggerRect={cvTriggerRect}
+        pdfUrl="/rohitkumarsahoo_cv.pdf"
+        downloadFilename="rohitkumarsahoo_cv.pdf"
+      />
     </div>
   );
 }
