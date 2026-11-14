@@ -164,36 +164,38 @@ export const ContactPage = () => {
       
 
       {/* Main Content Grid */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-9 min-h-0 relative z-10 pt-6 lg:pt-10">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-9 min-h-0 relative z-10 pt-2 lg:pt-10">
         {/* Left Column (7/12) */}
         <div className="lg:col-span-7 flex flex-col justify-between py-0">
           <div className="relative">
 
-            <h2 ref={containerRef} className="text-[clamp(2.85rem,11.8vw,5.5rem)] sm:text-7xl lg:text-[clamp(3.4rem,5.2vw,5.5rem)] font-extrabold font-satoshi tracking-tight leading-[0.95] mb-4 text-white mt-1 break-words">
-              <VariableProximity label={text1} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
-              <VariableProximity label={text2} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" /><br />
-              <span className="text-red-500">
+            <h2 ref={containerRef} className="font-extrabold font-satoshi tracking-tight mb-2.5 sm:mb-3 text-white mt-1 break-words">
+              <span className="text-[clamp(1.5rem,6.8vw,2.5rem)] sm:text-4xl lg:text-[clamp(2.4rem,3.2vw,3.6rem)] leading-tight whitespace-nowrap block">
+                <VariableProximity label={text1} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />{' '}
+                <VariableProximity label={text2} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
+              </span>
+              <span className="text-red-500 text-[clamp(2.65rem,11.8vw,4.6rem)] sm:text-6xl lg:text-[clamp(3.4rem,5.2vw,5.5rem)] leading-[1.02] sm:leading-[1.08] block">
                 <VariableProximity label={text3} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
               </span>
             </h2>
-            <p className="text-sm sm:text-base text-white/60 max-w-xl font-inter leading-relaxed mb-6">
+            <p className="text-xs sm:text-sm lg:text-base text-white/60 max-w-xl font-inter leading-relaxed mb-3 sm:mb-4">
               I'm always open to collaborations, exciting projects, and impactful ideas.
             </p>
 
             {/* Action Area: Get in Touch + Button */}
-            <div className="flex flex-row items-center gap-4 mt-2 flex-wrap">
-              <span className="text-sm font-satoshi font-semibold text-red-500 tracking-wider uppercase flex items-center gap-2">
+            <div className="flex flex-row items-center gap-3 sm:gap-4 mt-0.5 sm:mt-1 flex-wrap">
+              <span className="text-xs sm:text-sm font-satoshi font-semibold text-red-500 tracking-wider uppercase flex items-center gap-2">
                 <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
                 Get In Touch
               </span>
               
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="group relative flex items-center justify-between gap-4 px-6 py-2.5 rounded-full border border-red-500/40 hover:border-red-500/80 bg-transparent hover:bg-red-500/[0.08] text-white font-bold font-satoshi text-base transition-all duration-300 shadow-[0_0_16px_rgba(239,68,68,0.2)] hover:shadow-[0_0_26px_rgba(239,68,68,0.4)] cursor-pointer active:scale-95"
+                className="group relative flex items-center justify-between gap-3.5 sm:gap-4 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full border border-red-500/40 hover:border-red-500/80 bg-transparent hover:bg-red-500/[0.08] text-white font-bold font-satoshi text-xs sm:text-sm transition-all duration-300 shadow-[0_0_16px_rgba(239,68,68,0.2)] hover:shadow-[0_0_26px_rgba(239,68,68,0.4)] cursor-pointer active:scale-95"
               >
                 <span className="group-hover:text-red-400 transition-colors">Send a Message</span>
-                <div className="w-7 h-7 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
-                  <ArrowRight size={14} className="text-white/50 group-hover:text-red-500 transition-all" />
+                <div className="w-6 h-6 sm:w-7 sm:h-7 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
+                  <ArrowRight size={13} className="text-white/50 group-hover:text-red-500 transition-all" />
                 </div>
               </button>
             </div>
@@ -201,10 +203,12 @@ export const ContactPage = () => {
         </div>
 
         {/* Right Column (5/12) */}
-        <div className="lg:col-span-5 flex flex-col gap-6 py-0">
-          <div className="text-sm font-satoshi font-bold text-white/50 tracking-wider mb-1 mt-1">
-            <span>SOCIALS</span>
-            <div className="w-12 h-0.5 bg-red-500 mt-1" />
+        <div className="lg:col-span-5 flex flex-col py-0 mt-0">
+          <div className="my-4 sm:my-5 lg:my-0 lg:mb-6">
+            <div className="text-xs sm:text-sm font-satoshi font-bold text-white/50 tracking-wider">
+              <span>SOCIALS</span>
+              <div className="w-10 sm:w-12 h-0.5 bg-red-500 mt-1" />
+            </div>
           </div>
 
           {/* Desktop View: Static Glass Cards (Original Design) */}
@@ -256,8 +260,8 @@ export const ContactPage = () => {
           </div>
 
           {/* Mobile View: Accordion OS Socials Deck */}
-          <div className="block lg:hidden w-full pb-4">
-            <SocialsAccordion defaultOpen={0} autoplay={false} />
+          <div className="block lg:hidden w-full pb-24">
+            <SocialsAccordion defaultOpen={0} />
           </div>
         </div>
       </div>

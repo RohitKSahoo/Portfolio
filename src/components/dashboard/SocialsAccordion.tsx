@@ -68,19 +68,24 @@ const DEFAULT_SOCIALS: SocialItem[] = [
 
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
-const MIN_W = 380;
-const MIN_H = 420;
+const MIN_W = 350;
+const MIN_H = 370;
 const PAD = 16;
-const COLUMN = 310;
+const COLUMN = 326;
 const PILL_GAP = 9;
-const PILL_PAD = 14;
 const PHOTO_BLEED = 2;
-const NOTE_W = COLUMN - PILL_PAD * 2 - 2;
+const NOTE_W = COLUMN - 18 * 2 - 2;
 
 const SPRING = { type: 'spring' as const, stiffness: 340, damping: 28, mass: 0.8 };
 const HEIGHT_SPRING = { type: 'spring' as const, stiffness: 340, damping: 34, mass: 0.8 };
-const BOUNCY = { type: 'spring' as const, stiffness: 400, damping: 22 };
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
+
+const FALLBACK_WIDTHS: Record<string, number> = {
+  Email: 104,
+  GitHub: 114,
+  LinkedIn: 124,
+  Instagram: 134,
+};
 
 function posOf(offsetY: unknown): string {
   const o = typeof offsetY === 'number' && Number.isFinite(offsetY) ? Math.max(-250, Math.min(250, offsetY)) : 0;
@@ -105,19 +110,19 @@ function Note({ item, reduce }: { item: SocialItem; reduce: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: h, transition: { height: spring, opacity: { duration: 0.3, delay: 0.08 } } }}
-      exit={{ opacity: 0, height: 0, transition: { height: spring, opacity: { duration: 0.25 } } }}
+      animate={{ opacity: 1, height: h, transition: { height: spring, opacity: { duration: 0.28, delay: 0.06 } } }}
+      exit={{ opacity: 0, height: 0, transition: { height: spring, opacity: { duration: 0.2 } } }}
       style={{ overflowX: 'visible', overflowY: 'clip', width: 0, minWidth: '100%' }}
     >
       <div ref={ref} style={{ paddingTop: 10 }}>
-        <div style={{ boxSizing: 'border-box', width: NOTE_W, paddingLeft: 34 }}>
-          <p className="text-[12px] text-white/70 font-inter leading-relaxed m-0 break-words">
+        <div style={{ boxSizing: 'border-box', width: NOTE_W, paddingLeft: 24 }}>
+          <p className="text-[12px] sm:text-[13px] text-white/80 font-inter leading-relaxed m-0 break-words">
             {item.claim}
           </p>
-          <div className="flex items-center gap-1.5 mt-2.5 pt-2 border-t border-white/10 text-red-400 group-hover:text-red-300 font-satoshi font-semibold text-[11px] tracking-wide transition-colors">
+          <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-white/10 text-red-400 font-satoshi font-semibold text-[11px] tracking-wide">
             <span className="truncate">{item.handle}</span>
             <span className="text-white/40">·</span>
-            <span className="shrink-0 flex items-center gap-0.5 text-white/80">
+            <span className="shrink-0 flex items-center gap-1 text-white/90">
               Click again to open <ArrowUpRight size={12} className="inline text-red-400" />
             </span>
           </div>
@@ -131,8 +136,6 @@ export interface SocialsAccordionProps {
   items?: SocialItem[];
   defaultOpen?: number;
   autoplay?: boolean;
-  interval?: number;
-  pauseOnHover?: boolean;
   radius?: number;
   className?: string;
 }
@@ -140,9 +143,6 @@ export interface SocialsAccordionProps {
 export const SocialsAccordion: React.FC<SocialsAccordionProps> = ({
   items = DEFAULT_SOCIALS,
   defaultOpen = 0,
-  autoplay = false,
-  interval = 4,
-  pauseOnHover = true,
   radius = 20,
   className = '',
 }) => {
@@ -150,11 +150,8 @@ export const SocialsAccordion: React.FC<SocialsAccordionProps> = ({
   const reduce = useReducedMotion();
 
   const rootRef = useRef<HTMLDivElement>(null);
-  const [frame, setFrame] = useState({ w: 380, h: 420 });
+  const [frame, setFrame] = useState({ w: 350, h: 370 });
   const [active, setActive] = useState<number | null>(defaultOpen);
-
-  const pausedRef = useRef(false);
-  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const el = rootRef.current;
@@ -165,12 +162,7 @@ export const SocialsAccordion: React.FC<SocialsAccordionProps> = ({
       }
     });
     ro.observe(el);
-    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting));
-    io.observe(el);
-    return () => {
-      ro.disconnect();
-      io.disconnect();
-    };
+    return () => ro.disconnect();
   }, []);
 
   const cardW = frame.w;
@@ -183,41 +175,8 @@ export const SocialsAccordion: React.FC<SocialsAccordionProps> = ({
     setActive(next);
   }, []);
 
-  const activeRef = useRef(active);
-  activeRef.current = active;
-
-  const step = useCallback(
-    (dir: 1 | -1) => {
-      const prev = activeRef.current;
-      const next = prev === null ? 0 : (prev + dir + n) % n;
-      activeRef.current = next;
-      select(next);
-    },
-    [n, select]
-  );
-
-  useEffect(() => {
-    if (!autoplay || !visible) return;
-    const id = setInterval(() => {
-      if (pauseOnHover && pausedRef.current) return;
-      step(1);
-    }, Math.max(1000, interval * 1000));
-    return () => clearInterval(id);
-  }, [autoplay, visible, pauseOnHover, interval, step]);
-
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    const k = e.key.toLowerCase();
-    if (k === 'arrowdown' || k === 'arrowright' || k === 's') step(1);
-    else if (k === 'arrowup' || k === 'arrowleft' || k === 'w') step(-1);
-    else if (k === 'escape') select(null);
-    else if (/^[1-9]$/.test(k) && +k <= n) select(+k - 1);
-    else return;
-    e.preventDefault();
-  };
-
   const handlePillClick = (i: number, item: SocialItem) => {
     if (active === i) {
-      // Expanded card clicked again -> navigate to link!
       if (item.external) {
         window.open(item.href, '_blank', 'noopener,noreferrer');
       } else {
@@ -247,8 +206,11 @@ export const SocialsAccordion: React.FC<SocialsAccordionProps> = ({
     return () => ro.disconnect();
   }, [n]);
 
-  // Border 1 + padding + 22px icon + 10px gap + 16px brand icon + 10px gap on title
-  const closedW = (i: number) => Math.min(COLUMN, 2 + PILL_PAD * 2 + 22 + 10 + 16 + 10 + (titleW[i] ?? 0));
+  const closedW = (item: SocialItem, i: number) => {
+    const measured = titleW[i];
+    const textW = measured && measured > 20 ? measured : (FALLBACK_WIDTHS[item.title] ? FALLBACK_WIDTHS[item.title] - 46 : 60);
+    return Math.min(COLUMN, Math.max(92, Math.round(textW + 48)));
+  };
 
   const fade = reduce ? { duration: 0 } : { duration: 0.45, ease: EASE_OUT };
   const lastShown = useRef(0);
@@ -260,26 +222,11 @@ export const SocialsAccordion: React.FC<SocialsAccordionProps> = ({
       ref={rootRef}
       tabIndex={0}
       aria-label="Socials showcase accordion"
-      onKeyDown={onKeyDown}
-      onMouseEnter={() => {
-        pausedRef.current = true;
-      }}
-      onMouseLeave={() => {
-        pausedRef.current = false;
-      }}
-      onFocus={() => {
-        pausedRef.current = true;
-      }}
-      onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-          pausedRef.current = false;
-        }
-      }}
-      className={`relative w-full h-[420px] sm:h-[450px] select-none outline-none overflow-hidden ${className}`}
+      className={`relative w-full h-[370px] sm:h-[390px] select-none outline-none overflow-hidden ${className}`}
       style={{
         borderRadius: radius,
         border: '1px solid rgba(255, 255, 255, 0.12)',
-        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.6)',
+        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.65)',
         isolation: 'isolate',
       }}
     >
@@ -314,17 +261,16 @@ export const SocialsAccordion: React.FC<SocialsAccordionProps> = ({
           );
         })}
 
-        {/* Ambient Dark Gradient Overlays for optimal contrast & cyberpunk aesthetic */}
+        {/* Ambient Dark Gradient Overlays */}
         <div
           className="absolute inset-0 pointer-events-none z-[3]"
           style={{
             background:
-              'linear-gradient(135deg, rgba(8, 8, 12, 0.78) 0%, rgba(10, 10, 14, 0.45) 50%, rgba(0, 0, 0, 0.85) 100%)',
+              'linear-gradient(135deg, rgba(8, 8, 12, 0.82) 0%, rgba(10, 10, 14, 0.48) 50%, rgba(0, 0, 0, 0.9) 100%)',
           }}
         />
-        {/* Subtle red atmospheric glow from top-left */}
         <div
-          className="absolute -top-12 -left-12 w-64 h-64 rounded-full pointer-events-none z-[3] opacity-25 blur-3xl"
+          className="absolute -top-12 -left-12 w-52 h-52 rounded-full pointer-events-none z-[3] opacity-25 blur-3xl"
           style={{ background: 'radial-gradient(circle, #ef4444 0%, transparent 70%)' }}
         />
       </div>
@@ -366,7 +312,7 @@ export const SocialsAccordion: React.FC<SocialsAccordionProps> = ({
                 <motion.div
                   key={item.title}
                   initial={false}
-                  animate={titleW.length === n ? { width: open ? COLUMN : closedW(i) } : undefined}
+                  animate={{ width: open ? COLUMN : closedW(item, i) }}
                   transition={reduce ? { duration: 0 } : SPRING}
                   role="button"
                   tabIndex={0}
@@ -379,94 +325,44 @@ export const SocialsAccordion: React.FC<SocialsAccordionProps> = ({
                       handlePillClick(i, item);
                     }
                   }}
-                  whileHover={reduce ? undefined : { scale: open ? 1.01 : 1.03, x: 3 }}
+                  whileHover={reduce ? undefined : { scale: open ? 1.01 : 1.025, x: 2 }}
                   whileTap={reduce ? undefined : { scale: 0.98 }}
                   className="group relative cursor-pointer outline-none overflow-hidden"
                   style={{
                     boxSizing: 'border-box',
                     maxWidth: COLUMN,
-                    padding: `12px ${PILL_PAD}px`,
-                    borderRadius: 22,
-                    background: open ? 'rgba(12, 12, 18, 0.88)' : 'rgba(20, 20, 28, 0.72)',
-                    border: open ? '1px solid rgba(239, 68, 68, 0.55)' : '1px solid rgba(255, 255, 255, 0.16)',
+                    padding: open ? '13px 18px' : '9px 15px',
+                    borderRadius: 20,
+                    background: open ? 'rgba(12, 12, 18, 0.92)' : 'rgba(20, 20, 28, 0.78)',
+                    border: open ? '1px solid rgba(239, 68, 68, 0.65)' : '1px solid rgba(255, 255, 255, 0.16)',
                     backdropFilter: 'blur(16px)',
                     WebkitBackdropFilter: 'blur(16px)',
                     boxShadow: open
-                      ? '0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(239, 68, 68, 0.2)'
-                      : '0 4px 16px rgba(0, 0, 0, 0.3)',
-                    transition: 'background-color .25s ease, border-color .25s ease, box-shadow .25s ease',
+                      ? '0 8px 28px rgba(0, 0, 0, 0.65), 0 0 18px rgba(239, 68, 68, 0.22)'
+                      : '0 2px 10px rgba(0, 0, 0, 0.3)',
+                    transition: 'background-color .25s ease, border-color .25s ease, box-shadow .25s ease, padding .25s ease',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
-                    {/* Expand/Collapse round toggle */}
-                    <motion.div
-                      animate={{
-                        backgroundColor: open ? '#ef4444' : 'rgba(255, 255, 255, 0.12)',
-                        color: '#ffffff',
-                        borderColor: open ? '#ef4444' : 'rgba(255, 255, 255, 0.25)',
-                      }}
-                      transition={BOUNCY}
-                      onClick={(e) => {
-                        if (open) {
-                          e.stopPropagation();
-                          select(null);
-                        }
-                      }}
-                      title={open ? 'Collapse (or click card to open link)' : 'Expand'}
-                      style={{
-                        width: 22,
-                        height: 22,
-                        flexShrink: 0,
-                        boxSizing: 'border-box',
-                        borderRadius: '50%',
-                        border: '1.5px solid',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: open ? '0 0 10px rgba(239, 68, 68, 0.5)' : '0 1px 3px rgba(0,0,0,0.2)',
-                      }}
-                    >
-                      <motion.svg
-                        viewBox="0 0 24 24"
-                        width={13}
-                        height={13}
-                        animate={{ rotate: open ? 135 : 0 }}
-                        transition={BOUNCY}
-                        aria-hidden
-                      >
-                        <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-                        <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-                      </motion.svg>
-                    </motion.div>
-
-                    {/* Brand icon */}
-                    <div className="shrink-0 text-white/80 group-hover:text-red-400 transition-colors">
-                      <Icon size={16} />
-                    </div>
-
-                    {/* Title & Badge */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, width: '100%' }}>
+                    {/* Brand icon and name only (no plus icon) */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                      <Icon size={open ? 16 : 15} className={open ? 'text-red-400 shrink-0' : 'text-white/80 shrink-0 group-hover:text-red-400 transition-colors'} />
                       <span
                         ref={(el) => {
                           titleEls.current[i] = el;
                         }}
-                        className="text-sm font-bold font-satoshi text-white tracking-wide truncate group-hover:text-red-300 transition-colors"
+                        className={`${open ? 'text-sm' : 'text-xs'} font-bold font-satoshi text-white tracking-wide whitespace-nowrap`}
                       >
                         {item.title}
                       </span>
-
-                      {item.badge && (
-                        <motion.span
-                          aria-hidden={!open}
-                          initial={false}
-                          animate={{ opacity: open ? 1 : 0 }}
-                          transition={reduce ? { duration: 0 } : { duration: 0.2, delay: open ? 0.12 : 0 }}
-                          className="text-[11px] font-mono font-bold text-red-400/90 shrink-0"
-                        >
-                          {item.badge}
-                        </motion.span>
-                      )}
                     </div>
+
+                    {/* Badge shown only when open */}
+                    {open && item.badge && (
+                      <span className="text-[11px] font-mono font-bold text-red-400/90 shrink-0 pl-2">
+                        {item.badge}
+                      </span>
+                    )}
                   </div>
 
                   <AnimatePresence initial={false}>
@@ -475,60 +371,6 @@ export const SocialsAccordion: React.FC<SocialsAccordionProps> = ({
                 </motion.div>
               );
             })}
-          </div>
-
-          {/* Stepper Deck at bottom */}
-          <div style={{ marginTop: 'auto', paddingTop: 18 }}>
-            <AnimatePresence>
-              {active !== null && (
-                <motion.div
-                  initial={{ opacity: 0, y: 15, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 15, scale: 0.9 }}
-                  transition={reduce ? { duration: 0 } : BOUNCY}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '4px 6px',
-                    borderRadius: 100,
-                    background: 'rgba(18, 18, 24, 0.78)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)',
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-                  }}
-                >
-                  <button
-                    type="button"
-                    aria-label="Previous social"
-                    onClick={() => step(-1)}
-                    className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white/70 hover:text-white bg-white/10 hover:bg-red-500/20 border border-white/10 hover:border-red-500/40 transition-all cursor-pointer focus:outline-none"
-                  >
-                    <svg viewBox="0 0 24 24" width={13} height={13} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                      <polyline points="18 15 12 9 6 15" />
-                    </svg>
-                  </button>
-
-                  <div className="flex items-center gap-1 h-[26px] px-1 text-[11px] font-mono font-bold text-white/80">
-                    <span className="text-red-400">{String((active ?? 0) + 1).padStart(2, '0')}</span>
-                    <span className="text-white/30">/</span>
-                    <span>{String(n).padStart(2, '0')}</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    aria-label="Next social"
-                    onClick={() => step(1)}
-                    className="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white/70 hover:text-white bg-white/10 hover:bg-red-500/20 border border-white/10 hover:border-red-500/40 transition-all cursor-pointer focus:outline-none"
-                  >
-                    <svg viewBox="0 0 24 24" width={13} height={13} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
         </div>
       </motion.div>

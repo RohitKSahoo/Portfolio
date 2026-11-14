@@ -414,7 +414,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       {/* FULL-VIEWPORT 3D LANYARD (Desktop only, spans right half of viewport) */}
       {!isMobile && typeof document !== 'undefined' && createPortal(
         <div className={`hidden lg:block fixed inset-0 w-screen h-screen z-[5] overflow-hidden transition-opacity duration-300 ${
-          isActive && !isExiting ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none'
+          (isActive || isExiting) ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none'
         }`}>
           <Lanyard
             frontImage={frontTexture || undefined}
@@ -461,7 +461,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
 
           {/* Mobile Lanyard Top Container (Mobile only: lanyard inside top card above experiences) */}
           {isMobile && (
-            <div className={`w-full ${MOBILE_LANYARD_CONFIG.containerHeight} relative rounded-2xl overflow-hidden border border-white/10 bg-[#0d0e10]/80 shadow-[0_8px_32px_rgba(0,0,0,0.6)] shrink-0 mb-3 pointer-events-auto ${isActive ? 'block' : 'hidden'}`}>
+            <div className={`w-full ${MOBILE_LANYARD_CONFIG.containerHeight} relative rounded-2xl overflow-hidden border border-white/10 bg-[#0d0e10]/80 shadow-[0_8px_32px_rgba(0,0,0,0.6)] shrink-0 mb-3 pointer-events-auto ${(isActive || isExiting) ? 'block' : 'hidden'}`}>
               <Lanyard
                 isMobile={true}
                 frontImage={frontTexture || undefined}
@@ -488,6 +488,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
                 githubUrl="https://github.com/RohitKSahoo"
                 companies={DEFAULT_COMPANIES}
                 isExiting={isExiting}
+                onExitComplete={onExitComplete}
                 className="w-full h-full"
               />
             </div>
