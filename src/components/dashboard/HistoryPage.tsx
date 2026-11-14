@@ -26,7 +26,7 @@ if (typeof window !== 'undefined') {
     preloadedAvatar = av;
   };
 
-  ['/papercycle.png', '/enigma.png', '/cttc.png'].forEach(src => {
+  ['/papercycle.png', '/enigma.png', '/cttc.png', '/multiplyy.svg'].forEach(src => {
     const lg = new Image();
     lg.crossOrigin = 'anonymous';
     lg.src = src;
@@ -127,7 +127,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
           img.onerror = () => res(null);
         });
 
-    const logosPromises = ['/papercycle.png', '/enigma.png', '/cttc.png'].map(src => {
+    const logosPromises = ['/papercycle.png', '/enigma.png', '/cttc.png', '/multiplyy.svg'].map(src => {
       if (preloadedLogos[src] && preloadedLogos[src].complete) return Promise.resolve();
       return new Promise<void>(res => {
         const img = new Image();

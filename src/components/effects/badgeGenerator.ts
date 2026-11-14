@@ -16,7 +16,8 @@ export const DEFAULT_COMPANIES: CompanyExperience[] = [
     role: 'Full Stack Developer',
     period: 'Aug 2026 - Present',
     url: 'https://www.linkedin.com/in/rohitksahoo/',
-    logo: 'MY'
+    logo: 'MY',
+    logoUrl: '/multiplyy.svg'
   },
   {
     name: 'Papercycle',
