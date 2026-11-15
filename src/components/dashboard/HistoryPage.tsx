@@ -427,9 +427,9 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
             finish="metallic"
             orientation="landscape"
             cornerRadius={0.1}
-            size={0.58}
-            anchor={0.735}
-            strapLength={0.27}
+            size={0.55}
+            anchor={0.74}
+            strapLength={0.35}
             gravity={0.65}
             damping={0.2}
             elasticity={0.9}
@@ -581,7 +581,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
                           <span className="text-xs font-mono text-red-500/80 font-bold block mb-2 tracking-wider">
                             {item.category}
                           </span>
-                          <ul className="text-sm sm:text-base text-white/65 space-y-2 list-disc list-inside font-inter leading-relaxed">
+                          <ul className="text-sm sm:text-base text-white/65 lg:text-white lg:[&_strong]:underline lg:[&_strong]:underline-offset-2 space-y-2 list-disc list-inside font-inter leading-relaxed">
                             {item.points.map((pt, pIdx) => (
                               <li key={pIdx}>{pt}</li>
                             ))}

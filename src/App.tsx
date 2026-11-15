@@ -377,7 +377,7 @@ function App() {
           } pointer-events-none`} 
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
-          <div className={`max-w-[1600px] w-full mx-auto pointer-events-none ${
+          <div className={`${activeTab === 'projects' ? 'max-w-[1720px]' : 'max-w-[1600px]'} w-full mx-auto pointer-events-none ${
             isProfileLocked ? 'flex-1 flex flex-col' : ''
           }`}>
              {renderContent()}

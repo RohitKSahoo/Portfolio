@@ -30,7 +30,7 @@ def extract_all():
     sheets = [
         ('up', 'public/assets/Head_Directions_2.jpg', [
             'dir_up-far-left', 'dir_up-mid-left', 'dir_up-left', 'dir_up',
-            'dir_up-right', 'dir_up-mid-right', 'dir_up-far-right'
+            None, 'dir_up-mid-right', 'dir_up-far-right'
         ]),
         ('center', 'public/assets/Head_directions_1.jpg', [
             'dir_far-left', 'dir_mid-left', 'dir_left', 'dir_center',
@@ -38,7 +38,7 @@ def extract_all():
         ]),
         ('down', 'public/assets/Head_directions_3.jpg', [
             'dir_down-far-left', 'dir_down-mid-left', 'dir_down-left', 'dir_down',
-            'dir_down-right', 'dir_down-mid-right', 'dir_down-far-right'
+            None, 'dir_down-mid-right', 'dir_down-far-right'
         ])
     ]
     

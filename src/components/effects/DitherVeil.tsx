@@ -537,7 +537,9 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
     if (!container) return undefined;
 
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio || 1, 2), alpha: true, antialias: false });
+    const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
+    const targetDpr = isMobileDevice ? 1.2 : Math.min(window.devicePixelRatio || 1, 2);
+    const renderer = new Renderer({ dpr: targetDpr, alpha: true, antialias: false });
     const gl = renderer.gl;
     const canvas = gl.canvas;
     canvas.style.display = 'block';

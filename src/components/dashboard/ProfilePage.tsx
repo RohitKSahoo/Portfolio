@@ -11,7 +11,6 @@ const DIRECTIONS = [
   'up-mid-left',
   'up-left',
   'up',
-  'up-right',
   'up-mid-right',
   'up-far-right',
   'far-left',
@@ -24,7 +23,6 @@ const DIRECTIONS = [
   'down-mid-left',
   'down-left',
   'down',
-  'down-right',
   'down-mid-right',
   'down-far-right',
 ] as const;
@@ -58,8 +56,7 @@ function calculateDirection(dx: number, dy: number): Direction {
     if (col === -2) return 'up-mid-left';
     if (col === -1) return 'up-left';
     if (col === 0) return 'up';
-    if (col === 1) return 'up-right';
-    if (col === 2) return 'up-mid-right';
+    if (col === 1 || col === 2) return 'up-mid-right';
     return 'up-far-right';
   }
   if (row === 1) {
@@ -67,8 +64,7 @@ function calculateDirection(dx: number, dy: number): Direction {
     if (col === -2) return 'down-mid-left';
     if (col === -1) return 'down-left';
     if (col === 0) return 'down';
-    if (col === 1) return 'down-right';
-    if (col === 2) return 'down-mid-right';
+    if (col === 1 || col === 2) return 'down-mid-right';
     return 'down-far-right';
   }
 
@@ -149,9 +145,9 @@ export const ProfilePage = ({
     // Background preload all remaining frames ONLY on desktop with mouse
     if (isFinePointer) {
       const directionsList: Direction[] = [
-        'up-far-left', 'up-mid-left', 'up-left', 'up', 'up-right', 'up-mid-right', 'up-far-right',
+        'up-far-left', 'up-mid-left', 'up-left', 'up', 'up-mid-right', 'up-far-right',
         'far-left', 'mid-left', 'left', 'center', 'right', 'far-right',
-        'down-far-left', 'down-mid-left', 'down-left', 'down', 'down-right', 'down-mid-right', 'down-far-right'
+        'down-far-left', 'down-mid-left', 'down-left', 'down', 'down-mid-right', 'down-far-right'
       ];
       directionsList.forEach(name => {
         if (name === 'center') return;

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Github, Linkedin, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
 import VariableProximity from '../effects/VariableProximity';
 import { SocialsAccordion } from './SocialsAccordion';
+import { MagicBentoCard } from '../effects/MagicBento';
 
 const SOCIALS = [
   {
@@ -166,14 +167,14 @@ export const ContactPage = () => {
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-9 min-h-0 relative z-10 pt-2 lg:pt-10">
         {/* Left Column (7/12) */}
         <div className="lg:col-span-7 flex flex-col justify-between py-0">
-          <div className="relative">
+          <div className="relative pt-1 sm:pt-2 lg:pt-6">
 
-            <h2 ref={containerRef} className="font-extrabold font-satoshi tracking-tight mb-2.5 sm:mb-3 text-white mt-1 break-words">
-              <span className="text-[clamp(1.5rem,6.8vw,2.5rem)] sm:text-4xl lg:text-[clamp(2.9rem,4vw,4.6rem)] leading-tight whitespace-nowrap block">
+            <h2 ref={containerRef} className="font-extrabold font-satoshi tracking-tight mb-3 sm:mb-4 lg:mb-5 text-white mt-1 break-words">
+              <span className="text-[clamp(1.75rem,7vw,2.8rem)] sm:text-5xl lg:text-[clamp(3.4rem,4.6vw,5.4rem)] leading-tight whitespace-nowrap block">
                 <VariableProximity label={text1} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />{' '}
                 <VariableProximity label={text2} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
               </span>
-              <span className="text-red-500 font-alex font-normal text-[clamp(3.8rem,16.5vw,6.5rem)] sm:text-7xl lg:text-[clamp(6rem,8.8vw,9.8rem)] leading-[0.98] sm:leading-[1] lg:leading-[0.92] block -mt-1 sm:-mt-2 lg:-mt-3">
+              <span className="text-red-500 font-alex font-normal text-[clamp(4.2rem,17.5vw,7.2rem)] sm:text-8xl lg:text-[clamp(6.8rem,9.6vw,11rem)] leading-[0.98] sm:leading-[1] lg:leading-[0.92] block mt-1 sm:mt-2 lg:mt-3">
                 <VariableProximity 
                   label={text3} 
                   containerRef={containerRef} 
@@ -185,12 +186,12 @@ export const ContactPage = () => {
                 />
               </span>
             </h2>
-            <p className="text-xs sm:text-sm lg:text-base text-white/60 max-w-xl font-inter leading-relaxed mb-3 sm:mb-4">
+            <p className="text-xs sm:text-sm lg:text-base text-white/60 max-w-xl font-inter leading-relaxed mt-4 sm:mt-5 lg:mt-6 mb-4 sm:mb-5 lg:mb-6">
               I'm always open to collaborations, exciting projects, and impactful ideas.
             </p>
 
             {/* Action Area: Get in Touch + Button */}
-            <div className="flex flex-row items-center gap-3 sm:gap-4 mt-0.5 sm:mt-1 flex-wrap">
+            <div className="flex flex-row items-center gap-3 sm:gap-4 mt-2 sm:mt-3 lg:mt-5 flex-wrap">
               <span className="text-xs sm:text-sm font-satoshi font-semibold text-red-500 tracking-wider uppercase flex items-center gap-2">
                 <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
                 Get In Touch
@@ -218,7 +219,7 @@ export const ContactPage = () => {
             </div>
           </div>
 
-          {/* Desktop View: Transparent Social Cards */}
+          {/* Desktop View: Social Cards matching Project Cards style */}
           <div className="hidden lg:flex flex-col gap-6">
             {SOCIALS.map((social) => {
               const Icon = social.icon;
@@ -227,9 +228,16 @@ export const ContactPage = () => {
                   key={social.name}
                   href={social.href}
                   {...(social.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className="group relative block focus:outline-none cursor-pointer rounded-2xl border border-white/10 hover:border-red-500/40 bg-white/[0.02] hover:bg-white/[0.05] p-5 sm:p-6 w-full transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_0_25px_rgba(239,68,68,0.15)]"
+                  className="group relative block focus:outline-none cursor-pointer rounded-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
                 >
-                  <div className="w-full flex items-center justify-between">
+                  <MagicBentoCard
+                    particleCount={0}
+                    glowColor="239, 68, 68"
+                    enableTilt={false}
+                    enableMagnetism={false}
+                    clickEffect={false}
+                    className="w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-[#0e1017]/45 hover:bg-[#121520]/60 backdrop-blur-xl border border-white/10 hover:border-red-500/40 shadow-[0_10px_35px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.08)] transition-all duration-500"
+                  >
                     <div className="flex items-center gap-5">
                       <div className="p-4 bg-red-500/10 text-red-500 rounded-xl group-hover:bg-red-500/20 group-hover:scale-105 transition-all">
                         <Icon size={26} />
@@ -246,7 +254,7 @@ export const ContactPage = () => {
                     <div className="w-9 h-9 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
                       <ArrowRight size={16} className="text-white/50 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all" />
                     </div>
-                  </div>
+                  </MagicBentoCard>
                 </a>
               );
             })}

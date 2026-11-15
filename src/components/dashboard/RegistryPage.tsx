@@ -14,35 +14,8 @@ import {
 } from 'lucide-react';
 import Folder, { type FolderEntry } from '../effects/Folder';
 import { MagicBentoCard } from '../effects/MagicBento';
+import { FastTypingText } from '../effects/FastTypingText';
 import { PROJECTS } from './data';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.02,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { 
-    opacity: 0, 
-    y: 24,
-  },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: {
-      type: 'spring',
-      stiffness: 280,
-      damping: 26,
-      mass: 0.8
-    },
-  },
-};
 
 export const RegistryPage = () => {
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
@@ -214,12 +187,9 @@ export const RegistryPage = () => {
   }, []);
 
   const projectRows = React.useMemo(() => {
-    const rows: { left: typeof PROJECTS[0]; right?: typeof PROJECTS[0] }[] = [];
-    for (let i = 0; i < PROJECTS.length; i += 2) {
-      rows.push({
-        left: PROJECTS[i],
-        right: PROJECTS[i + 1]
-      });
+    const rows: (typeof PROJECTS[0])[][] = [];
+    for (let i = 0; i < PROJECTS.length; i += 3) {
+      rows.push(PROJECTS.slice(i, i + 3));
     }
     return rows;
   }, []);
@@ -228,16 +198,13 @@ export const RegistryPage = () => {
     project: typeof PROJECTS[0],
     isExpanded: boolean,
     isSiblingExpanded: boolean,
-    isRightSide: boolean
+    origin: string = 'origin-left'
   ) => {
     return (
-      <motion.div
+      <div
         key={project.id}
         ref={(el) => { cardRefs.current[project.id] = el; }}
-        variants={cardVariants}
-        className={`w-full min-w-0 transition-opacity duration-500 ${
-          isRightSide ? 'origin-right' : 'origin-left'
-        } ${
+        className={`w-full min-w-0 transition-opacity duration-500 ${origin} ${
           isExpanded
             ? 'opacity-100 z-20 h-auto overflow-visible'
             : isSiblingExpanded
@@ -251,12 +218,12 @@ export const RegistryPage = () => {
           enableTilt={false}
           enableMagnetism={false}
           clickEffect={false}
-          className={`w-full flex flex-col gap-3 group relative rounded-2xl border transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          className={`w-full flex flex-col gap-2.5 group relative rounded-2xl border transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
             isExpanded
-              ? 'p-6 sm:p-8 pt-5 sm:pt-6 bg-[#0a0a0d] border-red-500/50 shadow-[0_20px_70px_rgba(0,0,0,0.85),0_0_30px_rgba(239,68,68,0.15)] h-auto'
+              ? 'p-6 sm:p-8 pt-5 sm:pt-6 bg-[#0c0d14]/85 backdrop-blur-2xl border-red-500/50 shadow-[0_20px_70px_rgba(0,0,0,0.85),0_0_35px_rgba(239,68,68,0.18),inset_0_1px_0_rgba(255,255,255,0.1)] h-auto'
               : isSiblingExpanded
                 ? '!p-0 !m-0 !border-0 opacity-0 overflow-hidden pointer-events-none'
-                : 'p-5 bg-[#0d0d0d] border-white/5 hover:border-white/10 cursor-pointer h-auto min-h-[160px]'
+                : 'p-4 sm:p-5 bg-[#0e1017]/45 hover:bg-[#121520]/60 backdrop-blur-xl border-white/10 hover:border-red-500/40 shadow-[0_10px_35px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.08)] cursor-pointer h-auto min-h-[148px]'
           }`}
           onClick={() => {
             if (!isExpanded) {
@@ -309,17 +276,19 @@ export const RegistryPage = () => {
             {/* Left Column: Persistent Header + (Compact Preview or Expanded Dossier) */}
             <div className="flex flex-col w-full">
               {/* Persistent Header: Folder + Title + Stack (Never unmounts!) */}
-              <div className={`flex flex-col lg:flex-row items-center ${isExpanded ? 'lg:items-center gap-5 pt-1 pl-2' : 'gap-6'} transition-all duration-300`}>
+              <div className={`flex flex-col lg:flex-row items-center ${isExpanded ? 'lg:items-center gap-5 pt-1 pl-2' : 'gap-4 sm:gap-5'} transition-all duration-300`}>
                 <div className="relative shrink-0 pl-1 pt-1">
                   <Folder
                     mode="flap"
-                    variant="matte"
+                    variant="glass"
                     color="#EF4444"
-                    size={0.38}
+                    size={isExpanded ? 0.48 : 0.43}
                     label={project.name}
                     items={folderItemsMap.get(project.id)}
                     theme="dark"
                     open={isExpanded}
+                    intro={true}
+                    introDelay={PROJECTS.findIndex(p => p.id === project.id) * 0.08}
                     onItemClick={(item, index) => console.log(item, index)}
                   />
                 </div>
@@ -328,11 +297,11 @@ export const RegistryPage = () => {
                   isExpanded ? 'lg:ml-8' : ''
                 }`}>
                   <h3 className={`font-bold font-satoshi tracking-tight transition-colors ${
-                    isExpanded ? 'text-2xl lg:text-3xl text-red-500' : 'text-xl text-white group-hover:text-red-500'
+                    isExpanded ? 'text-2xl lg:text-3xl text-red-500' : 'text-base lg:text-xl text-white group-hover:text-red-500'
                   }`}>
                     {project.name}
                   </h3>
-                  <div className="flex flex-wrap gap-1.5 mt-2 justify-center lg:justify-start">
+                  <div className="flex flex-wrap gap-1.5 mt-1.5 justify-center lg:justify-start">
                     {project.stack.slice(0, isExpanded ? 6 : 3).map(tech => (
                       <span key={tech} className="text-[0.62rem] font-satoshi font-medium text-white/50 border border-white/10 px-2 py-0.5 rounded uppercase tracking-wider bg-white/[0.02]">
                         {tech}
@@ -341,24 +310,6 @@ export const RegistryPage = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Compact Preview (Smooth exit when expanding, smooth enter when collapsing) */}
-              <AnimatePresence initial={false}>
-                {!isExpanded && (
-                  <motion.div
-                    key="compact-preview"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.35, ease: 'easeOut' }}
-                    className="hidden lg:flex flex-col gap-2 mt-2 pt-4 border-t border-white/5 opacity-60 group-hover:opacity-100 transition-opacity overflow-hidden"
-                  >
-                    <p className="text-xs text-white/60 font-inter leading-relaxed line-clamp-2">
-                      {project.architecture}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
 
               {/* Expanded Dossier */}
               <AnimatePresence initial={false}>
@@ -381,7 +332,7 @@ export const RegistryPage = () => {
                         <span>{project.category || 'SYSTEMS'}</span>
                       </div>
                       <p className="text-sm sm:text-base text-white/85 leading-relaxed font-sans">
-                        {project.primaryDescription}
+                        <FastTypingText text={project.primaryDescription} delay={140} speed={8} charsPerTick={2} />
                       </p>
                     </div>
 
@@ -391,7 +342,7 @@ export const RegistryPage = () => {
                         Architecture Blueprint
                       </span>
                       <p className="text-xs sm:text-sm text-white/60 font-inter leading-relaxed">
-                        {project.architecture}
+                        <FastTypingText text={project.architecture} delay={280} speed={8} charsPerTick={2} />
                       </p>
                     </div>
 
@@ -405,7 +356,7 @@ export const RegistryPage = () => {
                           {project.details.map((detail, idx) => (
                             <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm text-white/70">
                               <span className="text-red-500 font-mono text-sm leading-none mt-0.5">›</span>
-                              <span>{detail}</span>
+                              <FastTypingText text={detail} delay={380 + idx * 70} speed={6} charsPerTick={3} />
                             </li>
                           ))}
                         </ul>
@@ -534,7 +485,7 @@ export const RegistryPage = () => {
             </AnimatePresence>
           </div>
         </MagicBentoCard>
-      </motion.div>
+      </div>
     );
   };
 
@@ -553,17 +504,16 @@ export const RegistryPage = () => {
         {isMobile ? (
           <motion.div 
             key="mobile-grid"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
             className="grid grid-cols-2 gap-3.5 pt-2 pb-28 relative"
           >
             {PROJECTS.map((project, idx) => (
-              <motion.button
+              <button
                 key={project.id}
-                variants={cardVariants}
                 onClick={(e) => handleCardClick(project.id, e)}
-                className="group relative flex flex-col items-center justify-between p-3.5 rounded-2xl bg-[#0c0d10]/85 border border-white/10 hover:border-red-500/40 active:scale-[0.95] transition-colors duration-200 overflow-hidden text-center cursor-pointer shadow-[0_8px_24px_rgba(0,0,0,0.5)] focus:outline-none min-h-[164px]"
+                className="group relative flex flex-col items-center justify-between p-3.5 rounded-2xl bg-[#0e1017]/55 backdrop-blur-xl border border-white/10 hover:border-red-500/40 active:scale-[0.95] transition-all duration-200 overflow-hidden text-center cursor-pointer shadow-[0_8px_24px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.06)] focus:outline-none min-h-[178px]"
               >
                 {/* Header: Index & Status */}
                 <div className="w-full flex items-center justify-between text-[10px] font-mono text-white/40 mb-1">
@@ -582,12 +532,14 @@ export const RegistryPage = () => {
                 <div className="py-2 flex items-center justify-center shrink-0">
                   <Folder
                     mode="flap"
-                    variant="matte"
+                    variant="glass"
                     color="#EF4444"
-                    size={0.34}
+                    size={0.41}
                     label={project.name}
                     items={folderItemsMap.get(project.id)}
                     theme="dark"
+                    intro={true}
+                    introDelay={idx * 0.08}
                     onItemClick={(item, index) => console.log(item, index)}
                   />
                 </div>
@@ -601,44 +553,45 @@ export const RegistryPage = () => {
                     {project.category || project.stack[0]}
                   </span>
                 </div>
-              </motion.button>
+              </button>
             ))}
           </motion.div>
         ) : (
           <motion.div
             key="desktop-grid"
             ref={gridRef}
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
             className="flex flex-col gap-6 pt-4 relative w-full"
           >
             {projectRows.map((row, rowIndex) => {
-              const isLeftExpanded = !isMobile && selectedId === row.left.id;
-              const isRightExpanded = !isMobile && !!row.right && selectedId === row.right.id;
-              const hasExpandedInRow = isLeftExpanded || isRightExpanded;
+              const expandedIndex = row.findIndex(p => !isMobile && selectedId === p.id);
+              const hasExpandedInRow = expandedIndex !== -1;
 
-              const gridTemplateColumns = isLeftExpanded
-                ? '100% 0%'
-                : isRightExpanded
-                  ? '0% 100%'
-                  : 'calc(50% - 12px) calc(50% - 12px)';
+              const gridTemplateColumns = hasExpandedInRow
+                ? [0, 1, 2].map(i => i === expandedIndex ? '100%' : '0%').join(' ')
+                : 'calc((100% - 36px) / 3) calc((100% - 36px) / 3) calc((100% - 36px) / 3)';
 
-              const gridGap = hasExpandedInRow ? '0px' : '24px';
+              const gridGap = hasExpandedInRow ? '0px' : '18px';
 
               return (
                 <div
                   key={`row-${rowIndex}`}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: row.right ? gridTemplateColumns : (isLeftExpanded ? '100%' : 'calc(50% - 12px)'),
-                    gap: row.right ? gridGap : '0px',
+                    gridTemplateColumns,
+                    gap: gridGap,
                     transition: 'grid-template-columns 700ms cubic-bezier(0.16, 1, 0.3, 1), gap 700ms cubic-bezier(0.16, 1, 0.3, 1)'
                   }}
                   className="w-full items-start relative"
                 >
-                  {renderProjectCard(row.left, isLeftExpanded, isRightExpanded, false)}
-                  {row.right && renderProjectCard(row.right, isRightExpanded, isLeftExpanded, true)}
+                  {row.map((project, cardIndex) => {
+                    const isExpanded = !isMobile && selectedId === project.id;
+                    const isSiblingExpanded = hasExpandedInRow && !isExpanded;
+                    const origin = cardIndex === 0 ? 'origin-left' : cardIndex === 1 ? 'origin-center' : 'origin-right';
+                    return renderProjectCard(project, isExpanded, isSiblingExpanded, origin);
+                  })}
                 </div>
               );
             })}
@@ -797,7 +750,7 @@ export const RegistryPage = () => {
 
                     {/* Main Description */}
                     <p className="text-sm sm:text-base text-white/60 leading-relaxed font-sans mb-6 sm:mb-8 max-w-xl">
-                      {activeProject.primaryDescription}
+                      <FastTypingText text={activeProject.primaryDescription} delay={140} speed={8} charsPerTick={2} />
                     </p>
 
                     {/* Core Capabilities */}
@@ -811,7 +764,7 @@ export const RegistryPage = () => {
                       {(activeProject.details || []).map((detail, idx) => (
                         <li key={idx} className="flex items-center gap-3 text-sm text-white/80 font-sans">
                           <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-                          <span>{detail}</span>
+                          <FastTypingText text={detail} delay={300 + idx * 70} speed={6} charsPerTick={3} />
                         </li>
                       ))}
                     </ul>
