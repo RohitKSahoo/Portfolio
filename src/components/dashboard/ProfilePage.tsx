@@ -5,14 +5,12 @@ import { Zap, FileText } from 'lucide-react';
 import { DitherVeil } from '../effects/DitherVeil';
 import { TechText } from '../effects/TechText';
 import { CVViewerModal } from '../CVViewerModal';
-import GlassSurface from '../effects/GlassSurface';
 
 const DIRECTIONS = [
   'up-far-left',
   'up-mid-left',
   'up-left',
   'up',
-  'up-right',
   'up-mid-right',
   'up-far-right',
   'far-left',
@@ -25,7 +23,6 @@ const DIRECTIONS = [
   'down-mid-left',
   'down-left',
   'down',
-  'down-right',
   'down-mid-right',
   'down-far-right',
 ] as const;
@@ -59,8 +56,7 @@ function calculateDirection(dx: number, dy: number): Direction {
     if (col === -2) return 'up-mid-left';
     if (col === -1) return 'up-left';
     if (col === 0) return 'up';
-    if (col === 1) return 'up-right';
-    if (col === 2) return 'up-mid-right';
+    if (col === 1 || col === 2) return 'up-mid-right';
     return 'up-far-right';
   }
   if (row === 1) {
@@ -68,8 +64,7 @@ function calculateDirection(dx: number, dy: number): Direction {
     if (col === -2) return 'down-mid-left';
     if (col === -1) return 'down-left';
     if (col === 0) return 'down';
-    if (col === 1) return 'down-right';
-    if (col === 2) return 'down-mid-right';
+    if (col === 1 || col === 2) return 'down-mid-right';
     return 'down-far-right';
   }
 
@@ -100,6 +95,16 @@ export const ProfilePage = ({
   const [cvTriggerRect, setCvTriggerRect] = React.useState<DOMRect | null>(null);
   const [isAvatarLoaded, setIsAvatarLoaded] = React.useState(false);
   const [direction, setDirection] = React.useState<Direction>('center');
+  const [nameBounds, setNameBounds] = React.useState<{ left: number; right: number } | null>(null);
+
+  const handleNameLayout = React.useCallback((bounds: { left: number; right: number }) => {
+    setNameBounds(prev => {
+      if (prev && Math.abs(prev.left - bounds.left) < 1 && Math.abs(prev.right - bounds.right) < 1) {
+        return prev;
+      }
+      return { left: Math.round(bounds.left), right: Math.round(bounds.right) };
+    });
+  }, []);
 
   const avatarFigureRef = React.useRef<HTMLDivElement>(null);
 
@@ -140,9 +145,9 @@ export const ProfilePage = ({
     // Background preload all remaining frames ONLY on desktop with mouse
     if (isFinePointer) {
       const directionsList: Direction[] = [
-        'up-far-left', 'up-mid-left', 'up-left', 'up', 'up-right', 'up-mid-right', 'up-far-right',
+        'up-far-left', 'up-mid-left', 'up-left', 'up', 'up-mid-right', 'up-far-right',
         'far-left', 'mid-left', 'left', 'center', 'right', 'far-right',
-        'down-far-left', 'down-mid-left', 'down-left', 'down', 'down-right', 'down-mid-right', 'down-far-right'
+        'down-far-left', 'down-mid-left', 'down-left', 'down', 'down-mid-right', 'down-far-right'
       ];
       directionsList.forEach(name => {
         if (name === 'center') return;
@@ -191,30 +196,6 @@ export const ProfilePage = ({
       window.removeEventListener('scroll', aim);
     };
   }, []);
-
-  React.useEffect(() => {
-    // Only dispatch heavy multi-stage fluid shockwave burst on desktop GPUs to eliminate mobile load lag
-    if (isAvatarLoaded && !isMobile) {
-      const timer = setTimeout(() => {
-        window.dispatchEvent(
-          new CustomEvent('liquid-ether-surge', {
-            detail: { origin: 'top-left', intensity: 1.4 }
-          })
-        );
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isAvatarLoaded, isMobile]);
-
-  React.useEffect(() => {
-    if (isExiting) {
-      window.dispatchEvent(
-        new CustomEvent('liquid-ether-surge', {
-          detail: { origin: 'bottom-center', intensity: 1 }
-        })
-      );
-    }
-  }, [isExiting]);
 
   const activeAvatarSrc = `/avatar-frames/dir_${isMobile ? 'center' : direction}.png?v=5`;
 
@@ -355,50 +336,18 @@ export const ProfilePage = ({
               <div className="hidden lg:flex flex-col gap-2.5 sm:gap-3 lg:self-end pointer-events-auto w-52 sm:w-auto">
                 <button 
                   onClick={onExploreProjects}
-                  className="group relative block w-full sm:w-auto focus:outline-none cursor-pointer rounded-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                  className="group relative flex items-center justify-between gap-3.5 h-[46px] px-6 w-full sm:w-auto rounded-xl border border-red-500/40 hover:border-red-500/80 bg-red-500/[0.04] hover:bg-red-500/[0.12] text-white font-bold font-satoshi text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-[0_0_18px_rgba(239,68,68,0.15)] hover:shadow-[0_0_25px_rgba(239,68,68,0.35)]"
                 >
-                  <GlassSurface
-                    width="100%"
-                    height={46}
-                    borderRadius={10}
-                    distortionScale={-100}
-                    displace={0.3}
-                    backgroundOpacity={0}
-                    saturation={1.3}
-                    redOffset={20}
-                    greenOffset={5}
-                    blueOffset={10}
-                    className="w-full sm:w-auto border border-red-500/40 group-hover:border-red-500/80 shadow-[0_0_20px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_28px_rgba(239,68,68,0.45)] transition-all"
-                  >
-                    <div className="flex items-center justify-between gap-3.5 px-6 w-full text-white font-bold font-satoshi text-xs sm:text-sm uppercase tracking-wider">
-                      <span className="group-hover:text-red-400 transition-colors truncate">Explore Projects</span>
-                      <Zap size={15} className="text-red-500 group-hover:scale-110 transition-transform shrink-0" fill="currentColor" />
-                    </div>
-                  </GlassSurface>
+                  <span className="group-hover:text-red-400 transition-colors truncate">Explore Projects</span>
+                  <Zap size={15} className="text-red-500 group-hover:scale-110 transition-transform shrink-0" fill="currentColor" />
                 </button>
                 
                 <button 
                   onClick={handleViewCV}
-                  className="group relative block w-full sm:w-auto focus:outline-none cursor-pointer rounded-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                  className="group relative flex items-center justify-between gap-3.5 h-[46px] px-6 w-full sm:w-auto rounded-xl border border-white/15 hover:border-white/30 bg-white/[0.02] hover:bg-white/[0.08] text-white/80 hover:text-white font-bold font-satoshi text-xs sm:text-sm uppercase tracking-wider transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
                 >
-                  <GlassSurface
-                    width="100%"
-                    height={46}
-                    borderRadius={10}
-                    distortionScale={-100}
-                    displace={0.2}
-                    backgroundOpacity={0}
-                    saturation={1.0}
-                    redOffset={5}
-                    greenOffset={5}
-                    blueOffset={15}
-                    className="w-full sm:w-auto border border-white/10 group-hover:border-white/25 shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-all"
-                  >
-                    <div className="flex items-center justify-between gap-3.5 px-6 w-full text-white/80 group-hover:text-white font-bold font-satoshi text-xs sm:text-sm uppercase tracking-wider transition-colors">
-                      <span className="truncate">Explore CV</span>
-                      <FileText size={15} className="group-hover:text-red-500 transition-colors shrink-0" />
-                    </div>
-                  </GlassSurface>
+                  <span className="truncate">Explore CV</span>
+                  <FileText size={15} className="text-white/60 group-hover:text-red-500 transition-colors shrink-0" />
                 </button>
               </div>
             </div>
@@ -407,7 +356,7 @@ export const ProfilePage = ({
           {/* BOTTOM REGION: NAME OVER FOG */}
           <div className="mt-auto w-full flex flex-col items-center gap-0 sm:gap-1 pb-3 sm:pb-2 mb-2 sm:mb-0 pointer-events-none">
             {/* INTRODUCTORY HANDWRITTEN KICKER ABOVE NAME */}
-            <motion.span 
+            <motion.div 
               initial={{ opacity: 0, y: 25 }}
               animate={{ 
                 y: isMobile ? 0 : (isDockVisible ? -25 : 65),
@@ -415,10 +364,40 @@ export const ProfilePage = ({
               }}
               exit={{ opacity: 0, y: 35, transition: { duration: 0.18 } }}
               transition={{ type: "spring", stiffness: 200, damping: 30 }}
-              className="font-amatic text-[23px] sm:text-3xl lg:text-4xl text-red-500 font-bold tracking-widest text-center pointer-events-auto select-none"
+              className="w-full pointer-events-auto select-none"
             >
-              Designing real-time architectures — I'm
-            </motion.span>
+              {isMobile ? (
+                /* Mobile: Centered sentence by default */
+                <div className="w-full flex justify-center">
+                  <span className="font-amatic text-[33px] sm:text-3xl text-red-500 font-bold tracking-widest text-center">
+                    Nice to meet you ! I'm
+                  </span>
+                </div>
+              ) : (
+                /* Desktop: Divided on both sides of avatar, aligned exactly with the name's start and end points */
+                <div 
+                  className="relative w-full h-11 lg:h-14 transition-opacity duration-200"
+                  style={{ opacity: nameBounds ? 1 : 0 }}
+                >
+                  {nameBounds && (
+                    <>
+                      <span 
+                        style={{ left: `${nameBounds.left}px` }}
+                        className="absolute top-0 font-amatic text-4xl lg:text-5xl text-red-500 font-bold tracking-widest whitespace-nowrap"
+                      >
+                        Nice to meet you !
+                      </span>
+                      <span 
+                        style={{ left: `${nameBounds.right}px`, transform: 'translateX(-100%)' }}
+                        className="absolute top-0 font-amatic text-4xl lg:text-5xl text-red-500 font-bold tracking-widest whitespace-nowrap"
+                      >
+                      the name is
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
+            </motion.div>
 
             {/* NAME BANNER */}
             <motion.div 
@@ -448,6 +427,7 @@ export const ProfilePage = ({
                   specks={isMobile ? 12 : 15}
                   intro="scramble"
                   introDuration={isMobile ? 1.8 : 2.2}
+                  onLayout={handleNameLayout}
                   clickKick={true}
                   draggable={!isMobile}
                   selection={!isMobile}

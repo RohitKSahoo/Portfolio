@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Header } from './components/layout/Header';
 import { ProfilePage } from './components/dashboard/ProfilePage';
-import LiquidEther from './components/effects/LiquidEther';
+import HeroBackground from './components/effects/HeroBackground';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CVViewerModal } from './components/CVViewerModal';
 
@@ -20,7 +20,6 @@ const ContactPage = lazy(loadContact);
 
 inject();
 
-const LIQUID_COLORS = ['#5227FF', '#FF9FFC', '#B497CF'];
 const TAB_ORDER = ['profile', 'projects', 'experience', 'contact'];
 
 const getTabFromLocation = (): string => {
@@ -87,6 +86,7 @@ function App() {
   const [pendingTab, setPendingTab] = useState<string | null>(null);
   const [isHistoryExiting, setIsHistoryExiting] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
+  const [hasVisitedExperience, setHasVisitedExperience] = useState(() => activeTab === 'experience');
   const exitTimeoutRef = useRef<number | null>(null);
 
   const activeTabRef = useRef(activeTab);
@@ -140,6 +140,13 @@ function App() {
     if (typeof window !== 'undefined') {
       const img = new Image();
       img.src = '/avatar-frames/dir_center.png?v=5';
+
+      const prewarm = () => setHasVisitedExperience(true);
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(prewarm, { timeout: 2000 });
+      } else {
+        setTimeout(prewarm, 1200);
+      }
     }
   }, []);
 
@@ -247,6 +254,9 @@ function App() {
     const newDir = nextIdx > prevIdx ? 1 : -1;
     setDirection(newDir);
     setIsPageTransitioning(true);
+    if (nextTab === 'experience') {
+      setHasVisitedExperience(true);
+    }
     setActiveTab(nextTab);
   };
 
@@ -313,7 +323,7 @@ function App() {
           aria-hidden={activeTab !== 'experience'}
         >
           <Suspense fallback={null}>
-            {(activeTab === 'experience' || isHistoryExiting) && (
+            {(hasVisitedExperience || activeTab === 'experience' || isHistoryExiting) && (
               <HistoryPage 
                 isActive={activeTab === 'experience' && !isHistoryExiting}
                 isExiting={isHistoryExiting}
@@ -345,19 +355,8 @@ function App() {
         onViewCV={handleOpenCV}
       />
 
-      {/* LIQUID ETHER FLUID SIMULATION BACKGROUND */}
-      <LiquidEther
-        colors={LIQUID_COLORS}
-        mouseForce={12}
-        intensity={0.75}
-        cursorSize={85}
-        persistence={0.85}
-        viscosity={0.88}
-        autoDemo={true}
-        autoSpeed={0.22}
-        autoIntensity={1.2}
-        className="fixed inset-0 z-0 pointer-events-none"
-      />
+      {/* ORIGINKIT HERO 68 BACKGROUND (FibreArc Ribbon + Laser Pulse Matrix) */}
+      <HeroBackground />
 
       {/* MAIN SYSTEM VIEWPORT */}
       <main className={`flex flex-col relative z-10 transition-all duration-300 pointer-events-none ${
@@ -378,7 +377,7 @@ function App() {
           } pointer-events-none`} 
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
-          <div className={`max-w-[1600px] w-full mx-auto pointer-events-none ${
+          <div className={`${activeTab === 'projects' ? 'max-w-[1720px]' : 'max-w-[1600px]'} w-full mx-auto pointer-events-none ${
             isProfileLocked ? 'flex-1 flex flex-col' : ''
           }`}>
              {renderContent()}

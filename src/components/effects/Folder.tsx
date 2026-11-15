@@ -46,6 +46,7 @@ export interface FolderProps {
   zoomOnClick?: boolean;
   peek?: boolean;
   intro?: boolean;
+  introDelay?: number;
   tilt?: number;
   bounce?: number;
   speed?: number;
@@ -237,6 +238,7 @@ interface Settings {
   openOn: string;
   peek: boolean;
   intro: boolean;
+  introDelay?: number;
   draggable: boolean;
   zoomOnClick: boolean;
   closeOnOutsideClick: boolean;
@@ -1081,6 +1083,7 @@ const Folder = ({
   zoomOnClick = true,
   peek = true,
   intro = true,
+  introDelay = 0,
   tilt = 0.5,
   bounce = 0.4,
   speed = 1,
@@ -1164,6 +1167,7 @@ const Folder = ({
     openOn,
     peek,
     intro,
+    introDelay: Math.max(0, Number(introDelay) || 0),
     draggable,
     zoomOnClick,
     closeOnOutsideClick,
@@ -2001,19 +2005,28 @@ const Folder = ({
     document.fonts?.ready.then(invalidate);
 
     let observer: IntersectionObserver | null = null;
+    let introTimer: ReturnType<typeof setTimeout> | null = null;
     if (settingsRef.current.intro && !reduce) {
       state.intro.phase = 'wait';
       root.style.opacity = '0';
+      const trigger = () => {
+        const delay = settingsRef.current.introDelay || 0;
+        if (delay > 0) {
+          introTimer = setTimeout(beginIntro, delay * 1000);
+        } else {
+          beginIntro();
+        }
+      };
       if (typeof IntersectionObserver === 'undefined') {
-        beginIntro();
+        trigger();
       } else {
         observer = new IntersectionObserver(
           entries => {
             if (!entries.some(entry => entry.isIntersecting)) return;
             observer?.disconnect();
-            beginIntro();
+            trigger();
           },
-          { threshold: 0.2 }
+          { threshold: 0.1 }
         );
         observer.observe(root);
       }
@@ -2052,6 +2065,7 @@ const Folder = ({
       window.removeEventListener('pointercancel', onUp);
       document.removeEventListener('pointerdown', onDocumentDown);
       document.removeEventListener('keydown', onKey);
+      if (introTimer) clearTimeout(introTimer);
       observer?.disconnect();
       engineRef.current = null;
     };

@@ -114,12 +114,12 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>((p
 
   useAnimationFrame(() => {
     if (!containerRef?.current) return;
-    const containerRect = containerRef.current.getBoundingClientRect();
     const { x, y } = mousePositionRef.current;
     if (lastPositionRef.current.x === x && lastPositionRef.current.y === y) {
       return;
     }
     lastPositionRef.current = { x, y };
+    const containerRect = containerRef.current.getBoundingClientRect();
 
     letterRefs.current.forEach((letterRef, index) => {
       if (!letterRef) return;
