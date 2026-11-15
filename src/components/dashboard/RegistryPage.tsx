@@ -12,7 +12,7 @@ import {
   ChevronRight,
   Eye
 } from 'lucide-react';
-import Folder from '../effects/Folder';
+import Folder, { type FolderEntry } from '../effects/Folder';
 import { MagicBentoCard } from '../effects/MagicBento';
 import { PROJECTS } from './data';
 
@@ -21,8 +21,8 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.04,
+      staggerChildren: 0.05,
+      delayChildren: 0.02,
     },
   },
 };
@@ -30,16 +30,16 @@ const containerVariants = {
 const cardVariants = {
   hidden: { 
     opacity: 0, 
-    y: 42,
+    y: 24,
   },
   visible: { 
     opacity: 1, 
     y: 0,
     transition: {
       type: 'spring',
-      stiffness: 240,
-      damping: 24,
-      mass: 0.85
+      stiffness: 280,
+      damping: 26,
+      mass: 0.8
     },
   },
 };
@@ -52,6 +52,7 @@ export const RegistryPage = () => {
   const [showMockupModal, setShowMockupModal] = React.useState(false);
   const activeProject = PROJECTS.find(p => p.id === selectedId) || PROJECTS[0];
   const gridRef = React.useRef<HTMLDivElement>(null);
+  const cardRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
 
   const handleCardClick = (projectId: string, e?: any) => {
     const target = e?.currentTarget || e?.target;
@@ -99,9 +100,20 @@ export const RegistryPage = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedId, showMockupModal, activeProject.images.length]);
 
+  const [isMobile, setIsMobile] = React.useState(() => 
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
+
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // Lock body scroll when window modal is active
   React.useEffect(() => {
-    if (selectedId) {
+    if (isMobile && selectedId) {
       document.body.style.overflow = 'hidden';
       return () => {
         document.body.style.overflow = '';
@@ -111,7 +123,7 @@ export const RegistryPage = () => {
       setIsMaximized(false);
       setShowMockupModal(false);
     }
-  }, [selectedId]);
+  }, [selectedId, isMobile]);
 
   // Reset image carousel index and modal when selected project changes
   React.useEffect(() => {
@@ -119,35 +131,397 @@ export const RegistryPage = () => {
     setShowMockupModal(false);
   }, [selectedId]);
 
-  const getFolderItems = (project: typeof PROJECTS[0]) => [
-    <div key="1" className="w-full h-full flex flex-col items-center justify-center p-2 bg-[#0c0c0c] text-[var(--theme-accent)] overflow-hidden font-satoshi">
-      <div className="w-full flex justify-between items-center opacity-40 mb-1">
-        <span className="text-[0.5rem] font-medium tracking-wider">TRACE_0x{project.id.slice(-2)}</span>
-        <Zap size={6} />
-      </div>
-      <div className="w-full h-px bg-[var(--theme-accent)]/20 mb-1" />
-      <div className="flex flex-col gap-0.5 w-full opacity-60 text-[0.5rem]">
-        <span>{">>"} PINIT_CORE...</span>
-        <span>{">>"} SYSCALL_01_OK</span>
-        <span>{">>"} UPLINK_READY</span>
-      </div>
-    </div>,
-    <div key="2" className="w-full h-full flex items-center justify-center bg-black relative">
-       <img 
-         src={project.images[0]} 
-         loading="lazy"
-         decoding="async"
-         className="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-opacity duration-300" 
-         alt="Preview" 
-       />
-       <div className="absolute inset-0 bg-black/40" />
-       <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-red-500 text-white text-[0.5rem] font-bold font-satoshi uppercase rounded">LIVE</div>
-    </div>,
-    <div key="3" className="w-full h-full flex flex-col items-center justify-center p-2 bg-[#0c0c0c] border border-red-500/20">
-       <Terminal size={14} className="text-red-500 mb-1" />
-       <span className="text-[0.5rem] font-bold font-satoshi text-white/40 tracking-wider">EXECUTABLE</span>
-    </div>
-  ];
+  // Auto-slide project images when expanded
+  React.useEffect(() => {
+    if (!selectedId) return;
+    const currentProject = PROJECTS.find(p => p.id === selectedId);
+    if (!currentProject || !currentProject.images || currentProject.images.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setActiveImageIndex(prev => (prev + 1) % currentProject.images.length);
+    }, 3200);
+
+    return () => clearInterval(timer);
+  }, [selectedId]);
+
+  // Smooth scroll expanded project card into focus on desktop with equal top/bottom gaps
+  React.useEffect(() => {
+    if (selectedId && !isMobile) {
+      const scrollToFocus = () => {
+        const cardEl = cardRefs.current[selectedId];
+        if (!cardEl) return;
+        const headerEl = document.querySelector('header');
+        const headerBottom = headerEl ? headerEl.getBoundingClientRect().bottom : 100;
+        const topBound = Math.max(headerBottom, 100);
+        const bottomBound = window.innerHeight;
+        const availableSpace = bottomBound - topBound;
+        
+        const cardRect = cardEl.getBoundingClientRect();
+        const cardHeight = Math.max(cardRect.height, cardEl.scrollHeight);
+        
+        const idealGap = (availableSpace - cardHeight) / 2;
+        const topGap = Math.max(28, idealGap);
+        
+        const targetCardTop = topBound + topGap;
+        const currentScrollY = window.scrollY || window.pageYOffset;
+        const targetScrollY = Math.max(0, currentScrollY + cardRect.top - targetCardTop);
+
+        window.scrollTo({
+          top: targetScrollY,
+          behavior: 'smooth'
+        });
+      };
+
+      const timer1 = setTimeout(scrollToFocus, 70);
+      const timer2 = setTimeout(scrollToFocus, 400);
+      const timer3 = setTimeout(scrollToFocus, 720);
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+        clearTimeout(timer3);
+      };
+    }
+  }, [selectedId, isMobile]);
+
+  const folderItemsMap = React.useMemo(() => {
+    const map = new Map<string, FolderEntry[]>();
+    for (const project of PROJECTS) {
+      map.set(project.id, [
+        {
+          title: project.details[0] || `${project.name} Architecture`,
+          description: project.category || 'SYSTEMS'
+        },
+        {
+          title: project.details[1] || `${project.name} Specs`,
+          description: project.stack.slice(0, 3).join(' • ')
+        },
+        ...(project.images && project.images[0]
+          ? [
+              {
+                image: project.images[0],
+                title: `${project.name} Preview`
+              }
+            ]
+          : [
+              {
+                title: `${project.name} Executable`,
+                description: `Status: ${project.status}`
+              }
+            ])
+      ]);
+    }
+    return map;
+  }, []);
+
+  const projectRows = React.useMemo(() => {
+    const rows: { left: typeof PROJECTS[0]; right?: typeof PROJECTS[0] }[] = [];
+    for (let i = 0; i < PROJECTS.length; i += 2) {
+      rows.push({
+        left: PROJECTS[i],
+        right: PROJECTS[i + 1]
+      });
+    }
+    return rows;
+  }, []);
+
+  const renderProjectCard = (
+    project: typeof PROJECTS[0],
+    isExpanded: boolean,
+    isSiblingExpanded: boolean,
+    isRightSide: boolean
+  ) => {
+    return (
+      <motion.div
+        key={project.id}
+        ref={(el) => { cardRefs.current[project.id] = el; }}
+        variants={cardVariants}
+        className={`w-full min-w-0 transition-opacity duration-500 ${
+          isRightSide ? 'origin-right' : 'origin-left'
+        } ${
+          isExpanded
+            ? 'opacity-100 z-20 h-auto overflow-visible'
+            : isSiblingExpanded
+              ? '!opacity-0 pointer-events-none overflow-hidden'
+              : 'opacity-100 h-auto overflow-visible'
+        }`}
+      >
+        <MagicBentoCard 
+          particleCount={0}
+          glowColor="239, 68, 68"
+          enableTilt={false}
+          enableMagnetism={false}
+          clickEffect={false}
+          className={`w-full flex flex-col gap-3 group relative rounded-2xl border transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            isExpanded
+              ? 'p-6 sm:p-8 pt-7 sm:pt-9 bg-[#0a0a0d] border-red-500/50 shadow-[0_20px_70px_rgba(0,0,0,0.85),0_0_30px_rgba(239,68,68,0.15)] h-auto'
+              : isSiblingExpanded
+                ? '!p-0 !m-0 !border-0 opacity-0 overflow-hidden pointer-events-none'
+                : 'p-5 bg-[#0d0d0d] border-white/5 hover:border-white/10 cursor-pointer h-auto min-h-[160px]'
+          }`}
+          onClick={() => {
+            if (!isExpanded) {
+              setSelectedId(project.id);
+              setActiveImageIndex(0);
+            }
+          }}
+        >
+          {/* Header: Status & Controls */}
+          <div className={`w-full flex items-center ${isExpanded ? 'justify-end' : 'justify-between'}`}>
+            {!isExpanded && (
+              <div className="flex items-center gap-2">
+                <div className={`w-1.5 h-1.5 rounded-full ${
+                  project.status === 'STABLE' ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'
+                }`} />
+                <span className="text-[0.65rem] font-mono font-medium text-white/50 tracking-wider">
+                  [{project.status}]
+                </span>
+              </div>
+            )}
+
+            {isExpanded && (
+              <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">
+                  <div className={`w-1.5 h-1.5 rounded-full ${
+                    project.status === 'STABLE' ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'
+                  }`} />
+                  <span className="text-[0.65rem] font-mono font-medium text-white/60 tracking-wider">
+                    [{project.status}]
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedId(null);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 hover:bg-white/15 border border-white/10 text-white/60 hover:text-white text-xs font-mono transition-colors cursor-pointer"
+                >
+                  <Minus size={13} />
+                  <span>Collapse</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Persistent Header: Folder + Title + Stack (Never unmounts!) */}
+          <div className={`flex flex-col lg:flex-row items-center ${isExpanded ? 'lg:items-center gap-5 pt-1 pl-2' : 'gap-6'} transition-all duration-300`}>
+            <div className="relative shrink-0 pl-1 pt-1">
+              <Folder
+                mode="flap"
+                variant="matte"
+                color="#EF4444"
+                size={0.38}
+                label={project.name}
+                items={folderItemsMap.get(project.id)}
+                theme="dark"
+                open={isExpanded}
+                onItemClick={(item, index) => console.log(item, index)}
+              />
+            </div>
+
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+              <h3 className={`font-bold font-satoshi tracking-tight transition-colors ${
+                isExpanded ? 'text-2xl lg:text-3xl text-red-500' : 'text-xl text-white group-hover:text-red-500'
+              }`}>
+                {project.name}
+              </h3>
+              <div className="flex flex-wrap gap-1.5 mt-2 justify-center lg:justify-start">
+                {project.stack.slice(0, isExpanded ? 6 : 3).map(tech => (
+                  <span key={tech} className="text-[0.62rem] font-satoshi font-medium text-white/50 border border-white/10 px-2 py-0.5 rounded uppercase tracking-wider bg-white/[0.02]">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Compact Preview (Smooth exit when expanding, smooth enter when collapsing) */}
+          <AnimatePresence initial={false}>
+            {!isExpanded && (
+              <motion.div
+                key="compact-preview"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+                className="hidden lg:flex flex-col gap-2 mt-2 pt-4 border-t border-white/5 opacity-60 group-hover:opacity-100 transition-opacity overflow-hidden"
+              >
+                <p className="text-xs text-white/60 font-inter leading-relaxed line-clamp-2">
+                  {project.architecture}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Expanded Body: Dossier + Mockup (Smooth unified height animation for both edges!) */}
+          <AnimatePresence initial={false}>
+            {isExpanded && (
+              <motion.div
+                key="expanded-body"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ 
+                  height: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+                  opacity: { duration: 0.35, ease: 'easeOut' }
+                }}
+                className="overflow-hidden w-full pt-4"
+              >
+                <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-8 items-start">
+                  {/* Left Column: Dossier */}
+                  <div className="flex flex-col gap-5">
+                    {/* Category & Description */}
+                    <div>
+                      <div className="flex items-center gap-2 text-[11px] font-mono tracking-widest text-white/60 uppercase mb-2">
+                        <span className="w-1 h-3 bg-red-500 inline-block" />
+                        <span>{project.category || 'SYSTEMS'}</span>
+                      </div>
+                      <p className="text-sm sm:text-base text-white/85 leading-relaxed font-sans">
+                        {project.primaryDescription}
+                      </p>
+                    </div>
+
+                    {/* Architecture Overview */}
+                    <div className="p-3.5 rounded-xl bg-black/50 border border-white/5">
+                      <span className="text-[10px] font-mono text-red-400 uppercase tracking-wider block mb-1">
+                        Architecture Blueprint
+                      </span>
+                      <p className="text-xs sm:text-sm text-white/60 font-inter leading-relaxed">
+                        {project.architecture}
+                      </p>
+                    </div>
+
+                    {/* Core Capabilities */}
+                    {project.details && project.details.length > 0 && (
+                      <div>
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block mb-2">
+                          Core Capabilities
+                        </span>
+                        <ul className="space-y-1.5">
+                          {project.details.map((detail, idx) => (
+                            <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm text-white/70">
+                              <span className="text-red-500 font-mono text-sm leading-none mt-0.5">›</span>
+                              <span>{detail}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Action Row */}
+                    {project.github && (
+                      <div className="pt-2">
+                        <a
+                          href={project.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/15 border border-white/20 hover:border-red-500/50 rounded-xl text-xs font-mono font-bold text-white transition-all shadow-sm active:scale-95"
+                        >
+                          <Github size={14} className="text-white/80" />
+                          <span>View Source</span>
+                          <ExternalLink size={12} className="text-white/40" />
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right Column: Mockup */}
+                  {project.images && project.images.length > 0 && (
+                    <div className="w-full">
+                      {(() => {
+                        const isDesktopMockup = project.id === 'P_03' || project.id === 'P_05';
+
+                        return isDesktopMockup ? (
+                          /* Studio Monitor Display Mockup */
+                          <div className="flex flex-col items-center lg:items-end lg:pr-4 justify-center w-full select-none pt-1">
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowMockupModal(true);
+                              }}
+                              className="relative rounded-2xl border-[3px] border-[#2c2d33] bg-[#0c0d10] p-2 sm:p-2.5 shadow-[0_25px_60px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.2)] w-full max-w-[490px] aspect-[16/10] flex flex-col overflow-hidden group/monitor cursor-pointer"
+                            >
+                              {/* Webcam Sensor Dot */}
+                              <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-black border border-white/20 z-20" />
+
+                              {/* Screen Glass with Auto-Slide Crossfade */}
+                              <div className="relative w-full h-full rounded-lg overflow-hidden bg-black flex items-center justify-center">
+                                <AnimatePresence mode="wait">
+                                  <motion.img
+                                    key={activeImageIndex}
+                                    src={project.images[activeImageIndex] || project.images[0]}
+                                    alt={project.name}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                                    className="w-full h-full object-contain select-none"
+                                  />
+                                </AnimatePresence>
+                                <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-transparent via-white/[0.03] to-transparent" />
+                                <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur border border-white/15 text-[9px] font-mono text-white/80 flex items-center gap-1 opacity-0 group-hover/monitor:opacity-100 transition-opacity z-10">
+                                  <Eye size={10} />
+                                  <span>View Image</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Monitor Stand */}
+                            <div className="w-10 h-7 bg-gradient-to-b from-[#2a2c33] to-[#141518] border-x border-white/10 -mt-0.5" />
+                            <div className="w-36 h-2 rounded-t-md bg-gradient-to-r from-[#1c1d22] via-[#353842] to-[#1c1d22] border-t border-x border-white/20 shadow-2xl" />
+                          </div>
+                        ) : (
+                          /* Flagship Mobile Device Mockup */
+                          <div className="flex flex-col items-center lg:items-end lg:pr-11 justify-center w-full select-none pt-1">
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowMockupModal(true);
+                              }}
+                              className="relative rounded-[24px] border-[1.5px] border-[#383a44] bg-[#0b0c10] p-1 sm:p-1.5 shadow-[0_25px_65px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.2)] w-[235px] sm:w-[260px] lg:w-[275px] aspect-[9/19.5] flex flex-col justify-between overflow-hidden group/mobile cursor-pointer"
+                            >
+                              {/* Minimal Punch-Hole Camera */}
+                              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-black z-30 flex items-center justify-center border border-white/15 shadow-inner">
+                                <div className="w-1 h-1 rounded-full bg-[#161c2c]" />
+                              </div>
+
+                              {/* Screen Image with smooth auto-slide crossfade */}
+                              <div className="relative w-full h-full rounded-[18px] overflow-hidden bg-black flex items-center justify-center">
+                                <AnimatePresence mode="wait">
+                                  <motion.img
+                                    key={activeImageIndex}
+                                    src={project.images[activeImageIndex] || project.images[0]}
+                                    alt={project.name}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                                    className="w-full h-full object-cover select-none"
+                                  />
+                                </AnimatePresence>
+
+                                <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-transparent via-white/[0.04] to-transparent" />
+                                <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur border border-white/15 text-[9px] font-mono text-white/80 flex items-center gap-1 opacity-0 group-hover/mobile:opacity-100 transition-opacity z-20">
+                                  <Eye size={10} />
+                                  <span>View Image</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </MagicBentoCard>
+      </motion.div>
+    );
+  };
 
   return (
     <div className="relative font-inter pointer-events-auto">
@@ -160,114 +534,106 @@ export const RegistryPage = () => {
           </div>
         </div>
         
-        {/* MOBILE APP DRAWER GRID (< 768px) */}
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid grid-cols-2 gap-3.5 pt-2 pb-28 md:hidden relative"
-        >
-          {PROJECTS.map((project, idx) => (
-            <motion.button
-              key={project.id}
-              variants={cardVariants}
-              onClick={(e) => handleCardClick(project.id, e)}
-              className="group relative flex flex-col items-center justify-between p-3.5 rounded-2xl bg-[#0c0d10]/85 border border-white/10 hover:border-red-500/40 active:scale-[0.95] transition-colors duration-200 overflow-hidden text-center cursor-pointer shadow-[0_8px_24px_rgba(0,0,0,0.5)] focus:outline-none min-h-[164px]"
-            >
-              {/* Header: Index & Status */}
-              <div className="w-full flex items-center justify-between text-[10px] font-mono text-white/40 mb-1">
-                <span className="tracking-wider">0{idx + 1}</span>
-                <div className="flex items-center gap-1.5">
-                  <span className={`w-1.5 h-1.5 rounded-full ${
-                    project.status === 'STABLE' ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'
-                  }`} />
-                  <span className="text-[9px] uppercase tracking-wider text-white/50">
-                    {project.status === 'STABLE' ? 'LIVE' : 'DEV'}
+        {/* RESPONSIVE PROJECTS GRID */}
+        {isMobile ? (
+          <motion.div 
+            key="mobile-grid"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-2 gap-3.5 pt-2 pb-28 relative"
+          >
+            {PROJECTS.map((project, idx) => (
+              <motion.button
+                key={project.id}
+                variants={cardVariants}
+                onClick={(e) => handleCardClick(project.id, e)}
+                className="group relative flex flex-col items-center justify-between p-3.5 rounded-2xl bg-[#0c0d10]/85 border border-white/10 hover:border-red-500/40 active:scale-[0.95] transition-colors duration-200 overflow-hidden text-center cursor-pointer shadow-[0_8px_24px_rgba(0,0,0,0.5)] focus:outline-none min-h-[164px]"
+              >
+                {/* Header: Index & Status */}
+                <div className="w-full flex items-center justify-between text-[10px] font-mono text-white/40 mb-1">
+                  <span className="tracking-wider">0{idx + 1}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${
+                      project.status === 'STABLE' ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'
+                    }`} />
+                    <span className="text-[9px] uppercase tracking-wider text-white/50">
+                      {project.status === 'STABLE' ? 'LIVE' : 'DEV'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Centered Folder Icon */}
+                <div className="py-2 flex items-center justify-center shrink-0">
+                  <Folder
+                    mode="flap"
+                    variant="matte"
+                    color="#EF4444"
+                    size={0.34}
+                    label={project.name}
+                    items={folderItemsMap.get(project.id)}
+                    theme="dark"
+                    onItemClick={(item, index) => console.log(item, index)}
+                  />
+                </div>
+
+                {/* Title & Category */}
+                <div className="w-full mt-1 flex flex-col items-center">
+                  <h3 className="font-satoshi font-bold text-sm text-white group-hover:text-red-400 transition-colors tracking-tight truncate max-w-full">
+                    {project.name}
+                  </h3>
+                  <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider mt-0.5 truncate max-w-full">
+                    {project.category || project.stack[0]}
                   </span>
                 </div>
-              </div>
+              </motion.button>
+            ))}
+          </motion.div>
+        ) : (
+          <motion.div
+            key="desktop-grid"
+            ref={gridRef}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col gap-6 pt-4 relative w-full"
+          >
+            {projectRows.map((row, rowIndex) => {
+              const isLeftExpanded = !isMobile && selectedId === row.left.id;
+              const isRightExpanded = !isMobile && !!row.right && selectedId === row.right.id;
+              const hasExpandedInRow = isLeftExpanded || isRightExpanded;
 
-              {/* Centered Folder Icon */}
-              <div className="py-2 flex items-center justify-center shrink-0">
-                <Folder color="#EF4444" size={0.72} items={getFolderItems(project)} />
-              </div>
+              const gridTemplateColumns = isLeftExpanded
+                ? '100% 0%'
+                : isRightExpanded
+                  ? '0% 100%'
+                  : 'calc(50% - 12px) calc(50% - 12px)';
 
-              {/* Title & Category */}
-              <div className="w-full mt-1 flex flex-col items-center">
-                <h3 className="font-satoshi font-bold text-sm text-white group-hover:text-red-400 transition-colors tracking-tight truncate max-w-full">
-                  {project.name}
-                </h3>
-                <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider mt-0.5 truncate max-w-full">
-                  {project.category || project.stack[0]}
-                </span>
-              </div>
-            </motion.button>
-          ))}
-        </motion.div>
+              const gridGap = hasExpandedInRow ? '0px' : '24px';
 
-        {/* DESKTOP BENTO GRID (>= 768px) */}
-        <motion.div 
-          ref={gridRef} 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="hidden md:grid md:grid-cols-2 gap-x-6 gap-y-6 pt-4 relative"
-        >
-          {PROJECTS.map((project) => (
-            <motion.div
-              key={project.id}
-              variants={cardVariants}
-              className="h-full"
-            >
-              <MagicBentoCard 
-                particleCount={0}
-                glowColor="239, 68, 68"
-                enableTilt={false}
-                enableMagnetism={false}
-                clickEffect={false}
-                className="flex flex-col gap-3 group cursor-pointer relative p-5 bg-[#0d0d0d] border border-white/5 transition-colors duration-300 rounded-xl hover:border-white/10 h-full"
-                onClick={(e) => handleCardClick(project.id, e)}
-              >
-                <div className="absolute top-5 right-5 flex items-center gap-2">
-                  <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
-                    project.status === 'STABLE' ? 'bg-emerald-400' : 'bg-amber-400'
-                  }`} />
-                  <span className="text-[0.6rem] font-satoshi font-medium text-white/40 tracking-wider">[{project.status}]</span>
+              return (
+                <div
+                  key={`row-${rowIndex}`}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: row.right ? gridTemplateColumns : (isLeftExpanded ? '100%' : 'calc(50% - 12px)'),
+                    gap: row.right ? gridGap : '0px',
+                    transition: 'grid-template-columns 700ms cubic-bezier(0.16, 1, 0.3, 1), gap 700ms cubic-bezier(0.16, 1, 0.3, 1)'
+                  }}
+                  className="w-full items-start relative"
+                >
+                  {renderProjectCard(row.left, isLeftExpanded, isRightExpanded, false)}
+                  {row.right && renderProjectCard(row.right, isRightExpanded, isLeftExpanded, true)}
                 </div>
-
-                <div className="flex flex-col lg:flex-row items-center gap-6 group-hover:translate-y-[-2px] transition-transform duration-300">
-                   <div className="relative shrink-0">
-                      <Folder color="#EF4444" size={0.9} items={getFolderItems(project)} />
-                   </div>
-
-                   <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-                      <h3 className="text-xl font-bold font-satoshi text-white group-hover:text-red-500 transition-colors tracking-tight">
-                        {project.name}
-                      </h3>
-                      <div className="flex flex-wrap gap-1.5 mt-2 justify-center lg:justify-start">
-                        {project.stack.slice(0, 3).map(tech => (
-                          <span key={tech} className="text-[0.6rem] font-satoshi font-medium text-white/40 border border-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider">
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                   </div>
-                </div>
-
-                <div className="hidden lg:flex flex-col gap-2 mt-2 pt-4 border-t border-white/5 opacity-60 group-hover:opacity-100 transition-opacity">
-                    <p className="text-xs text-white/60 font-inter leading-relaxed line-clamp-2">
-                      {project.architecture}
-                    </p>
-                </div>
-              </MagicBentoCard>
-            </motion.div>
-          ))}
-        </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
       </div>
 
-      {/* PROJECT DETAILS MODAL */}
+      {/* PROJECT DETAILS MODAL (Mobile Fallback) */}
       <AnimatePresence>
-        {selectedId && (
+        {isMobile && selectedId && (
           <div className="fixed inset-0 z-[300] flex items-center justify-center p-2 sm:p-4 lg:p-6 select-none font-sans">
             {/* Backdrop */}
             <motion.div
@@ -593,129 +959,76 @@ export const RegistryPage = () => {
         )}
       </AnimatePresence>
 
-      {/* FULLSCREEN MOCKUP LIGHTBOX MODAL */}
+      {/* FULLSCREEN MOCKUP LIGHTBOX (Clean Image Only) */}
       <AnimatePresence>
         {showMockupModal && (
-          <div className="fixed inset-0 z-[400] flex items-center justify-center p-3 sm:p-6 select-none font-sans">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={() => setShowMockupModal(false)}
-              className="fixed inset-0 bg-black/90 backdrop-blur-xl"
-            />
-
-            {/* Modal Box */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.94, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.94, y: 15 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="relative z-10 w-full max-w-4xl max-h-[92dvh] sm:max-h-[88vh] bg-[#0c0d10] border border-white/15 rounded-2xl flex flex-col overflow-hidden shadow-[0_25px_90px_rgba(0,0,0,0.95)]"
+          <div 
+            onClick={() => setShowMockupModal(false)}
+            className="fixed inset-0 z-[400] flex items-center justify-center p-4 sm:p-10 select-none font-sans bg-black/92 backdrop-blur-md cursor-zoom-out"
+          >
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMockupModal(false);
+              }}
+              className="fixed top-5 right-5 sm:top-8 sm:right-8 z-50 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-all backdrop-blur-md border border-white/15 cursor-pointer shadow-lg active:scale-95"
+              aria-label="Close"
             >
-              {/* Modal Top Bar */}
-              <div className="h-12 sm:h-14 bg-[#101115] border-b border-white/10 flex items-center justify-between px-4 sm:px-6 shrink-0">
-                <div className="flex items-center gap-2.5 text-xs font-mono text-white/70">
-                  <span className="text-red-400 font-semibold">{activeProject.name}</span>
-                  <span className="text-white/30">/</span>
-                  <span className="text-white/50">MOCKUPS</span>
-                  <span className="text-[10px] text-white/40 ml-1">
-                    ({activeImageIndex + 1} of {activeProject.images.length})
-                  </span>
-                </div>
+              <X size={22} />
+            </button>
 
-                <button
-                  onClick={() => setShowMockupModal(false)}
-                  className="hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors cursor-pointer text-white/70"
-                  aria-label="Close mockups"
-                >
-                  <X size={18} />
-                </button>
+            {/* Counter */}
+            {activeProject.images.length > 1 && (
+              <div className="fixed top-5 sm:top-8 left-1/2 -translate-x-1/2 z-50 px-3.5 py-1 rounded-full bg-black/60 border border-white/15 text-xs font-mono text-white/70 backdrop-blur-md shadow-lg pointer-events-none">
+                {activeImageIndex + 1} / {activeProject.images.length}
               </div>
+            )}
 
-              {/* Modal Body / Image Viewer */}
-              <div className="relative flex-1 flex items-center justify-center p-4 sm:p-8 bg-black/50 overflow-hidden">
-                {activeProject.id === 'P_03' || activeProject.id === 'P_05' ? (
-                  /* Laptop / Desktop Display Mockup */
-                  <div className="relative rounded-2xl border-[2px] border-white/20 bg-[#0a0a0c] shadow-[0_20px_60px_rgba(0,0,0,0.9)] w-full max-w-[680px] aspect-[16/10] flex flex-col overflow-hidden">
-                    <div className="h-7 bg-[#141518] border-b border-white/10 flex items-center justify-between px-3 shrink-0">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-amber-500/70" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
-                        <span className="text-[10px] font-mono text-white/40 ml-2 truncate">{activeProject.name.toLowerCase()}</span>
-                      </div>
-                      <span className="text-[9px] font-mono text-white/40">
-                        {activeImageIndex + 1} / {activeProject.images.length}
-                      </span>
-                    </div>
-                    <div className="relative w-full flex-1 bg-black overflow-hidden flex items-center justify-center">
-                      <img
-                        src={activeProject.images[activeImageIndex]}
-                        alt={activeProject.name}
-                        className="w-full h-full object-contain select-none"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  /* Mobile Phone Mockup */
-                  <div className="relative rounded-[26px] border-[2px] border-white/20 bg-[#0a0a0c] p-2.5 shadow-[0_20px_60px_rgba(0,0,0,0.9)] w-[240px] sm:w-[280px] aspect-[9/19.5] max-h-[68dvh] flex flex-col justify-between overflow-hidden">
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-black border border-white/15 z-20 shadow-inner" />
-                    <div className="relative w-full h-full rounded-[18px] overflow-hidden bg-black flex items-center justify-center">
-                      <img
-                        src={activeProject.images[activeImageIndex]}
-                        alt={activeProject.name}
-                        className="w-full h-full object-cover select-none"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Left & Right Navigation Arrows */}
-                {activeProject.images.length > 1 && (
-                  <>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveImageIndex(prev => (prev - 1 + activeProject.images.length) % activeProject.images.length);
-                      }}
-                      className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/75 hover:bg-black/95 backdrop-blur-md border border-white/25 text-white flex items-center justify-center transition-all z-30 cursor-pointer shadow-lg active:scale-95"
-                      aria-label="Previous image"
-                    >
-                      <ChevronLeft size={20} />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveImageIndex(prev => (prev + 1) % activeProject.images.length);
-                      }}
-                      className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/75 hover:bg-black/95 backdrop-blur-md border border-white/25 text-white flex items-center justify-center transition-all z-30 cursor-pointer shadow-lg active:scale-95"
-                      aria-label="Next image"
-                    >
-                      <ChevronRight size={20} />
-                    </button>
-                  </>
-                )}
-              </div>
-
-              {/* Bottom Dot Thumbnails */}
-              {activeProject.images.length > 1 && (
-                <div className="h-11 bg-[#101115] border-t border-white/10 flex items-center justify-center gap-2 px-4 shrink-0">
-                  {activeProject.images.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveImageIndex(i)}
-                      className={`transition-all rounded-full cursor-pointer ${
-                        activeImageIndex === i ? 'bg-red-500 w-5 h-2' : 'bg-white/30 hover:bg-white/60 w-2 h-2'
-                      }`}
-                      aria-label={`Go to slide ${i + 1}`}
-                    />
-                  ))}
-                </div>
-              )}
+            {/* Pure image without any window container */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative max-w-full max-h-[88vh] flex items-center justify-center cursor-default z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={activeProject.images[activeImageIndex]}
+                alt={activeProject.name}
+                className="max-h-[85vh] max-w-[90vw] object-contain rounded-xl shadow-[0_30px_100px_rgba(0,0,0,0.95)] select-none border border-white/10"
+              />
             </motion.div>
+
+            {/* Navigation Arrows in the Lightbox */}
+            {activeProject.images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIndex(prev => (prev - 1 + activeProject.images.length) % activeProject.images.length);
+                  }}
+                  className="fixed left-4 sm:left-10 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/70 hover:bg-black/95 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all z-50 cursor-pointer shadow-2xl active:scale-95"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIndex(prev => (prev + 1) % activeProject.images.length);
+                  }}
+                  className="fixed right-4 sm:right-10 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/70 hover:bg-black/95 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all z-50 cursor-pointer shadow-2xl active:scale-95"
+                  aria-label="Next image"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </>
+            )}
           </div>
         )}
       </AnimatePresence>

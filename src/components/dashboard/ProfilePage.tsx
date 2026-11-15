@@ -269,7 +269,7 @@ export const ProfilePage = ({
                }}
                className={
                  isMobile
-                   ? "relative w-full max-w-none h-[54vh] sm:h-[68vh] pointer-events-none flex items-center justify-center select-none overflow-visible"
+                   ? "relative w-full max-w-none h-[56vh] sm:h-[70vh] pointer-events-none flex items-center justify-center select-none overflow-visible"
                    : "relative w-full max-w-7xl xl:max-w-[1920px] h-[74vh] sm:h-[84vh] lg:h-[92vh] pointer-events-auto flex items-end justify-center select-none origin-bottom"
                }
                style={isMobile ? undefined : { bottom: 0 }}
@@ -277,7 +277,7 @@ export const ProfilePage = ({
                 <motion.div
                   animate={{ 
                     y: isMobile ? 12 : 0,
-                    scale: isMobile ? 0.98 : 1
+                    scale: isMobile ? 1.02 : 1
                   }}
                   transition={{ duration: 0.4 }}
                   className={
@@ -288,51 +288,42 @@ export const ProfilePage = ({
                   style={
                     isMobile
                       ? {
-                          maskImage: 'linear-gradient(to bottom, black 68%, rgba(0,0,0,0.85) 82%, rgba(0,0,0,0.2) 94%, transparent 100%)',
-                          WebkitMaskImage: 'linear-gradient(to bottom, black 68%, rgba(0,0,0,0.85) 82%, rgba(0,0,0,0.2) 94%, transparent 100%)',
+                          maskImage: 'linear-gradient(to bottom, black 82%, rgba(0,0,0,0.6) 94%, transparent 100%)',
+                          WebkitMaskImage: 'linear-gradient(to bottom, black 82%, rgba(0,0,0,0.6) 94%, transparent 100%)',
                         }
                       : { bottom: 0 }
                   }
                 >
-                  {isMobile ? (
-                    <>
-                      <img 
-                        src={activeAvatarSrc}
-                        alt="Rohit Kumar Sahoo Avatar"
-                        className="w-full h-full object-contain pointer-events-none select-none"
-                        onLoad={() => setIsAvatarLoaded(true)}
-                      />
-                      {/* Dense dark fog cushion over lower torso */}
-                      <div 
-                        className="absolute inset-x-0 bottom-0 h-44 pointer-events-none z-10" 
-                        style={{
-                          background: 'linear-gradient(to top, rgba(10,10,10,0.96) 0%, rgba(10,10,10,0.82) 42%, rgba(10,10,10,0.3) 76%, transparent 100%)'
-                        }}
-                      />
-                    </>
-                  ) : (
-                    <DitherVeil 
-                      src={activeAvatarSrc}
-                      fit="contain"
-                      align="bottom"
-                      intro={false}
-                      colorEntrance={true}
-                      colorEntranceDuration={2500}
-                      triggerEntrance={isAvatarLoaded ? 1 : 0}
-                      pattern="atkinson"
-                      pixelSize={2}
-                      levels={5}
-                      inkColor="#000000"
-                      paperColor="#f4f1ea"
-                      revealRadius={130}
-                      softness={0.7}
-                      linger={4}
-                      wander={false}
-                      clickBurst={false}
-                      rimColor="#000000"
-                      rim={0}
-                      transparentBg={true}
-                      className="w-full h-full bg-transparent"
+                  <DitherVeil 
+                    src={activeAvatarSrc}
+                    fit="contain"
+                    align={isMobile ? "center" : "bottom"}
+                    intro={false}
+                    colorEntrance={true}
+                    colorEntranceDuration={isMobile ? 1800 : 2500}
+                    triggerEntrance={isAvatarLoaded ? 1 : 0}
+                    pattern="atkinson"
+                    pixelSize={2}
+                    levels={5}
+                    inkColor="#000000"
+                    paperColor="#f4f1ea"
+                    revealRadius={isMobile ? 110 : 130}
+                    softness={0.7}
+                    linger={isMobile ? 3.5 : 4}
+                    wander={isMobile ? true : false}
+                    clickBurst={false}
+                    rimColor="#000000"
+                    rim={0}
+                    transparentBg={true}
+                    className="w-full h-full bg-transparent"
+                  />
+                  {isMobile && (
+                    /* Subtle bottom edge fade - restricted strictly to lower torso border */
+                    <div 
+                      className="absolute inset-x-0 bottom-0 h-20 pointer-events-none z-10" 
+                      style={{
+                        background: 'linear-gradient(to top, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.45) 45%, transparent 100%)'
+                      }}
                     />
                   )}
                 </motion.div>

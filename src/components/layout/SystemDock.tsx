@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Briefcase, Database, Mail, FileText } from 'lucide-react';
-import { LiquidNavbar, LiquidNavItem } from '../effects/LiquidNavbar';
 import GooeyNav from '../effects/GooeyNav';
-
-// Set to true to use React Bits GooeyNav, false to use LiquidNavbar
-const USE_GOOEY_NAV = true;
 
 interface DockProps {
   activeTab: string;
@@ -77,33 +73,6 @@ export const SystemDock: React.FC<DockProps> = ({
     return idx >= 0 ? idx : 0;
   }, [activeTab]);
 
-  const navItems: LiquidNavItem[] = useMemo(() => [
-    {
-      id: 'profile',
-      label: 'HOME',
-      icon: <User size={20} strokeWidth={2.0} />,
-      fx: 'glow'
-    },
-    {
-      id: 'projects',
-      label: 'PROJECTS',
-      icon: <Database size={20} strokeWidth={2.0} />,
-      fx: 'pop'
-    },
-    {
-      id: 'experience',
-      label: 'EXPERIENCE',
-      icon: <Briefcase size={20} strokeWidth={2.0} />,
-      fx: 'wave'
-    },
-    {
-      id: 'contact',
-      label: 'CONTACT',
-      icon: <Mail size={20} strokeWidth={2.0} />,
-      fx: 'drop'
-    }
-  ], []);
-
   const gooeyNavItems = useMemo(() => [
     { label: isMobile ? '' : 'HOME', icon: <User size={isMobile ? 20 : 18} strokeWidth={2.0} /> },
     { label: isMobile ? '' : 'PROJECTS', icon: <Database size={isMobile ? 20 : 18} strokeWidth={2.0} /> },
@@ -143,34 +112,23 @@ export const SystemDock: React.FC<DockProps> = ({
           transition={{ type: 'spring', stiffness: 280, damping: 28 }}
           className="pointer-events-auto shrink-0"
         >
-          {USE_GOOEY_NAV ? (
-            <GooeyNav
-              items={gooeyNavItems}
-              activeIndex={activeIndex}
-              onChange={(index) => handleNavChange(index)}
-              theme="dark"
-              color="#ef4444"
-              colors={["#ef4444", "#f8717186", "#dc2626"]}
-              size={isMobile ? "md" : "lg"}
-              frame={true}
-              particleCount={10}
-              spread={50}
-              animationTime={600}
-              timeVariance={300}
-              gooeyness={0.3}
-              wobble={0.9}
-              hoverEffect={true}
-            />
-          ) : (
-            <LiquidNavbar
-              items={navItems}
-              active={activeIndex}
-              onChange={handleNavChange}
-              tone="dark"
-              compact={isMobile}
-              sound={false}
-            />
-          )}
+          <GooeyNav
+            items={gooeyNavItems}
+            activeIndex={activeIndex}
+            onChange={(index) => handleNavChange(index)}
+            theme="dark"
+            color="#ef4444"
+            colors={["#ef4444", "#f8717186", "#dc2626"]}
+            size={isMobile ? "md" : "lg"}
+            frame={true}
+            particleCount={10}
+            spread={50}
+            animationTime={600}
+            timeVariance={300}
+            gooeyness={0.5}
+            wobble={0.9}
+            hoverEffect={true}
+          />
         </motion.div>
 
         {/* Mobile Explore CV CTA matching dock aesthetic and positioned right next to it */}
