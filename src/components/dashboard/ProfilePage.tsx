@@ -269,7 +269,7 @@ export const ProfilePage = ({
                }}
                className={
                  isMobile
-                   ? "relative w-full max-w-none h-[54vh] sm:h-[68vh] pointer-events-none flex items-center justify-center select-none overflow-visible"
+                   ? "relative w-full max-w-none h-[56vh] sm:h-[70vh] pointer-events-none flex items-center justify-center select-none overflow-visible"
                    : "relative w-full max-w-7xl xl:max-w-[1920px] h-[74vh] sm:h-[84vh] lg:h-[92vh] pointer-events-auto flex items-end justify-center select-none origin-bottom"
                }
                style={isMobile ? undefined : { bottom: 0 }}
@@ -277,7 +277,7 @@ export const ProfilePage = ({
                 <motion.div
                   animate={{ 
                     y: isMobile ? 12 : 0,
-                    scale: isMobile ? 0.98 : 1
+                    scale: isMobile ? 1.08 : 1
                   }}
                   transition={{ duration: 0.4 }}
                   className={
@@ -288,8 +288,8 @@ export const ProfilePage = ({
                   style={
                     isMobile
                       ? {
-                          maskImage: 'linear-gradient(to bottom, black 68%, rgba(0,0,0,0.85) 82%, rgba(0,0,0,0.2) 94%, transparent 100%)',
-                          WebkitMaskImage: 'linear-gradient(to bottom, black 68%, rgba(0,0,0,0.85) 82%, rgba(0,0,0,0.2) 94%, transparent 100%)',
+                          maskImage: 'linear-gradient(to bottom, black 82%, rgba(0,0,0,0.6) 94%, transparent 100%)',
+                          WebkitMaskImage: 'linear-gradient(to bottom, black 82%, rgba(0,0,0,0.6) 94%, transparent 100%)',
                         }
                       : { bottom: 0 }
                   }
@@ -307,7 +307,7 @@ export const ProfilePage = ({
                     levels={5}
                     inkColor="#000000"
                     paperColor="#f4f1ea"
-                    revealRadius={isMobile ? 115 : 130}
+                    revealRadius={isMobile ? 120 : 130}
                     softness={0.7}
                     linger={isMobile ? 3.5 : 4}
                     wander={isMobile ? true : false}
@@ -318,11 +318,11 @@ export const ProfilePage = ({
                     className="w-full h-full bg-transparent"
                   />
                   {isMobile && (
-                    /* Dense dark fog cushion over lower torso */
+                    /* Subtle bottom edge fade - restricted strictly to lower torso border */
                     <div 
-                      className="absolute inset-x-0 bottom-0 h-44 pointer-events-none z-10" 
+                      className="absolute inset-x-0 bottom-0 h-20 pointer-events-none z-10" 
                       style={{
-                        background: 'linear-gradient(to top, rgba(10,10,10,0.96) 0%, rgba(10,10,10,0.82) 42%, rgba(10,10,10,0.3) 76%, transparent 100%)'
+                        background: 'linear-gradient(to top, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.45) 45%, transparent 100%)'
                       }}
                     />
                   )}
