@@ -294,45 +294,36 @@ export const ProfilePage = ({
                       : { bottom: 0 }
                   }
                 >
-                  {isMobile ? (
-                    <>
-                      <img 
-                        src={activeAvatarSrc}
-                        alt="Rohit Kumar Sahoo Avatar"
-                        className="w-full h-full object-contain pointer-events-none select-none"
-                        onLoad={() => setIsAvatarLoaded(true)}
-                      />
-                      {/* Dense dark fog cushion over lower torso */}
-                      <div 
-                        className="absolute inset-x-0 bottom-0 h-44 pointer-events-none z-10" 
-                        style={{
-                          background: 'linear-gradient(to top, rgba(10,10,10,0.96) 0%, rgba(10,10,10,0.82) 42%, rgba(10,10,10,0.3) 76%, transparent 100%)'
-                        }}
-                      />
-                    </>
-                  ) : (
-                    <DitherVeil 
-                      src={activeAvatarSrc}
-                      fit="contain"
-                      align="bottom"
-                      intro={false}
-                      colorEntrance={true}
-                      colorEntranceDuration={2500}
-                      triggerEntrance={isAvatarLoaded ? 1 : 0}
-                      pattern="atkinson"
-                      pixelSize={2}
-                      levels={5}
-                      inkColor="#000000"
-                      paperColor="#f4f1ea"
-                      revealRadius={130}
-                      softness={0.7}
-                      linger={4}
-                      wander={false}
-                      clickBurst={false}
-                      rimColor="#000000"
-                      rim={0}
-                      transparentBg={true}
-                      className="w-full h-full bg-transparent"
+                  <DitherVeil 
+                    src={activeAvatarSrc}
+                    fit="contain"
+                    align={isMobile ? "center" : "bottom"}
+                    intro={false}
+                    colorEntrance={true}
+                    colorEntranceDuration={isMobile ? 1800 : 2500}
+                    triggerEntrance={isAvatarLoaded ? 1 : 0}
+                    pattern="atkinson"
+                    pixelSize={2}
+                    levels={5}
+                    inkColor="#000000"
+                    paperColor="#f4f1ea"
+                    revealRadius={isMobile ? 115 : 130}
+                    softness={0.7}
+                    linger={isMobile ? 3.5 : 4}
+                    wander={isMobile ? true : false}
+                    clickBurst={false}
+                    rimColor="#000000"
+                    rim={0}
+                    transparentBg={true}
+                    className="w-full h-full bg-transparent"
+                  />
+                  {isMobile && (
+                    /* Dense dark fog cushion over lower torso */
+                    <div 
+                      className="absolute inset-x-0 bottom-0 h-44 pointer-events-none z-10" 
+                      style={{
+                        background: 'linear-gradient(to top, rgba(10,10,10,0.96) 0%, rgba(10,10,10,0.82) 42%, rgba(10,10,10,0.3) 76%, transparent 100%)'
+                      }}
                     />
                   )}
                 </motion.div>

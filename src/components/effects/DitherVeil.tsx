@@ -764,11 +764,16 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       let targetX = pointer.x;
       let targetY = pointer.y;
       if (!pointer.inside && wanderOn) {
-        drift = Math.min(1, drift + dt / 1.2);
         const [wx, wy] = wanderAt(now / 1000, width, height);
-        const k = drift * drift * (3 - 2 * drift);
-        targetX += (wx - targetX) * k;
-        targetY += (wy - targetY) * k;
+        if (!pointer.placed) {
+          targetX = wx;
+          targetY = wy;
+        } else {
+          drift = Math.min(1, drift + dt / 1.2);
+          const k = drift * drift * (3 - 2 * drift);
+          targetX += (wx - targetX) * k;
+          targetY += (wy - targetY) * k;
+        }
       } else {
         drift = 0;
       }
