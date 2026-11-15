@@ -389,7 +389,7 @@ void main() {
   float spread = length((cellUv - 0.5) * aspect) / length(aspect * 0.5);
   float appear = step(spread * 0.72 + bayer(cell + vec2(3.0, 5.0)) * 0.28, uIntro * 1.001);
 
-  // Background is 0.0 alpha (completely transparent, seamless with LiquidEther).
+  // Background is 0.0 alpha (completely transparent, seamless with backdrop).
   // Figure pixels are 100% preserved.
   float targetAlpha = rawTex.a * framed;
 

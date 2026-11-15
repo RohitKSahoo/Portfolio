@@ -10,9 +10,6 @@ export interface SocialItem {
   href: string;
   external: boolean;
   icon: React.ElementType;
-  image: string;
-  alt: string;
-  offsetY?: number;
 }
 
 const DEFAULT_SOCIALS: SocialItem[] = [
@@ -24,9 +21,6 @@ const DEFAULT_SOCIALS: SocialItem[] = [
     href: 'mailto:rohitkumarsahoo37@gmail.com',
     external: false,
     icon: Mail,
-    image: 'https://images.unsplash.com/photo-1517071148094-e0c3f35783ce?q=80&w=1394&auto=format&fit=crop',
-    alt: 'Warm neon lighting and minimalist creative atmosphere',
-    offsetY: 0,
   },
   {
     title: 'GitHub',
@@ -36,9 +30,6 @@ const DEFAULT_SOCIALS: SocialItem[] = [
     href: 'https://github.com/RohitKSahoo',
     external: true,
     icon: Github,
-    image: 'https://images.unsplash.com/photo-1761646062236-274331e70d7b?q=80&w=1615&auto=format&fit=crop',
-    alt: 'High-contrast studio silhouette with dramatic orange lighting',
-    offsetY: -200,
   },
   {
     title: 'LinkedIn',
@@ -48,9 +39,6 @@ const DEFAULT_SOCIALS: SocialItem[] = [
     href: 'https://linkedin.com/in/rohitksahoo',
     external: true,
     icon: Linkedin,
-    image: 'https://images.unsplash.com/photo-1734290173221-4899e9cc2b65?q=80&w=1470&auto=format&fit=crop',
-    alt: 'Dramatic moody doorway with red lighting',
-    offsetY: -150,
   },
   {
     title: 'Instagram',
@@ -60,9 +48,6 @@ const DEFAULT_SOCIALS: SocialItem[] = [
     href: 'https://www.instagram.com/rohitks.2407?igsh=MTU4c3hhMGI1eXdqMQ==',
     external: true,
     icon: Instagram,
-    image: 'https://images.unsplash.com/photo-1783767772392-8a58cd7843f8?q=80&w=1471&auto=format&fit=crop',
-    alt: 'Vibrant magenta and crimson chromatic lights',
-    offsetY: 0,
   },
 ];
 
@@ -212,11 +197,6 @@ export const SocialsAccordion: React.FC<SocialsAccordionProps> = ({
     return Math.min(COLUMN, Math.max(92, Math.round(textW + 48)));
   };
 
-  const fade = reduce ? { duration: 0 } : { duration: 0.45, ease: EASE_OUT };
-  const lastShown = useRef(0);
-  if (active !== null && active < n) lastShown.current = active;
-  const shown = Math.min(lastShown.current, n - 1);
-
   return (
     <div
       ref={rootRef}
@@ -230,47 +210,21 @@ export const SocialsAccordion: React.FC<SocialsAccordionProps> = ({
         isolation: 'isolate',
       }}
     >
-      {/* Background Photos with Cross-fade */}
+      {/* Clean Dark Ambient Gradient & Accent Glow Background (No photo backdrop) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {items.map((item, i) => {
-          const on = i === shown;
-          return (
-            <motion.img
-              key={i}
-              src={item.image}
-              alt={item.alt}
-              draggable={false}
-              decoding="async"
-              initial={false}
-              animate={{ opacity: on ? 1 : 0 }}
-              transition={on ? fade : { ...fade, delay: fade.duration }}
-              style={{
-                position: 'absolute',
-                top: -PHOTO_BLEED,
-                left: -PHOTO_BLEED,
-                width: `calc(100% + ${PHOTO_BLEED * 2}px)`,
-                height: `calc(100% + ${PHOTO_BLEED * 2}px)`,
-                objectFit: 'cover',
-                objectPosition: posOf(item.offsetY),
-                maxWidth: 'none',
-                maxHeight: 'none',
-                display: 'block',
-                zIndex: on ? 2 : 1,
-              }}
-            />
-          );
-        })}
-
-        {/* Ambient Dark Gradient Overlays */}
         <div
-          className="absolute inset-0 pointer-events-none z-[3]"
+          className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(135deg, rgba(8, 8, 12, 0.82) 0%, rgba(10, 10, 14, 0.48) 50%, rgba(0, 0, 0, 0.9) 100%)',
+              'linear-gradient(135deg, rgba(14, 14, 20, 0.95) 0%, rgba(10, 10, 15, 0.92) 50%, rgba(6, 6, 9, 0.98) 100%)',
           }}
         />
         <div
-          className="absolute -top-12 -left-12 w-52 h-52 rounded-full pointer-events-none z-[3] opacity-25 blur-3xl"
+          className="absolute -top-12 -left-12 w-64 h-64 rounded-full pointer-events-none opacity-20 blur-3xl"
+          style={{ background: 'radial-gradient(circle, #ef4444 0%, transparent 70%)' }}
+        />
+        <div
+          className="absolute -bottom-16 -right-16 w-64 h-64 rounded-full pointer-events-none opacity-10 blur-3xl"
           style={{ background: 'radial-gradient(circle, #ef4444 0%, transparent 70%)' }}
         />
       </div>

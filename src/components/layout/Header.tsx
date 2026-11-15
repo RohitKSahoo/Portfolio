@@ -13,9 +13,9 @@ const TAB_TITLES: Record<string, string> = {
   contact: 'Contact'
 };
 
-const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!<>-_\\/[]{}*^?#';
+const GLYPHS = '@#$%^&*()0123456789!<>-_/[]{}*^?#';
 
-const useScrambleText = (targetText: string = '', glyphs = GLYPHS, speed = 25) => {
+const useScrambleText = (targetText: string = '', glyphs = GLYPHS, speed = 15) => {
   const [displayText, setDisplayText] = useState(targetText || '');
 
   useEffect(() => {
@@ -93,13 +93,13 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
           className="hidden md:flex items-center gap-3 px-4 py-2.5 border-2 border-[var(--theme-accent)] bg-[var(--theme-accent)]/10 hover:bg-[var(--theme-accent)] text-[var(--theme-accent)] hover:text-black transition-all rounded-lg font-mono text-[0.65rem] tracking-[0.2em] uppercase font-bold shadow-[0_0_15px_rgba(var(--theme-accent-rgb),0.15)]"
         >
           <Mail size={14} strokeWidth={2.5} />
-          <span>LETS_CONNECT</span>
+          <span>LET'S CONNECT</span>
         </a>
 
         <div className="hidden lg:flex items-center gap-8">
           <div className="flex flex-col items-end gap-1">
             <span className="text-[0.55rem] text-tier-3 font-mono tracking-widest uppercase truncate max-w-[200px]">
-              BHUBANESWAR, OD // LOCAL_TIME
+            BHUBANSWAR, INDIA
             </span>
             <span className="text-xs font-mono text-tier-2 tabular-nums">
               {formatDate(time)}

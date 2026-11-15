@@ -72,6 +72,7 @@ export interface TechTextProps {
   dotSize?: number;
   className?: string;
   style?: React.CSSProperties;
+  onLayout?: (bounds: { left: number; right: number; width: number }) => void;
 }
 
 interface Settings {
@@ -186,12 +187,15 @@ export const TechText: React.FC<TechTextProps> = ({
   dotColor = '#ef4444',
   dotSize,
   className = '',
-  style
+  style,
+  onLayout
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const settingsRef = useRef<Settings | null>(null);
   const wakeRef = useRef<() => void>(() => {});
+  const onLayoutRef = useRef(onLayout);
+  onLayoutRef.current = onLayout;
 
   useEffect(() => {
     settingsRef.current = {
@@ -431,6 +435,7 @@ export const TechText: React.FC<TechTextProps> = ({
         ].filter(band => band.y1 - band.y0 > 0.5)
       };
       word = next;
+      onLayoutRef.current?.({ left: next.left, right: next.left + totalWidth, width });
 
       const chars = Array.from(s.text);
       const previous = glyphs;

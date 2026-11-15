@@ -253,7 +253,7 @@ export const RegistryPage = () => {
           clickEffect={false}
           className={`w-full flex flex-col gap-3 group relative rounded-2xl border transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
             isExpanded
-              ? 'p-6 sm:p-8 pt-7 sm:pt-9 bg-[#0a0a0d] border-red-500/50 shadow-[0_20px_70px_rgba(0,0,0,0.85),0_0_30px_rgba(239,68,68,0.15)] h-auto'
+              ? 'p-6 sm:p-8 pt-5 sm:pt-6 bg-[#0a0a0d] border-red-500/50 shadow-[0_20px_70px_rgba(0,0,0,0.85),0_0_30px_rgba(239,68,68,0.15)] h-auto'
               : isSiblingExpanded
                 ? '!p-0 !m-0 !border-0 opacity-0 overflow-hidden pointer-events-none'
                 : 'p-5 bg-[#0d0d0d] border-white/5 hover:border-white/10 cursor-pointer h-auto min-h-[160px]'
@@ -266,7 +266,7 @@ export const RegistryPage = () => {
           }}
         >
           {/* Header: Status & Controls */}
-          <div className={`w-full flex items-center ${isExpanded ? 'justify-end' : 'justify-between'}`}>
+          <div className={`w-full flex items-center ${isExpanded ? 'justify-end -mt-1 sm:-mt-1.5 sm:-mr-2' : 'justify-between'}`}>
             {!isExpanded && (
               <div className="flex items-center gap-2">
                 <div className={`w-1.5 h-1.5 rounded-full ${
@@ -304,73 +304,76 @@ export const RegistryPage = () => {
             )}
           </div>
 
-          {/* Persistent Header: Folder + Title + Stack (Never unmounts!) */}
-          <div className={`flex flex-col lg:flex-row items-center ${isExpanded ? 'lg:items-center gap-5 pt-1 pl-2' : 'gap-6'} transition-all duration-300`}>
-            <div className="relative shrink-0 pl-1 pt-1">
-              <Folder
-                mode="flap"
-                variant="matte"
-                color="#EF4444"
-                size={0.38}
-                label={project.name}
-                items={folderItemsMap.get(project.id)}
-                theme="dark"
-                open={isExpanded}
-                onItemClick={(item, index) => console.log(item, index)}
-              />
-            </div>
+          {/* Main Content Layout: When expanded, Left Column has Header + Dossier, Right Column has Mockup aligned at the top level */}
+          <div className={`w-full ${isExpanded ? 'grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-8 items-start' : 'flex flex-col gap-3'}`}>
+            {/* Left Column: Persistent Header + (Compact Preview or Expanded Dossier) */}
+            <div className="flex flex-col w-full">
+              {/* Persistent Header: Folder + Title + Stack (Never unmounts!) */}
+              <div className={`flex flex-col lg:flex-row items-center ${isExpanded ? 'lg:items-center gap-5 pt-1 pl-2' : 'gap-6'} transition-all duration-300`}>
+                <div className="relative shrink-0 pl-1 pt-1">
+                  <Folder
+                    mode="flap"
+                    variant="matte"
+                    color="#EF4444"
+                    size={0.38}
+                    label={project.name}
+                    items={folderItemsMap.get(project.id)}
+                    theme="dark"
+                    open={isExpanded}
+                    onItemClick={(item, index) => console.log(item, index)}
+                  />
+                </div>
 
-            <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-              <h3 className={`font-bold font-satoshi tracking-tight transition-colors ${
-                isExpanded ? 'text-2xl lg:text-3xl text-red-500' : 'text-xl text-white group-hover:text-red-500'
-              }`}>
-                {project.name}
-              </h3>
-              <div className="flex flex-wrap gap-1.5 mt-2 justify-center lg:justify-start">
-                {project.stack.slice(0, isExpanded ? 6 : 3).map(tech => (
-                  <span key={tech} className="text-[0.62rem] font-satoshi font-medium text-white/50 border border-white/10 px-2 py-0.5 rounded uppercase tracking-wider bg-white/[0.02]">
-                    {tech}
-                  </span>
-                ))}
+                <div className={`flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  isExpanded ? 'lg:ml-8' : ''
+                }`}>
+                  <h3 className={`font-bold font-satoshi tracking-tight transition-colors ${
+                    isExpanded ? 'text-2xl lg:text-3xl text-red-500' : 'text-xl text-white group-hover:text-red-500'
+                  }`}>
+                    {project.name}
+                  </h3>
+                  <div className="flex flex-wrap gap-1.5 mt-2 justify-center lg:justify-start">
+                    {project.stack.slice(0, isExpanded ? 6 : 3).map(tech => (
+                      <span key={tech} className="text-[0.62rem] font-satoshi font-medium text-white/50 border border-white/10 px-2 py-0.5 rounded uppercase tracking-wider bg-white/[0.02]">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* Compact Preview (Smooth exit when expanding, smooth enter when collapsing) */}
-          <AnimatePresence initial={false}>
-            {!isExpanded && (
-              <motion.div
-                key="compact-preview"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.35, ease: 'easeOut' }}
-                className="hidden lg:flex flex-col gap-2 mt-2 pt-4 border-t border-white/5 opacity-60 group-hover:opacity-100 transition-opacity overflow-hidden"
-              >
-                <p className="text-xs text-white/60 font-inter leading-relaxed line-clamp-2">
-                  {project.architecture}
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              {/* Compact Preview (Smooth exit when expanding, smooth enter when collapsing) */}
+              <AnimatePresence initial={false}>
+                {!isExpanded && (
+                  <motion.div
+                    key="compact-preview"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                    className="hidden lg:flex flex-col gap-2 mt-2 pt-4 border-t border-white/5 opacity-60 group-hover:opacity-100 transition-opacity overflow-hidden"
+                  >
+                    <p className="text-xs text-white/60 font-inter leading-relaxed line-clamp-2">
+                      {project.architecture}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-          {/* Expanded Body: Dossier + Mockup (Smooth unified height animation for both edges!) */}
-          <AnimatePresence initial={false}>
-            {isExpanded && (
-              <motion.div
-                key="expanded-body"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ 
-                  height: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
-                  opacity: { duration: 0.35, ease: 'easeOut' }
-                }}
-                className="overflow-hidden w-full pt-4"
-              >
-                <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-8 items-start">
-                  {/* Left Column: Dossier */}
-                  <div className="flex flex-col gap-5">
+              {/* Expanded Dossier */}
+              <AnimatePresence initial={false}>
+                {isExpanded && (
+                  <motion.div
+                    key="expanded-dossier"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ 
+                      height: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+                      opacity: { duration: 0.35, ease: 'easeOut' }
+                    }}
+                    className="overflow-hidden w-full pt-5 flex flex-col gap-5"
+                  >
                     {/* Category & Description */}
                     <div>
                       <div className="flex items-center gap-2 text-[11px] font-mono tracking-widest text-white/60 uppercase mb-2">
@@ -425,99 +428,111 @@ export const RegistryPage = () => {
                         </a>
                       </div>
                     )}
-                  </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
-                  {/* Right Column: Mockup */}
-                  {project.images && project.images.length > 0 && (
-                    <div className="w-full">
-                      {(() => {
-                        const isDesktopMockup = project.id === 'P_03' || project.id === 'P_05';
+            {/* Right Column: Mockup (aligned on the same level as the project name heading) */}
+            <AnimatePresence initial={false}>
+              {isExpanded && project.images && project.images.length > 0 && (
+                <motion.div
+                  key="expanded-mockup"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ 
+                    height: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+                    opacity: { duration: 0.35, ease: 'easeOut' }
+                  }}
+                  className="overflow-hidden w-full"
+                >
+                  {(() => {
+                    const isDesktopMockup = project.id === 'P_03' || project.id === 'P_05';
 
-                        return isDesktopMockup ? (
-                          /* Studio Monitor Display Mockup */
-                          <div className="flex flex-col items-center lg:items-end lg:pr-4 justify-center w-full select-none pt-1">
-                            <div
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShowMockupModal(true);
-                              }}
-                              className="relative rounded-2xl border-[3px] border-[#2c2d33] bg-[#0c0d10] p-2 sm:p-2.5 shadow-[0_25px_60px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.2)] w-full max-w-[490px] aspect-[16/10] flex flex-col overflow-hidden group/monitor cursor-pointer"
-                            >
-                              {/* Webcam Sensor Dot */}
-                              <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-black border border-white/20 z-20" />
+                    return isDesktopMockup ? (
+                      /* Studio Monitor Display Mockup */
+                      <div className="flex flex-col items-center lg:items-end lg:pr-4 justify-center w-full select-none pt-1">
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowMockupModal(true);
+                          }}
+                          className="relative rounded-2xl border-[3px] border-[#2c2d33] bg-[#0c0d10] p-2 sm:p-2.5 shadow-[0_25px_60px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.2)] w-full max-w-[490px] aspect-[16/10] flex flex-col overflow-hidden group/monitor cursor-pointer"
+                        >
+                          {/* Webcam Sensor Dot */}
+                          <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-black border border-white/20 z-20" />
 
-                              {/* Screen Glass with Auto-Slide Crossfade */}
-                              <div className="relative w-full h-full rounded-lg overflow-hidden bg-black flex items-center justify-center">
-                                <AnimatePresence mode="wait">
-                                  <motion.img
-                                    key={activeImageIndex}
-                                    src={project.images[activeImageIndex] || project.images[0]}
-                                    alt={project.name}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.5, ease: 'easeInOut' }}
-                                    className="w-full h-full object-contain select-none"
-                                  />
-                                </AnimatePresence>
-                                <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-transparent via-white/[0.03] to-transparent" />
-                                <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur border border-white/15 text-[9px] font-mono text-white/80 flex items-center gap-1 opacity-0 group-hover/monitor:opacity-100 transition-opacity z-10">
-                                  <Eye size={10} />
-                                  <span>View Image</span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Monitor Stand */}
-                            <div className="w-10 h-7 bg-gradient-to-b from-[#2a2c33] to-[#141518] border-x border-white/10 -mt-0.5" />
-                            <div className="w-36 h-2 rounded-t-md bg-gradient-to-r from-[#1c1d22] via-[#353842] to-[#1c1d22] border-t border-x border-white/20 shadow-2xl" />
-                          </div>
-                        ) : (
-                          /* Flagship Mobile Device Mockup */
-                          <div className="flex flex-col items-center lg:items-end lg:pr-11 justify-center w-full select-none pt-1">
-                            <div
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShowMockupModal(true);
-                              }}
-                              className="relative rounded-[24px] border-[1.5px] border-[#383a44] bg-[#0b0c10] p-1 sm:p-1.5 shadow-[0_25px_65px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.2)] w-[235px] sm:w-[260px] lg:w-[275px] aspect-[9/19.5] flex flex-col justify-between overflow-hidden group/mobile cursor-pointer"
-                            >
-                              {/* Minimal Punch-Hole Camera */}
-                              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-black z-30 flex items-center justify-center border border-white/15 shadow-inner">
-                                <div className="w-1 h-1 rounded-full bg-[#161c2c]" />
-                              </div>
-
-                              {/* Screen Image with smooth auto-slide crossfade */}
-                              <div className="relative w-full h-full rounded-[18px] overflow-hidden bg-black flex items-center justify-center">
-                                <AnimatePresence mode="wait">
-                                  <motion.img
-                                    key={activeImageIndex}
-                                    src={project.images[activeImageIndex] || project.images[0]}
-                                    alt={project.name}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.5, ease: 'easeInOut' }}
-                                    className="w-full h-full object-cover select-none"
-                                  />
-                                </AnimatePresence>
-
-                                <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-transparent via-white/[0.04] to-transparent" />
-                                <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur border border-white/15 text-[9px] font-mono text-white/80 flex items-center gap-1 opacity-0 group-hover/mobile:opacity-100 transition-opacity z-20">
-                                  <Eye size={10} />
-                                  <span>View Image</span>
-                                </div>
-                              </div>
+                          {/* Screen Glass with Auto-Slide Carousel */}
+                          <div className="relative w-full h-full rounded-lg overflow-hidden bg-black flex items-center justify-center">
+                            <AnimatePresence initial={false}>
+                              <motion.img
+                                key={activeImageIndex}
+                                src={project.images[activeImageIndex] || project.images[0]}
+                                alt={project.name}
+                                initial={{ x: '100%' }}
+                                animate={{ x: '0%' }}
+                                exit={{ x: '-100%' }}
+                                transition={{ duration: 0.55, ease: [0.32, 0.72, 0, 1] }}
+                                className="absolute inset-0 w-full h-full object-contain select-none"
+                              />
+                            </AnimatePresence>
+                            <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-transparent via-white/[0.03] to-transparent z-10" />
+                            <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur border border-white/15 text-[9px] font-mono text-white/80 flex items-center gap-1 opacity-0 group-hover/monitor:opacity-100 transition-opacity z-20">
+                              <Eye size={10} />
+                              <span>View Image</span>
                             </div>
                           </div>
-                        );
-                      })()}
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                        </div>
+
+                        {/* Monitor Stand */}
+                        <div className="w-10 h-7 bg-gradient-to-b from-[#2a2c33] to-[#141518] border-x border-white/10 -mt-0.5" />
+                        <div className="w-36 h-2 rounded-t-md bg-gradient-to-r from-[#1c1d22] via-[#353842] to-[#1c1d22] border-t border-x border-white/20 shadow-2xl" />
+                      </div>
+                    ) : (
+                      /* Flagship Mobile Device Mockup */
+                      <div className="flex flex-col items-center lg:items-end lg:pr-11 justify-center w-full select-none pt-1">
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowMockupModal(true);
+                          }}
+                          className="relative rounded-[24px] border-[1.5px] border-[#383a44] bg-[#0b0c10] p-1 sm:p-1.5 shadow-[0_25px_65px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.2)] w-[235px] sm:w-[260px] lg:w-[275px] aspect-[9/19.5] flex flex-col justify-between overflow-hidden group/mobile cursor-pointer"
+                        >
+                          {/* Minimal Punch-Hole Camera */}
+                          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-black z-30 flex items-center justify-center border border-white/15 shadow-inner">
+                            <div className="w-1 h-1 rounded-full bg-[#161c2c]" />
+                          </div>
+
+                          {/* Screen Image with smooth auto-slide carousel */}
+                          <div className="relative w-full h-full rounded-[18px] overflow-hidden bg-black flex items-center justify-center">
+                            <AnimatePresence initial={false}>
+                              <motion.img
+                                key={activeImageIndex}
+                                src={project.images[activeImageIndex] || project.images[0]}
+                                alt={project.name}
+                                initial={{ x: '100%' }}
+                                animate={{ x: '0%' }}
+                                exit={{ x: '-100%' }}
+                                transition={{ duration: 0.55, ease: [0.32, 0.72, 0, 1] }}
+                                className="absolute inset-0 w-full h-full object-cover select-none"
+                              />
+                            </AnimatePresence>
+
+                            <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-transparent via-white/[0.04] to-transparent z-10" />
+                            <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur border border-white/15 text-[9px] font-mono text-white/80 flex items-center gap-1 opacity-0 group-hover/mobile:opacity-100 transition-opacity z-20">
+                              <Eye size={10} />
+                              <span>View Image</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </MagicBentoCard>
       </motion.div>
     );
@@ -695,7 +710,7 @@ export const RegistryPage = () => {
                     ))}
                   </div>
                   <span className="text-xs font-mono tracking-wider text-white/40 uppercase">
-                    SYS_PROJECT // {activeProject.id}
+                    PROJECT {activeProject.id}
                   </span>
                 </div>
 

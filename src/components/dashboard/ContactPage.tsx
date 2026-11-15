@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Github, Linkedin, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
 import VariableProximity from '../effects/VariableProximity';
-import GlassSurface from '../effects/GlassSurface';
 import { SocialsAccordion } from './SocialsAccordion';
 
 const SOCIALS = [
@@ -170,11 +169,11 @@ export const ContactPage = () => {
           <div className="relative">
 
             <h2 ref={containerRef} className="font-extrabold font-satoshi tracking-tight mb-2.5 sm:mb-3 text-white mt-1 break-words">
-              <span className="text-[clamp(1.5rem,6.8vw,2.5rem)] sm:text-4xl lg:text-[clamp(2.4rem,3.2vw,3.6rem)] leading-tight whitespace-nowrap block">
+              <span className="text-[clamp(1.5rem,6.8vw,2.5rem)] sm:text-4xl lg:text-[clamp(2.9rem,4vw,4.6rem)] leading-tight whitespace-nowrap block">
                 <VariableProximity label={text1} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />{' '}
                 <VariableProximity label={text2} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
               </span>
-              <span className="text-red-500 font-alex font-normal text-[clamp(3.8rem,16.5vw,6.5rem)] sm:text-7xl lg:text-[clamp(4.8rem,7.5vw,7.8rem)] leading-[0.98] sm:leading-[1] block -mt-1 sm:-mt-2">
+              <span className="text-red-500 font-alex font-normal text-[clamp(3.8rem,16.5vw,6.5rem)] sm:text-7xl lg:text-[clamp(6rem,8.8vw,9.8rem)] leading-[0.98] sm:leading-[1] lg:leading-[0.92] block -mt-1 sm:-mt-2 lg:-mt-3">
                 <VariableProximity 
                   label={text3} 
                   containerRef={containerRef} 
@@ -219,7 +218,7 @@ export const ContactPage = () => {
             </div>
           </div>
 
-          {/* Desktop View: Static Glass Cards (Original Design) */}
+          {/* Desktop View: Transparent Social Cards */}
           <div className="hidden lg:flex flex-col gap-6">
             {SOCIALS.map((social) => {
               const Icon = social.icon;
@@ -228,40 +227,26 @@ export const ContactPage = () => {
                   key={social.name}
                   href={social.href}
                   {...(social.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className="group relative block focus:outline-none cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
+                  className="group relative block focus:outline-none cursor-pointer rounded-2xl border border-white/10 hover:border-red-500/40 bg-white/[0.02] hover:bg-white/[0.05] p-5 sm:p-6 w-full transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_0_25px_rgba(239,68,68,0.15)]"
                 >
-                  <GlassSurface
-                    width="100%"
-                    height="auto"
-                    borderRadius={14}
-                    distortionScale={-100}
-                    displace={0.2}
-                    backgroundOpacity={0}
-                    saturation={1.1}
-                    redOffset={8}
-                    greenOffset={4}
-                    blueOffset={12}
-                    className="w-full border border-white/10 group-hover:border-red-500/40 shadow-[0_4px_20px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(239,68,68,0.15)] transition-all"
-                  >
-                    <div className="p-5 sm:p-6 w-full flex items-center justify-between">
-                      <div className="flex items-center gap-5">
-                        <div className="p-4 bg-red-500/10 text-red-500 rounded-xl group-hover:bg-red-500/20 group-hover:scale-105 transition-all">
-                          <Icon size={26} />
-                        </div>
-                        <div>
-                          <h3 className="text-lg sm:text-xl font-bold font-satoshi text-white group-hover:text-red-400 transition-colors">
-                            {social.name}
-                          </h3>
-                          <p className="text-sm sm:text-base text-white/50 font-inter group-hover:text-white/70 transition-colors mt-0.5">
-                            {social.handle}
-                          </p>
-                        </div>
+                  <div className="w-full flex items-center justify-between">
+                    <div className="flex items-center gap-5">
+                      <div className="p-4 bg-red-500/10 text-red-500 rounded-xl group-hover:bg-red-500/20 group-hover:scale-105 transition-all">
+                        <Icon size={26} />
                       </div>
-                      <div className="w-9 h-9 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
-                        <ArrowRight size={16} className="text-white/50 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all" />
+                      <div>
+                        <h3 className="text-lg sm:text-xl font-bold font-satoshi text-white group-hover:text-red-400 transition-colors">
+                          {social.name}
+                        </h3>
+                        <p className="text-sm sm:text-base text-white/50 font-inter group-hover:text-white/70 transition-colors mt-0.5">
+                          {social.handle}
+                        </p>
                       </div>
                     </div>
-                  </GlassSurface>
+                    <div className="w-9 h-9 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
+                      <ArrowRight size={16} className="text-white/50 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all" />
+                    </div>
+                  </div>
                 </a>
               );
             })}
@@ -381,28 +366,12 @@ export const ContactPage = () => {
                 <button 
                   onClick={handleSubmit}
                   disabled={isSending || isSent}
-                  className={`group relative block w-full focus:outline-none rounded-lg overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] ${(isSending || isSent) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                  className={`group relative flex items-center justify-between w-full h-[52px] px-6 rounded-xl border border-red-500/50 hover:border-red-500/90 bg-red-500/[0.08] hover:bg-red-500/[0.18] text-white text-base font-bold font-satoshi tracking-wide transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] shadow-[0_0_25px_rgba(239,68,68,0.2)] hover:shadow-[0_0_35px_rgba(239,68,68,0.4)] ${(isSending || isSent) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                 >
-                  <GlassSurface
-                    width="100%"
-                    height={52}
-                    borderRadius={10}
-                    distortionScale={-110}
-                    displace={0.3}
-                    backgroundOpacity={0.2}
-                    saturation={1.3}
-                    redOffset={25}
-                    greenOffset={5}
-                    blueOffset={10}
-                    className="w-full border border-red-500/50 group-hover:border-red-500/90 shadow-[0_0_25px_rgba(239,68,68,0.25)] group-hover:shadow-[0_0_35px_rgba(239,68,68,0.45)] transition-all"
-                  >
-                    <div className="flex justify-between items-center w-full px-6 text-white text-base font-bold font-satoshi tracking-wide">
-                      <span className="group-hover:text-red-300 transition-colors">
-                        {isSending ? 'Sending...' : isSent ? 'Sent!' : 'Submit Message'}
-                      </span>
-                      <ArrowRight size={18} className="text-red-500 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </GlassSurface>
+                  <span className="group-hover:text-red-300 transition-colors">
+                    {isSending ? 'Sending...' : isSent ? 'Sent!' : 'Submit Message'}
+                  </span>
+                  <ArrowRight size={18} className="text-red-500 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </motion.div>

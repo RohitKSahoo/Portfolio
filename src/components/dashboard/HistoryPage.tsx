@@ -178,7 +178,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
     return {
       multiplyy: true,
       papercycle: !isSmall,
-      cttc: !isSmall,
+      cttc: false,
       vssut: false,
     };
   });
@@ -414,7 +414,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       {/* FULL-VIEWPORT 3D LANYARD (Desktop only, spans right half of viewport) */}
       {!isMobile && typeof document !== 'undefined' && createPortal(
         <div className={`hidden lg:block fixed inset-0 w-screen h-screen z-[5] overflow-hidden transition-opacity duration-300 ${
-          (isActive || isExiting) ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none'
+          (isActive || isExiting) ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none !hidden'
         }`}>
           <Lanyard
             frontImage={frontTexture || undefined}
