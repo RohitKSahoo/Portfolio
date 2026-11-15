@@ -277,7 +277,7 @@ export const ProfilePage = ({
                 <motion.div
                   animate={{ 
                     y: isMobile ? 12 : 0,
-                    scale: isMobile ? 1.08 : 1
+                    scale: isMobile ? 1.02 : 1
                   }}
                   transition={{ duration: 0.4 }}
                   className={
@@ -307,7 +307,7 @@ export const ProfilePage = ({
                     levels={5}
                     inkColor="#000000"
                     paperColor="#f4f1ea"
-                    revealRadius={isMobile ? 120 : 130}
+                    revealRadius={isMobile ? 110 : 130}
                     softness={0.7}
                     linger={isMobile ? 3.5 : 4}
                     wander={isMobile ? true : false}

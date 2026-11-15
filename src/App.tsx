@@ -23,33 +23,58 @@ inject();
 const LIQUID_COLORS = ['#5227FF', '#FF9FFC', '#B497CF'];
 const TAB_ORDER = ['profile', 'projects', 'experience', 'contact'];
 
+const getTabFromLocation = (): string => {
+  if (typeof window === 'undefined') return 'profile';
+  const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
+  if (TAB_ORDER.includes(hash)) {
+    return hash;
+  }
+  return 'profile';
+};
+
+const isPageReload = (): boolean => {
+  if (typeof window === 'undefined' || !window.performance) return false;
+  const navEntries = window.performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+  if (navEntries && navEntries.length > 0) {
+    return navEntries[0].type === 'reload';
+  }
+  return (window.performance as any)?.navigation?.type === 1;
+};
+
 const pageVariants = {
-  enter: {
-    y: 35,
+  enter: (dir: number) => ({
+    y: dir >= 0 ? 24 : -24,
     opacity: 0,
-  },
+  }),
   center: {
     y: 0,
     opacity: 1,
     transition: {
-      y: { type: 'spring', stiffness: 280, damping: 28, mass: 0.85 },
+      y: { type: 'spring', stiffness: 280, damping: 28, mass: 0.8 },
       opacity: { duration: 0.22, ease: 'easeOut' },
     },
   },
-  exit: {
-    y: 35,
+  exit: (dir: number) => ({
+    y: dir >= 0 ? -18 : 18,
     opacity: 0,
     transition: {
-      y: { duration: 0.2, ease: [0.32, 0, 0.67, 0] },
+      y: { duration: 0.18, ease: [0.32, 0, 0.67, 0] },
       opacity: { duration: 0.16, ease: 'linear' },
     },
-  },
+  }),
 };
 
 function App() {
   const [activeTab, setActiveTab] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('active-tab') || 'profile';
+      if (isPageReload()) {
+        return 'profile';
+      }
+      const fromHash = getTabFromLocation();
+      if (window.location.hash) {
+        return fromHash;
+      }
+      return 'profile';
     }
     return 'profile';
   });
@@ -57,45 +82,70 @@ function App() {
   const [isDockVisible, setIsDockVisible] = useState(false);
   const [isCVModalOpen, setIsCVModalOpen] = useState(false);
   const [cvTriggerRect, setCvTriggerRect] = useState<DOMRect | null>(null);
-  const [shouldPreloadHistory, setShouldPreloadHistory] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const [pendingTab, setPendingTab] = useState<string | null>(null);
+  const [isHistoryExiting, setIsHistoryExiting] = useState(false);
+  const [isPageTransitioning, setIsPageTransitioning] = useState(false);
+  const exitTimeoutRef = useRef<number | null>(null);
+
+  const activeTabRef = useRef(activeTab);
+  activeTabRef.current = activeTab;
+
+  const pendingTabRef = useRef(pendingTab);
+  pendingTabRef.current = pendingTab;
+
+  const isHistoryExitingRef = useRef(isHistoryExiting);
+  isHistoryExitingRef.current = isHistoryExiting;
 
   const handleOpenCV = (rect?: DOMRect | null) => {
     setCvTriggerRect(rect || null);
     setIsCVModalOpen(true);
   };
 
-  // Background pre-warm 3D Lanyard & History WebGL context well after home page settles
+  // Set initial history state on mount if not already present & disable horizontal overscroll swipe navigation
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShouldPreloadHistory(true);
-    }, 3500);
-    return () => clearTimeout(timer);
+    if (typeof window !== 'undefined') {
+      document.documentElement.style.overscrollBehaviorX = 'none';
+      document.body.style.overscrollBehaviorX = 'none';
+
+      if (isPageReload()) {
+        window.history.replaceState({ tab: 'profile' }, '', window.location.pathname + window.location.search);
+        localStorage.setItem('active-tab', 'profile');
+      } else if (!window.history.state?.tab) {
+        const targetHash = activeTab === 'profile' ? '' : `#${activeTab}`;
+        const url = targetHash === '' ? (window.location.pathname + window.location.search) : targetHash;
+        window.history.replaceState({ tab: activeTab }, '', url);
+      }
+    }
   }, []);
 
-  // Background prefetch all page chunks during idle time for instantaneous tab switching
+  // Listen for browser Back/Forward (popstate) navigation on mobile & desktop
   useEffect(() => {
-    const prefetchPages = () => {
-      loadRegistry();
-      loadHistory();
-      loadContact();
+    const handlePopState = () => {
+      const targetTab = getTabFromLocation();
+      handleTabChange(targetTab, false);
     };
 
-    if ('requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(prefetchPages);
-    } else {
-      setTimeout(prefetchPages, 200);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Eagerly prefetch subpage bundles and pre-decode avatar frame
+  useEffect(() => {
+    loadRegistry();
+    loadHistory();
+    loadContact();
+
+    if (typeof window !== 'undefined') {
+      const img = new Image();
+      img.src = '/avatar-frames/dir_center.png?v=5';
     }
   }, []);
 
   useEffect(() => {
     localStorage.setItem('active-tab', activeTab);
-    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
-
-  const [pendingTab, setPendingTab] = useState<string | null>(null);
-  const [isHistoryExiting, setIsHistoryExiting] = useState(false);
-  const exitTimeoutRef = useRef<number | null>(null);
 
   // Lock mobile touch scrolling completely on Hero/Profile page so avatar and text stay locked in place
   useEffect(() => {
@@ -126,9 +176,11 @@ function App() {
         document.documentElement.style.overflow = '';
         document.documentElement.style.height = '';
         document.documentElement.style.overscrollBehavior = '';
+        document.documentElement.style.overscrollBehaviorX = 'none';
         document.body.style.overflow = '';
         document.body.style.height = '';
         document.body.style.overscrollBehavior = '';
+        document.body.style.overscrollBehaviorX = 'none';
         document.body.style.touchAction = '';
         window.removeEventListener('touchmove', preventTouch);
       };
@@ -145,13 +197,39 @@ function App() {
     const prevIdx = TAB_ORDER.indexOf('experience');
     const nextIdx = TAB_ORDER.indexOf(targetTab);
     setDirection(nextIdx > prevIdx ? 1 : -1);
+    setIsPageTransitioning(true);
     setActiveTab(targetTab);
   };
 
-  const handleTabChange = (nextTab: string) => {
-    if (nextTab === activeTab || nextTab === pendingTab) return;
+  const handleTabChange = (nextTab: string, pushHistory = true) => {
+    const currentTab = activeTabRef.current;
+    const currentPending = pendingTabRef.current;
+    const isExiting = isHistoryExitingRef.current;
 
-    if (activeTab === 'experience') {
+    if (nextTab === currentTab && !isExiting) return;
+    if (nextTab === currentPending) return;
+
+    if (pushHistory && typeof window !== 'undefined') {
+      const targetHash = nextTab === 'profile' ? '' : `#${nextTab}`;
+      const currentHash = window.location.hash;
+      const isAlreadyMatching = targetHash === '' ? (!currentHash || currentHash === '#') : (currentHash === targetHash);
+      if (!isAlreadyMatching) {
+        const newUrl = targetHash === '' ? (window.location.pathname + window.location.search) : targetHash;
+        window.history.pushState({ tab: nextTab }, '', newUrl);
+      }
+    }
+
+    if (isExiting) {
+      if (exitTimeoutRef.current) {
+        clearTimeout(exitTimeoutRef.current);
+        exitTimeoutRef.current = null;
+      }
+      setIsHistoryExiting(false);
+      setPendingTab(null);
+      if (nextTab === currentTab) return;
+    }
+
+    if (currentTab === 'experience') {
       // 1. Immediately indicate the targeted tab on dock
       setPendingTab(nextTab);
       // 2. Trigger upward lanyard ceiling pull exit before mounting new page
@@ -164,20 +242,30 @@ function App() {
       return;
     }
 
-    const prevIdx = TAB_ORDER.indexOf(activeTab);
+    const prevIdx = TAB_ORDER.indexOf(currentTab);
     const nextIdx = TAB_ORDER.indexOf(nextTab);
     const newDir = nextIdx > prevIdx ? 1 : -1;
     setDirection(newDir);
+    setIsPageTransitioning(true);
     setActiveTab(nextTab);
   };
+
+  const isProfileLocked = activeTab === 'profile' && !isPageTransitioning;
 
   const renderContent = () => {
     // Only render new page components when lanyard exit has completed
     const showNewPage = activeTab !== 'experience' && !isHistoryExiting;
 
     return (
-      <div className={`w-full relative ${activeTab === 'profile' ? 'flex-1 flex flex-col' : ''}`}>
-        <AnimatePresence mode="wait" custom={direction} initial={false}>
+      <div className={`w-full relative ${isProfileLocked ? 'flex-1 flex flex-col' : ''}`}>
+        <AnimatePresence 
+          mode="wait" 
+          custom={direction} 
+          initial={false}
+          onExitComplete={() => {
+            window.scrollTo({ top: 0, behavior: 'instant' });
+          }}
+        >
           {showNewPage && (
             <motion.div
               key={activeTab}
@@ -186,7 +274,12 @@ function App() {
               initial="enter"
               animate="center"
               exit="exit"
-              className={`w-full ${activeTab === 'profile' ? 'flex-1 flex flex-col' : ''}`}
+              onAnimationComplete={(definition) => {
+                if (definition === 'center') {
+                  setIsPageTransitioning(false);
+                }
+              }}
+              className={`w-full transform-gpu will-change-[transform,opacity] ${isProfileLocked ? 'flex-1 flex flex-col' : ''}`}
             >
               <Suspense fallback={null}>
                 {(() => {
@@ -214,13 +307,13 @@ function App() {
           )}
         </AnimatePresence>
 
-        {/* PERSISTENT & PRE-WARMED 3D LANYARD / EXPERIENCE MODULE */}
+        {/* 3D LANYARD / EXPERIENCE MODULE */}
         <div
           className={`w-full ${(activeTab === 'experience' || isHistoryExiting) ? 'block' : 'hidden'}`}
           aria-hidden={activeTab !== 'experience'}
         >
           <Suspense fallback={null}>
-            {(shouldPreloadHistory || activeTab === 'experience' || isHistoryExiting) && (
+            {(activeTab === 'experience' || isHistoryExiting) && (
               <HistoryPage 
                 isActive={activeTab === 'experience' && !isHistoryExiting}
                 isExiting={isHistoryExiting}
@@ -240,8 +333,8 @@ function App() {
   };
 
   return (
-    <div className={`min-h-screen selection:bg-[var(--theme-accent)] selection:text-white antialiased relative transition-colors ${
-      activeTab === 'profile' ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'overflow-x-clip'
+    <div className={`min-h-screen selection:bg-[var(--theme-accent)] selection:text-white antialiased relative transition-colors overscroll-x-none touch-pan-y ${
+      isProfileLocked ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'overflow-x-clip'
     }`}>
       {/* MAGNETIC DOCK NAVIGATION */}
       <SystemDock 
@@ -267,8 +360,8 @@ function App() {
       />
 
       {/* MAIN SYSTEM VIEWPORT */}
-      <main className={`flex flex-col relative z-10 transition-all duration-500 pointer-events-none ${
-        activeTab === 'profile' ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : ''
+      <main className={`flex flex-col relative z-10 transition-all duration-300 pointer-events-none ${
+        isProfileLocked ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : ''
       }`}>
         {/* TOP TELEMETRY HEADER */}
         <Header 
@@ -279,14 +372,14 @@ function App() {
         <div 
           ref={scrollContainerRef} 
           className={`px-4 sm:px-6 lg:px-8 pt-[74px] sm:pt-[92px] lg:pt-[112px] ${
-            activeTab === 'profile' 
+            isProfileLocked 
               ? 'pb-16 sm:pb-20 lg:pb-24 h-[100dvh] overflow-hidden flex flex-col' 
               : 'pb-20 lg:pb-24'
           } pointer-events-none`} 
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
           <div className={`max-w-[1600px] w-full mx-auto pointer-events-none ${
-            activeTab === 'profile' ? 'flex-1 flex flex-col' : ''
+            isProfileLocked ? 'flex-1 flex flex-col' : ''
           }`}>
              {renderContent()}
           </div>
