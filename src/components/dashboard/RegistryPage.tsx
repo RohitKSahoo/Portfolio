@@ -13,11 +13,14 @@ import {
   Eye
 } from 'lucide-react';
 import Folder, { type FolderEntry } from '../effects/Folder';
-import { MagicBentoCard } from '../effects/MagicBento';
 import { FastTypingText } from '../effects/FastTypingText';
 import { PROJECTS } from './data';
 
-export const RegistryPage = () => {
+interface RegistryPageProps {
+  isExiting?: boolean;
+}
+
+export const RegistryPage: React.FC<RegistryPageProps> = ({ isExiting = false }) => {
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [clickOrigin, setClickOrigin] = React.useState<{ x: number; y: number } | null>(null);
   const [activeImageIndex, setActiveImageIndex] = React.useState(0);
@@ -26,6 +29,14 @@ export const RegistryPage = () => {
   const activeProject = PROJECTS.find(p => p.id === selectedId) || PROJECTS[0];
   const gridRef = React.useRef<HTMLDivElement>(null);
   const cardRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
+  const hasEnteredRef = React.useRef(false);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      hasEnteredRef.current = true;
+    }, PROJECTS.length * 140 + 900);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleCardClick = (projectId: string, e?: any) => {
     const target = e?.currentTarget || e?.target;
@@ -200,24 +211,31 @@ export const RegistryPage = () => {
     isSiblingExpanded: boolean,
     origin: string = 'origin-left'
   ) => {
+    const projectIndex = PROJECTS.findIndex(p => p.id === project.id);
+    const enterDelay = 0.05 + projectIndex * 0.14;
+    const exitDelay = (PROJECTS.length - 1 - projectIndex) * 0.08;
+
     return (
-      <div
+      <motion.div
         key={project.id}
         ref={(el) => { cardRefs.current[project.id] = el; }}
-        className={`w-full min-w-0 transition-opacity duration-500 ${origin} ${
-          isExpanded
-            ? 'opacity-100 z-20 h-auto overflow-visible'
+        initial={{ opacity: 0, y: 320 }}
+        animate={
+          isExiting
+            ? { opacity: 0, y: 320, transition: { duration: 0.38, delay: exitDelay, ease: [0.32, 0, 0.67, 0] } }
             : isSiblingExpanded
-              ? '!opacity-0 pointer-events-none overflow-hidden'
-              : 'opacity-100 h-auto overflow-visible'
+              ? { opacity: 0, y: 0, transition: { duration: 0.3 } }
+              : { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1], delay: hasEnteredRef.current ? 0 : enterDelay } }
+        }
+        className={`w-full min-w-0 ${origin} ${
+          isExpanded
+            ? 'z-20 h-auto overflow-visible'
+            : isSiblingExpanded
+              ? 'pointer-events-none overflow-hidden'
+              : 'h-auto overflow-visible'
         }`}
       >
-        <MagicBentoCard 
-          particleCount={0}
-          glowColor="239, 68, 68"
-          enableTilt={false}
-          enableMagnetism={false}
-          clickEffect={false}
+        <div 
           className={`w-full flex flex-col gap-2.5 group relative rounded-2xl border transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
             isExpanded
               ? 'p-6 sm:p-8 pt-5 sm:pt-6 bg-[#0c0d14]/85 backdrop-blur-2xl border-red-500/50 shadow-[0_20px_70px_rgba(0,0,0,0.85),0_0_35px_rgba(239,68,68,0.18),inset_0_1px_0_rgba(255,255,255,0.1)] h-auto'
@@ -288,7 +306,9 @@ export const RegistryPage = () => {
                     theme="dark"
                     open={isExpanded}
                     intro={true}
-                    introDelay={PROJECTS.findIndex(p => p.id === project.id) * 0.08}
+                    introDelay={enterDelay}
+                    outro={isExiting}
+                    outroDelay={exitDelay}
                     onItemClick={(item, index) => console.log(item, index)}
                   />
                 </div>
@@ -320,7 +340,7 @@ export const RegistryPage = () => {
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ 
-                      height: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+                      height: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
                       opacity: { duration: 0.35, ease: 'easeOut' }
                     }}
                     className="overflow-hidden w-full pt-5 flex flex-col gap-5"
@@ -393,7 +413,7 @@ export const RegistryPage = () => {
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ 
-                    height: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+                    height: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
                     opacity: { duration: 0.35, ease: 'easeOut' }
                   }}
                   className="overflow-hidden w-full"
@@ -484,8 +504,8 @@ export const RegistryPage = () => {
               )}
             </AnimatePresence>
           </div>
-        </MagicBentoCard>
-      </div>
+        </div>
+      </motion.div>
     );
   };
 
@@ -509,52 +529,64 @@ export const RegistryPage = () => {
             transition={{ duration: 0.3 }}
             className="grid grid-cols-2 gap-3.5 pt-2 pb-28 relative"
           >
-            {PROJECTS.map((project, idx) => (
-              <button
-                key={project.id}
-                onClick={(e) => handleCardClick(project.id, e)}
-                className="group relative flex flex-col items-center justify-between p-3.5 rounded-2xl bg-[#0e1017]/55 backdrop-blur-xl border border-white/10 hover:border-red-500/40 active:scale-[0.95] transition-all duration-200 overflow-hidden text-center cursor-pointer shadow-[0_8px_24px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.06)] focus:outline-none min-h-[178px]"
-              >
-                {/* Header: Index & Status */}
-                <div className="w-full flex items-center justify-between text-[10px] font-mono text-white/40 mb-1">
-                  <span className="tracking-wider">0{idx + 1}</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${
-                      project.status === 'STABLE' ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'
-                    }`} />
-                    <span className="text-[9px] uppercase tracking-wider text-white/50">
-                      {project.status === 'STABLE' ? 'LIVE' : 'DEV'}
+            {PROJECTS.map((project, idx) => {
+              const enterDelay = 0.05 + idx * 0.14;
+              const exitDelay = (PROJECTS.length - 1 - idx) * 0.08;
+              return (
+                <motion.button
+                  key={project.id}
+                  initial={{ opacity: 0, y: 280 }}
+                  animate={
+                    isExiting
+                      ? { opacity: 0, y: 280, transition: { duration: 0.38, delay: exitDelay, ease: [0.32, 0, 0.67, 0] } }
+                      : { opacity: 1, y: 0, transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1], delay: hasEnteredRef.current ? 0 : enterDelay } }
+                  }
+                  onClick={(e) => handleCardClick(project.id, e)}
+                  className="group relative flex flex-col items-center justify-between p-3.5 rounded-2xl bg-[#0e1017]/55 backdrop-blur-xl border border-white/10 hover:border-red-500/40 active:scale-[0.95] transition-all duration-200 overflow-hidden text-center cursor-pointer shadow-[0_8px_24px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.06)] focus:outline-none min-h-[178px]"
+                >
+                  {/* Header: Index & Status */}
+                  <div className="w-full flex items-center justify-between text-[10px] font-mono text-white/40 mb-1">
+                    <span className="tracking-wider">0{idx + 1}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className={`w-1.5 h-1.5 rounded-full ${
+                        project.status === 'STABLE' ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'
+                      }`} />
+                      <span className="text-[9px] uppercase tracking-wider text-white/50">
+                        {project.status === 'STABLE' ? 'LIVE' : 'DEV'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Centered Folder Icon */}
+                  <div className="py-2 flex items-center justify-center shrink-0">
+                    <Folder
+                      mode="flap"
+                      variant="glass"
+                      color="#EF4444"
+                      size={0.41}
+                      label={project.name}
+                      items={folderItemsMap.get(project.id)}
+                      theme="dark"
+                      intro={true}
+                      introDelay={enterDelay}
+                      outro={isExiting}
+                      outroDelay={exitDelay}
+                      onItemClick={(item, index) => console.log(item, index)}
+                    />
+                  </div>
+
+                  {/* Title & Category */}
+                  <div className="w-full mt-1 flex flex-col items-center">
+                    <h3 className="font-satoshi font-bold text-sm text-white group-hover:text-red-400 transition-colors tracking-tight truncate max-w-full">
+                      {project.name}
+                    </h3>
+                    <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider mt-0.5 truncate max-w-full">
+                      {project.category || project.stack[0]}
                     </span>
                   </div>
-                </div>
-
-                {/* Centered Folder Icon */}
-                <div className="py-2 flex items-center justify-center shrink-0">
-                  <Folder
-                    mode="flap"
-                    variant="glass"
-                    color="#EF4444"
-                    size={0.41}
-                    label={project.name}
-                    items={folderItemsMap.get(project.id)}
-                    theme="dark"
-                    intro={true}
-                    introDelay={idx * 0.08}
-                    onItemClick={(item, index) => console.log(item, index)}
-                  />
-                </div>
-
-                {/* Title & Category */}
-                <div className="w-full mt-1 flex flex-col items-center">
-                  <h3 className="font-satoshi font-bold text-sm text-white group-hover:text-red-400 transition-colors tracking-tight truncate max-w-full">
-                    {project.name}
-                  </h3>
-                  <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider mt-0.5 truncate max-w-full">
-                    {project.category || project.stack[0]}
-                  </span>
-                </div>
-              </button>
-            ))}
+                </motion.button>
+              );
+            })}
           </motion.div>
         ) : (
           <motion.div
@@ -927,76 +959,84 @@ export const RegistryPage = () => {
         )}
       </AnimatePresence>
 
-      {/* FULLSCREEN MOCKUP LIGHTBOX (Clean Image Only) */}
+      {/* MOCKUP DISPLAY LIGHTBOX (Viewport matching the expanded folder card size) */}
       <AnimatePresence>
         {showMockupModal && (
           <div 
             onClick={() => setShowMockupModal(false)}
-            className="fixed inset-0 z-[400] flex items-center justify-center p-4 sm:p-10 select-none font-sans bg-black/92 backdrop-blur-md cursor-zoom-out"
+            className="fixed inset-0 z-[400] flex items-center justify-center p-4 sm:p-6 lg:p-10 select-none font-sans bg-black/85 backdrop-blur-md cursor-zoom-out"
           >
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowMockupModal(false);
-              }}
-              className="fixed top-5 right-5 sm:top-8 sm:right-8 z-50 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-all backdrop-blur-md border border-white/15 cursor-pointer shadow-lg active:scale-95"
-              aria-label="Close"
-            >
-              <X size={22} />
-            </button>
-
-            {/* Counter */}
-            {activeProject.images.length > 1 && (
-              <div className="fixed top-5 sm:top-8 left-1/2 -translate-x-1/2 z-50 px-3.5 py-1 rounded-full bg-black/60 border border-white/15 text-xs font-mono text-white/70 backdrop-blur-md shadow-lg pointer-events-none">
-                {activeImageIndex + 1} / {activeProject.images.length}
-              </div>
-            )}
-
-            {/* Pure image without any window container */}
+            {/* Viewport Frame matching the expanded folder card */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="relative max-w-full max-h-[88vh] flex items-center justify-center cursor-default z-10"
+              initial={{ opacity: 0, scale: 0.96, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 20 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-5xl xl:max-w-6xl h-[70vh] sm:h-[75vh] max-h-[640px] flex flex-col rounded-2xl border border-red-500/50 bg-[#0c0d14]/95 backdrop-blur-2xl shadow-[0_20px_70px_rgba(0,0,0,0.9),0_0_40px_rgba(239,68,68,0.2)] p-4 sm:p-6 overflow-hidden cursor-default z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              <img
-                src={activeProject.images[activeImageIndex]}
-                alt={activeProject.name}
-                className="max-h-[85vh] max-w-[90vw] object-contain rounded-xl shadow-[0_30px_100px_rgba(0,0,0,0.95)] select-none border border-white/10"
-              />
-            </motion.div>
+              {/* Header inside modal viewport */}
+              <div className="w-full flex items-center justify-between pb-3 border-b border-white/10 mb-3 shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_#ef4444]" />
+                  <span className="font-satoshi font-bold text-white text-base sm:text-lg tracking-tight">
+                    {activeProject.name} <span className="text-white/40 font-mono text-xs font-normal">/ PREVIEW</span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  {activeProject.images.length > 1 && (
+                    <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-white/60">
+                      {activeImageIndex + 1} / {activeProject.images.length}
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setShowMockupModal(false)}
+                    className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-white/60 hover:text-white transition-colors cursor-pointer"
+                    aria-label="Close"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              </div>
 
-            {/* Navigation Arrows in the Lightbox */}
-            {activeProject.images.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveImageIndex(prev => (prev - 1 + activeProject.images.length) % activeProject.images.length);
-                  }}
-                  className="fixed left-4 sm:left-10 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/70 hover:bg-black/95 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all z-50 cursor-pointer shadow-2xl active:scale-95"
-                  aria-label="Previous image"
-                >
-                  <ChevronLeft size={24} />
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveImageIndex(prev => (prev + 1) % activeProject.images.length);
-                  }}
-                  className="fixed right-4 sm:right-10 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/70 hover:bg-black/95 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all z-50 cursor-pointer shadow-2xl active:scale-95"
-                  aria-label="Next image"
-                >
-                  <ChevronRight size={24} />
-                </button>
-              </>
-            )}
+              {/* Viewport Frame for image */}
+              <div className="relative w-full flex-1 flex items-center justify-center rounded-xl bg-black/60 border border-white/5 overflow-hidden">
+                <img
+                  src={activeProject.images[activeImageIndex]}
+                  alt={activeProject.name}
+                  className="max-h-full max-w-full object-contain select-none p-2"
+                />
+
+                {/* Navigation Arrows inside viewport */}
+                {activeProject.images.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveImageIndex(prev => (prev - 1 + activeProject.images.length) % activeProject.images.length);
+                      }}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/70 hover:bg-black/95 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all z-20 cursor-pointer shadow-lg active:scale-95"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveImageIndex(prev => (prev + 1) % activeProject.images.length);
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/70 hover:bg-black/95 backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all z-20 cursor-pointer shadow-lg active:scale-95"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </>
+                )}
+              </div>
+            </motion.div>
           </div>
         )}
       </AnimatePresence>

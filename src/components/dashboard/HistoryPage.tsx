@@ -173,14 +173,11 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
   isActive = true
 }) => {
   const [isMobile, setIsMobile] = useState(false);
-  const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>(() => {
-    const isSmall = typeof window !== 'undefined' && window.innerWidth < 1024;
-    return {
-      multiplyy: true,
-      papercycle: !isSmall,
-      cttc: false,
-      vssut: false,
-    };
+  const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({
+    multiplyy: false,
+    papercycle: false,
+    cttc: false,
+    vssut: false,
   });
 
   const toggleExpand = (id: string) => {
@@ -189,6 +186,27 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       [id]: !prev[id]
     }));
   };
+
+  useEffect(() => {
+    if (isActive && !isExiting) {
+      setExpandedIds({
+        multiplyy: false,
+        papercycle: false,
+        cttc: false,
+        vssut: false,
+      });
+
+      const timer = setTimeout(() => {
+        setExpandedIds(prev => ({
+          ...prev,
+          multiplyy: true,
+          papercycle: true,
+        }));
+      }, 1550);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isActive, isExiting]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -200,7 +218,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
   const [githubStats, setGithubStats] = useState(DEFAULT_GITHUB_STATS);
   const [assetsReady, setAssetsReady] = useState(false);
   const [dropCount, setDropCount] = useState(0);
-  const wasActiveRef = useRef(false);
+  const wasActiveRef = useRef(isActive);
 
   useEffect(() => {
     if (isActive && !wasActiveRef.current) {
@@ -424,16 +442,16 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
             strapColor="#0a0a0c"
             strapWidth={0.55}
             metal="silver"
-            finish="metallic"
+            finish="matte"
             orientation="landscape"
             cornerRadius={0.1}
             size={0.55}
             anchor={0.74}
             strapLength={0.35}
-            gravity={0.65}
-            damping={0.2}
-            elasticity={0.9}
-            breeze={0.92}
+            gravity={0.52}
+            damping={0.42}
+            elasticity={0.68}
+            breeze={0.7}
             interactive={isActive && !isExiting}
             intro={isActive}
             introDirection="top"
@@ -451,13 +469,8 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
       {/* Main Content Grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 relative z-10 pointer-events-none">
         
-        {/* Left Column (5/12 or 6/12 on XL) - Timeline sliding smoothly up from bottom edge, and down on exit */}
-        <motion.div 
-          initial={false}
-          animate={isActive && !isExiting ? { opacity: 1, y: 0 } : { opacity: 0, y: 40, transition: { duration: 0.2, ease: 'easeIn' } }}
-          transition={{ type: "spring", stiffness: 220, damping: 26, mass: 0.9, delay: 0.05 }}
-          className="lg:col-span-5 xl:col-span-6 flex flex-col gap-4 sm:gap-6 py-2 overflow-y-auto lg:max-h-[calc(100vh-140px)] pr-1 sm:pr-3 no-scrollbar pointer-events-auto pb-2 lg:pb-20"
-        >
+        {/* Left Column (5/12 or 6/12 on XL) - Timeline cards sliding up individually */}
+        <div className="lg:col-span-5 xl:col-span-6 flex flex-col gap-4 sm:gap-6 py-2 overflow-y-auto lg:max-h-[calc(100vh-140px)] pr-1 sm:pr-3 no-scrollbar pointer-events-auto pb-2 lg:pb-20">
 
           {/* Mobile Lanyard Top Container (Mobile only: lanyard inside top card above experiences) */}
           {isMobile && (
@@ -477,9 +490,9 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
                 size={MOBILE_LANYARD_CONFIG.size}
                 anchor={MOBILE_LANYARD_CONFIG.anchor}
                 strapLength={MOBILE_LANYARD_CONFIG.strapLength}
-                gravity={0.65}
-                damping={0.2}
-                elasticity={0.9}
+                gravity={0.52}
+                damping={0.42}
+                elasticity={0.68}
                 breeze={0.5}
                 interactive={isActive && !isExiting}
                 intro={isActive}
@@ -498,20 +511,25 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
           {TIMELINE_DATA.map((item, index) => {
             const isExpanded = !!expandedIds[item.id];
             const isLast = index === TIMELINE_DATA.length - 1;
+            const enterDelay = 0.08 + index * 0.22;
+            const exitDelay = (TIMELINE_DATA.length - 1 - index) * 0.06;
 
             return (
               <motion.div 
                 key={item.id}
-                initial={{ opacity: 0, y: 35 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: "spring", stiffness: 220, damping: 26, delay: 0.08 * (index + 1) }}
+                initial={{ opacity: 0, y: 340 }}
+                animate={
+                  (isActive && !isExiting)
+                    ? { opacity: 1, y: 0, transition: { duration: 0.95, ease: [0.22, 1, 0.36, 1], delay: enterDelay } }
+                    : { opacity: 0, y: 340, transition: { duration: 0.38, delay: exitDelay, ease: [0.32, 0, 0.67, 0] } }
+                }
                 className="flex gap-4 sm:gap-6 group pointer-events-auto select-text"
               >
                 {/* Node & Line */}
                 <div className="flex flex-col items-center mt-1.5 shrink-0">
                   <div className={`w-5 h-5 rounded-sm border flex items-center justify-center ${
                     item.isCurrent 
-                      ? 'border-red-500 bg-[#0d0d0d] shadow-[0_0_8px_rgba(239,68,68,0.4)]' 
+                      ? 'border-red-500 bg-[#0d0d0d]' 
                       : 'border-white/20 bg-[#0d0d0d]'
                   }`}>
                     <div className={`w-2 h-2 rounded-sm ${item.isCurrent ? 'bg-red-500' : 'bg-white/20'}`} />
@@ -574,7 +592,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.22, ease: "easeInOut" }}
+                        transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
                         className="overflow-hidden"
                       >
                         <div className="pt-2 pb-1">
@@ -594,7 +612,7 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({
               </motion.div>
             );
           })}
-        </motion.div>
+        </div>
 
         {/* Right Column (7/12 or 6/12 on XL) - Transparent to allow clicking & interacting with the 3D Lanyard */}
         <div className="hidden lg:block lg:col-span-7 xl:col-span-6 pointer-events-none" />
