@@ -29,6 +29,53 @@ const DIRECTIONS = [
 
 type Direction = typeof DIRECTIONS[number];
 
+const KickerScrambleText: React.FC<{
+  target: string;
+  delayMs?: number;
+  speed?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}> = React.memo(({ target, delayMs = 550, speed = 32, className, style }) => {
+  const [text, setText] = React.useState('');
+  React.useEffect(() => {
+    if (!target) return;
+    const GLYPHS = '!@#$*%&?/><{}[]~';
+    let iteration = 0;
+    const totalSteps = target.length * 3;
+    let interval: ReturnType<typeof setInterval>;
+    const timer = setTimeout(() => {
+      interval = setInterval(() => {
+        setText(
+          target
+            .split('')
+            .map((char, index) => {
+              if (char === ' ') return ' ';
+              if (index < iteration / 3) return target[index];
+              return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+            })
+            .join('')
+        );
+        iteration++;
+        if (iteration > totalSteps) {
+          setText(target);
+          clearInterval(interval);
+        }
+      }, speed);
+    }, delayMs);
+
+    return () => {
+      clearTimeout(timer);
+      if (interval) clearInterval(interval);
+    };
+  }, [target, delayMs, speed]);
+
+  return (
+    <span className={className} style={style}>
+      {text || target}
+    </span>
+  );
+});
+
 function calculateDirection(dx: number, dy: number): Direction {
   // Center deadzone: look straight forward when cursor is nearby
   if (Math.hypot(dx, dy) < 60) {
@@ -142,21 +189,26 @@ export const ProfilePage = ({
     if (centerImg.complete) markLoaded();
     else centerImg.onload = markLoaded;
 
-    // Background preload all remaining frames ONLY on desktop with mouse
+    // Defer preloading remaining directional frames until AFTER entrance animations complete
+    let deferTimer: ReturnType<typeof setTimeout> | null = null;
     if (isFinePointer) {
-      const directionsList: Direction[] = [
-        'up-far-left', 'up-mid-left', 'up-left', 'up', 'up-mid-right', 'up-far-right',
-        'far-left', 'mid-left', 'left', 'center', 'right', 'far-right',
-        'down-far-left', 'down-mid-left', 'down-left', 'down', 'down-mid-right', 'down-far-right'
-      ];
-      directionsList.forEach(name => {
-        if (name === 'center') return;
-        const img = new Image();
-        img.src = `/avatar-frames/dir_${name}.png?v=5`;
-      });
+      deferTimer = setTimeout(() => {
+        const directionsList: Direction[] = [
+          'up-far-left', 'up-mid-left', 'up-left', 'up', 'up-mid-right', 'up-far-right',
+          'far-left', 'mid-left', 'left', 'right', 'far-right',
+          'down-far-left', 'down-mid-left', 'down-left', 'down', 'down-mid-right', 'down-far-right'
+        ];
+        directionsList.forEach(name => {
+          const img = new Image();
+          img.src = `/avatar-frames/dir_${name}.png?v=5`;
+        });
+      }, 2500);
     }
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      if (deferTimer) clearTimeout(deferTimer);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   // Cursor tracking across the 3x5 directional grid (desktop mouse only)
@@ -200,7 +252,7 @@ export const ProfilePage = ({
   const activeAvatarSrc = `/avatar-frames/dir_${isMobile ? 'center' : direction}.png?v=5`;
 
   return (
-    <div className="flex flex-col animate-in fade-in duration-500 font-inter w-full h-full flex-1">
+    <div className="flex flex-col font-inter w-full h-full flex-1">
       <div className="relative flex-1 min-h-[calc(100dvh-170px)] lg:min-h-[calc(100vh-180px)] border-none bg-transparent overflow-visible flex flex-col justify-between p-0">
         {/* CENTER AVATAR FIGURE - ANCHORED FIRMLY IN CENTER ON MOBILE, BOTTOM ON DESKTOP */}
         {typeof document !== 'undefined' && createPortal(
@@ -216,11 +268,11 @@ export const ProfilePage = ({
                ref={avatarFigureRef}
                initial={{
                  opacity: 0,
-                 y: isMobile ? 130 : '85%',
+                 y: isMobile ? 140 : '90%',
                  scale: isMobile ? 0.92 : 1
                }}
                animate={
-                 isAvatarLoaded 
+                 (isAvatarLoaded && !isExiting)
                    ? { 
                        opacity: 1, 
                        scale: 1,
@@ -229,20 +281,24 @@ export const ProfilePage = ({
                    : { 
                        opacity: 0, 
                        scale: isMobile ? 0.92 : 1, 
-                       y: isMobile ? 130 : '85%' 
+                       y: isMobile ? 140 : '90%' 
                      }
                }
                exit={{
                  opacity: 0,
-                 y: isMobile ? 130 : '85%',
+                 y: isMobile ? 140 : '90%',
                  scale: isMobile ? 0.94 : 1,
-                 transition: { duration: 0.35, ease: [0.32, 0, 0.67, 0] }
+                 transition: { duration: 0.38, ease: [0.32, 0, 0.67, 0] }
                }}
-               transition={{
-                 duration: 1.1,
-                 ease: [0.16, 1, 0.3, 1],
-                 delay: 0.08
-               }}
+               transition={
+                 isExiting
+                   ? { duration: 0.38, delay: 0.08, ease: [0.32, 0, 0.67, 0] }
+                   : {
+                       duration: 1.35,
+                       ease: [0.16, 1, 0.3, 1],
+                       delay: 0.95
+                     }
+               }
                onAnimationComplete={() => {
                  if (isExiting) {
                    onExitComplete?.();
@@ -313,21 +369,43 @@ export const ProfilePage = ({
           document.body
         )}
 
-        <motion.div 
-          initial={{ opacity: 0, y: 45 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 55, transition: { duration: 0.22, ease: [0.32, 0, 0.67, 0] } }}
-          transition={{ duration: 0.45, ease: "easeOut" }}
-          className="relative z-10 flex-1 flex flex-col min-h-[calc(100dvh-170px)] lg:min-h-[calc(100vh-180px)] justify-between p-0 pointer-events-none"
-        >
+        <div className="relative z-10 flex-1 flex flex-col min-h-[calc(100dvh-170px)] lg:min-h-[calc(100vh-180px)] justify-between p-0 pointer-events-none">
           <div className="flex flex-col lg:flex-row justify-between gap-3.5 sm:gap-6 lg:gap-8 items-start w-full px-0 pt-1 sm:pt-4 lg:pt-3">
-            <div className="flex flex-col gap-2 sm:gap-3 lg:gap-3.5 w-full lg:max-w-md xl:max-w-lg text-left pointer-events-auto">
+            {/* HEADLINE: Slides in from left on enter, slides out to left on exit */}
+            <motion.div 
+              initial={isMobile ? { opacity: 0, y: 35 } : { opacity: 0, x: -100 }}
+              animate={
+                isExiting 
+                  ? (isMobile ? { opacity: 0, y: 35 } : { opacity: 0, x: -100 })
+                  : { opacity: 1, x: 0, y: 0 }
+              }
+              transition={
+                isExiting 
+                  ? { duration: 0.32, ease: [0.32, 0, 0.67, 0] }
+                  : { duration: 1.05, ease: [0.16, 1, 0.3, 1], delay: 0.15 }
+              }
+              className="flex flex-col gap-2 sm:gap-3 lg:gap-3.5 w-full lg:max-w-md xl:max-w-lg text-left pointer-events-auto"
+            >
               <h2 className="text-[clamp(1.95rem,7.5vw,3.1rem)] sm:text-5xl lg:text-[clamp(2.8rem,3.4vw,4.2rem)] xl:text-6xl font-extrabold font-satoshi text-white leading-[1.12] tracking-tight w-full">
                 CS Undergrad & Systems Builder Based in <span className="text-red-500">India.</span>
               </h2>
-            </div>
+            </motion.div>
 
-            <div className="flex flex-col gap-3 sm:gap-6 lg:gap-6 w-full lg:w-auto lg:text-right lg:items-end pointer-events-auto">
+            {/* BIO & CTAS: Slides in from right on enter, slides out to right on exit */}
+            <motion.div 
+              initial={isMobile ? { opacity: 0, y: 35 } : { opacity: 0, x: 100 }}
+              animate={
+                isExiting 
+                  ? (isMobile ? { opacity: 0, y: 35 } : { opacity: 0, x: 100 })
+                  : { opacity: 1, x: 0, y: 0 }
+              }
+              transition={
+                isExiting 
+                  ? { duration: 0.32, ease: [0.32, 0, 0.67, 0] }
+                  : { duration: 1.05, ease: [0.16, 1, 0.3, 1], delay: 0.15 }
+              }
+              className="flex flex-col gap-3 sm:gap-6 lg:gap-6 w-full lg:w-auto lg:text-right lg:items-end pointer-events-auto"
+            >
               <p className="hidden lg:block text-xs sm:text-sm lg:text-base text-white/70 font-medium leading-relaxed w-full max-w-none lg:max-w-xs xl:max-w-sm font-inter">
                 Exploring real-time systems, backend architectures, and unconventional ideas.
               </p>
@@ -350,28 +428,35 @@ export const ProfilePage = ({
                   <FileText size={15} className="text-white/60 group-hover:text-red-500 transition-colors shrink-0" />
                 </button>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           {/* BOTTOM REGION: NAME OVER FOG */}
           <div className="mt-auto w-full flex flex-col items-center gap-0 sm:gap-1 pb-3 sm:pb-2 mb-2 sm:mb-0 pointer-events-none">
-            {/* INTRODUCTORY HANDWRITTEN KICKER ABOVE NAME */}
+            {/* INTRODUCTORY HANDWRITTEN KICKER ABOVE NAME: Slides up from bottom with sequential scramble */}
             <motion.div 
-              initial={{ opacity: 0, y: 25 }}
-              animate={{ 
-                y: isMobile ? 0 : (isDockVisible ? -25 : 65),
-                opacity: 1
-              }}
-              exit={{ opacity: 0, y: 35, transition: { duration: 0.18 } }}
-              transition={{ type: "spring", stiffness: 200, damping: 30 }}
+              initial={{ opacity: 0, y: (isMobile ? 0 : (isDockVisible ? -25 : 65)) + 75 }}
+              animate={
+                isExiting 
+                  ? { opacity: 0, y: (isMobile ? 0 : (isDockVisible ? -25 : 65)) + 45 }
+                  : { y: isMobile ? 0 : (isDockVisible ? -25 : 65), opacity: 1 }
+              }
+              transition={
+                isExiting 
+                  ? { duration: 0.28, delay: 0.05, ease: [0.32, 0, 0.67, 0] }
+                  : { duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.45 }
+              }
               className="w-full pointer-events-auto select-none"
             >
               {isMobile ? (
                 /* Mobile: Centered sentence by default */
                 <div className="w-full flex justify-center">
-                  <span className="font-amatic text-[33px] sm:text-3xl text-red-500 font-bold tracking-widest text-center">
-                    Nice to meet you ! I'm
-                  </span>
+                  <KickerScrambleText 
+                    target="Nice to meet you ! I'm" 
+                    delayMs={550} 
+                    speed={32}
+                    className="font-amatic text-[33px] sm:text-3xl text-red-500 font-bold tracking-widest text-center"
+                  />
                 </div>
               ) : (
                 /* Desktop: Divided on both sides of avatar, aligned exactly with the name's start and end points */
@@ -381,33 +466,39 @@ export const ProfilePage = ({
                 >
                   {nameBounds && (
                     <>
-                      <span 
+                      <KickerScrambleText 
+                        target="Nice to meet you !" 
+                        delayMs={550} 
+                        speed={32}
                         style={{ left: `${nameBounds.left}px` }}
                         className="absolute top-0 font-amatic text-4xl lg:text-5xl text-red-500 font-bold tracking-widest whitespace-nowrap"
-                      >
-                        Nice to meet you !
-                      </span>
-                      <span 
+                      />
+                      <KickerScrambleText 
+                        target="the name is" 
+                        delayMs={750} 
+                        speed={32}
                         style={{ left: `${nameBounds.right}px`, transform: 'translateX(-100%)' }}
                         className="absolute top-0 font-amatic text-4xl lg:text-5xl text-red-500 font-bold tracking-widest whitespace-nowrap"
-                      >
-                      the name is
-                      </span>
+                      />
                     </>
                   )}
                 </div>
               )}
             </motion.div>
 
-            {/* NAME BANNER */}
+            {/* NAME BANNER: Slides up from bottom with TechText letter scramble */}
             <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ 
-                y: isMobile ? 0 : (isDockVisible ? -25 : 65),
-                opacity: 1
-              }}
-              exit={{ opacity: 0, y: 45, transition: { duration: 0.2 } }}
-              transition={{ type: "spring", stiffness: 200, damping: 30 }}
+              initial={{ opacity: 0, y: (isMobile ? 0 : (isDockVisible ? -25 : 65)) + 80 }}
+              animate={
+                isExiting 
+                  ? { opacity: 0, y: (isMobile ? 0 : (isDockVisible ? -25 : 65)) + 50 }
+                  : { y: isMobile ? 0 : (isDockVisible ? -25 : 65), opacity: 1 }
+              }
+              transition={
+                isExiting 
+                  ? { duration: 0.28, delay: 0.05, ease: [0.32, 0, 0.67, 0] }
+                  : { duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.45 }
+              }
               className="w-full pointer-events-auto"
             >
               <div className="w-full h-[68px] sm:h-[84px] lg:h-[160px] flex items-center justify-center">
@@ -415,7 +506,7 @@ export const ProfilePage = ({
                   key={isMobile ? "mobile" : "desktop"}
                   text={isMobile ? "ROHIT K. SAHOO" : "ROHIT KUMAR SAHOO"}
                   fontFamily="Satoshi, sans-serif"
-                  fontWeight={800}
+                  fontWeight={700}
                   fontSize={isMobile ? 42 : 130}
                   letterSpacing={-0.03}
                   color="#ffffff"
@@ -426,7 +517,7 @@ export const ProfilePage = ({
                   lineStyle="dashed"
                   specks={isMobile ? 12 : 15}
                   intro="scramble"
-                  introDuration={isMobile ? 1.8 : 2.2}
+                  introDuration={isMobile ? 2.2 : 2.7}
                   onLayout={handleNameLayout}
                   clickKick={true}
                   draggable={!isMobile}
@@ -443,7 +534,7 @@ export const ProfilePage = ({
               </div>
             </motion.div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Windows 11 Document Viewer Window */}

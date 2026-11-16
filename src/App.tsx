@@ -41,26 +41,47 @@ const isPageReload = (): boolean => {
 };
 
 const pageVariants = {
-  enter: (dir: number) => ({
-    y: dir >= 0 ? 24 : -24,
-    opacity: 0,
-  }),
-  center: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      y: { type: 'spring', stiffness: 280, damping: 28, mass: 0.8 },
-      opacity: { duration: 0.22, ease: 'easeOut' },
-    },
+  enter: (custom: any) => {
+    if (custom?.isProfile || custom?.isProjects || custom?.isContact) {
+      return { opacity: 1, y: 0 };
+    }
+    const dir = typeof custom === 'number' ? custom : custom?.dir ?? 0;
+    return {
+      y: dir >= 0 ? 24 : -24,
+      opacity: 0,
+    };
   },
-  exit: (dir: number) => ({
-    y: dir >= 0 ? -18 : 18,
-    opacity: 0,
-    transition: {
-      y: { duration: 0.18, ease: [0.32, 0, 0.67, 0] },
-      opacity: { duration: 0.16, ease: 'linear' },
-    },
-  }),
+  center: (custom: any) => {
+    if (custom?.isProfile || custom?.isProjects || custom?.isContact) {
+      return { opacity: 1, y: 0 };
+    }
+    return {
+      y: 0,
+      opacity: 1,
+      transition: {
+        y: { type: 'spring', stiffness: 280, damping: 28, mass: 0.8 },
+        opacity: { duration: 0.22, ease: 'easeOut' },
+      },
+    };
+  },
+  exit: (custom: any) => {
+    if (custom?.isProfile || custom?.isProjects || custom?.isContact || custom?.instant) {
+      return {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.001 },
+      };
+    }
+    const dir = typeof custom === 'number' ? custom : custom?.dir ?? 0;
+    return {
+      y: dir >= 0 ? -18 : 18,
+      opacity: 0,
+      transition: {
+        y: { duration: 0.18, ease: [0.32, 0, 0.67, 0] },
+        opacity: { duration: 0.16, ease: 'linear' },
+      },
+    };
+  },
 };
 
 function App() {
@@ -85,6 +106,9 @@ function App() {
 
   const [pendingTab, setPendingTab] = useState<string | null>(null);
   const [isHistoryExiting, setIsHistoryExiting] = useState(false);
+  const [isProjectsExiting, setIsProjectsExiting] = useState(false);
+  const [isProfileExiting, setIsProfileExiting] = useState(false);
+  const [isContactExiting, setIsContactExiting] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   const [hasVisitedExperience, setHasVisitedExperience] = useState(() => activeTab === 'experience');
   const exitTimeoutRef = useRef<number | null>(null);
@@ -97,6 +121,19 @@ function App() {
 
   const isHistoryExitingRef = useRef(isHistoryExiting);
   isHistoryExitingRef.current = isHistoryExiting;
+
+  const isProjectsExitingRef = useRef(isProjectsExiting);
+  isProjectsExitingRef.current = isProjectsExiting;
+
+  const isProfileExitingRef = useRef(isProfileExiting);
+  isProfileExitingRef.current = isProfileExiting;
+
+  const isContactExitingRef = useRef(isContactExiting);
+  isContactExitingRef.current = isContactExiting;
+
+  const wasProjectsExitingRef = useRef(false);
+  const wasProfileExitingRef = useRef(false);
+  const wasContactExitingRef = useRef(false);
 
   const handleOpenCV = (rect?: DOMRect | null) => {
     setCvTriggerRect(rect || null);
@@ -208,10 +245,64 @@ function App() {
     setActiveTab(targetTab);
   };
 
+  const finalizeSwitchFromProjects = (targetTab: string) => {
+    if (exitTimeoutRef.current) {
+      clearTimeout(exitTimeoutRef.current);
+      exitTimeoutRef.current = null;
+    }
+    wasProjectsExitingRef.current = true;
+    setIsProjectsExiting(false);
+    setPendingTab(null);
+    const prevIdx = TAB_ORDER.indexOf('projects');
+    const nextIdx = TAB_ORDER.indexOf(targetTab);
+    setDirection(nextIdx > prevIdx ? 1 : -1);
+    setIsPageTransitioning(true);
+    if (targetTab === 'experience') {
+      setHasVisitedExperience(true);
+    }
+    setActiveTab(targetTab);
+  };
+
+  const finalizeSwitchFromProfile = (targetTab: string) => {
+    if (exitTimeoutRef.current) {
+      clearTimeout(exitTimeoutRef.current);
+      exitTimeoutRef.current = null;
+    }
+    wasProfileExitingRef.current = true;
+    setIsProfileExiting(false);
+    setPendingTab(null);
+    const prevIdx = TAB_ORDER.indexOf('profile');
+    const nextIdx = TAB_ORDER.indexOf(targetTab);
+    setDirection(nextIdx > prevIdx ? 1 : -1);
+    setIsPageTransitioning(true);
+    if (targetTab === 'experience') {
+      setHasVisitedExperience(true);
+    }
+    setActiveTab(targetTab);
+  };
+
+  const finalizeSwitchFromContact = (targetTab: string) => {
+    if (exitTimeoutRef.current) {
+      clearTimeout(exitTimeoutRef.current);
+      exitTimeoutRef.current = null;
+    }
+    wasContactExitingRef.current = true;
+    setIsContactExiting(false);
+    setPendingTab(null);
+    const prevIdx = TAB_ORDER.indexOf('contact');
+    const nextIdx = TAB_ORDER.indexOf(targetTab);
+    setDirection(nextIdx > prevIdx ? 1 : -1);
+    setIsPageTransitioning(true);
+    if (targetTab === 'experience') {
+      setHasVisitedExperience(true);
+    }
+    setActiveTab(targetTab);
+  };
+
   const handleTabChange = (nextTab: string, pushHistory = true) => {
     const currentTab = activeTabRef.current;
     const currentPending = pendingTabRef.current;
-    const isExiting = isHistoryExitingRef.current;
+    const isExiting = isHistoryExitingRef.current || isProjectsExitingRef.current || isProfileExitingRef.current || isContactExitingRef.current;
 
     if (nextTab === currentTab && !isExiting) return;
     if (nextTab === currentPending) return;
@@ -232,6 +323,9 @@ function App() {
         exitTimeoutRef.current = null;
       }
       setIsHistoryExiting(false);
+      setIsProjectsExiting(false);
+      setIsProfileExiting(false);
+      setIsContactExiting(false);
       setPendingTab(null);
       if (nextTab === currentTab) return;
     }
@@ -245,7 +339,46 @@ function App() {
       if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
       exitTimeoutRef.current = window.setTimeout(() => {
         finalizeSwitchFromExperience(nextTab);
-      }, 310);
+      }, 540);
+      return;
+    }
+
+    if (currentTab === 'projects') {
+      // 1. Immediately indicate the targeted tab on dock
+      setPendingTab(nextTab);
+      // 2. Trigger cards sliding down and folder files sliding up
+      setIsProjectsExiting(true);
+
+      if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
+      exitTimeoutRef.current = window.setTimeout(() => {
+        finalizeSwitchFromProjects(nextTab);
+      }, 780);
+      return;
+    }
+
+    if (currentTab === 'profile') {
+      // 1. Immediately indicate the targeted tab on dock
+      setPendingTab(nextTab);
+      // 2. Trigger profile components sliding out
+      setIsProfileExiting(true);
+
+      if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
+      exitTimeoutRef.current = window.setTimeout(() => {
+        finalizeSwitchFromProfile(nextTab);
+      }, 520);
+      return;
+    }
+
+    if (currentTab === 'contact') {
+      // 1. Immediately indicate the targeted tab on dock
+      setPendingTab(nextTab);
+      // 2. Trigger social cards sliding out to the right
+      setIsContactExiting(true);
+
+      if (exitTimeoutRef.current) clearTimeout(exitTimeoutRef.current);
+      exitTimeoutRef.current = window.setTimeout(() => {
+        finalizeSwitchFromContact(nextTab);
+      }, 480);
       return;
     }
 
@@ -265,21 +398,31 @@ function App() {
   const renderContent = () => {
     // Only render new page components when lanyard exit has completed
     const showNewPage = activeTab !== 'experience' && !isHistoryExiting;
+    const animCustom = { 
+      dir: direction, 
+      instant: wasProjectsExitingRef.current || wasProfileExitingRef.current || wasContactExitingRef.current,
+      isProfile: activeTab === 'profile',
+      isProjects: activeTab === 'projects',
+      isContact: activeTab === 'contact'
+    };
 
     return (
       <div className={`w-full relative ${isProfileLocked ? 'flex-1 flex flex-col' : ''}`}>
         <AnimatePresence 
           mode="wait" 
-          custom={direction} 
-          initial={false}
+          custom={animCustom} 
+          initial={true}
           onExitComplete={() => {
+            wasProjectsExitingRef.current = false;
+            wasProfileExitingRef.current = false;
+            wasContactExitingRef.current = false;
             window.scrollTo({ top: 0, behavior: 'instant' });
           }}
         >
           {showNewPage && (
             <motion.div
               key={activeTab}
-              custom={direction}
+              custom={animCustom}
               variants={pageVariants}
               initial="enter"
               animate="center"
@@ -295,19 +438,21 @@ function App() {
                 {(() => {
                   switch (activeTab) {
                     case 'profile': return (
-                      <ProfilePage 
+                        <ProfilePage 
                         onExploreProjects={() => handleTabChange('projects')} 
                         isDockVisible={isDockVisible}
                         onViewCV={handleOpenCV}
+                        isExiting={isProfileExiting}
                       />
                     );
-                    case 'projects': return <RegistryPage />;
-                    case 'contact': return <ContactPage />;
+                    case 'projects': return <RegistryPage isExiting={isProjectsExiting} />;
+                    case 'contact': return <ContactPage isExiting={isContactExiting} />;
                     default: return (
                       <ProfilePage 
                         onExploreProjects={() => handleTabChange('projects')} 
                         isDockVisible={isDockVisible}
                         onViewCV={handleOpenCV}
+                        isExiting={isProfileExiting}
                       />
                     );
                   }

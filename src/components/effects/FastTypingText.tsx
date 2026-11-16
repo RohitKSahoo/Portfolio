@@ -49,14 +49,21 @@ export const FastTypingText: React.FC<FastTypingTextProps> = ({
   }, [text, delay, speed, charsPerTick, onComplete]);
 
   return (
-    <span className={className}>
-      {text.slice(0, displayedLength)}
-      {!isTypingDone && (
-        <span 
-          className="inline-block w-[2.5px] h-[1em] ml-0.5 align-middle animate-pulse rounded-[1px]"
-          style={{ backgroundColor: cursorColor }}
-        />
-      )}
+    <span className={`inline-grid ${className}`}>
+      {/* Invisible full text: reserves the EXACT final height and width of the block from frame 0 so the container never jitters or changes shape while typing */}
+      <span className="invisible pointer-events-none select-none col-start-1 row-start-1" aria-hidden="true">
+        {text}
+      </span>
+      {/* Visible typing text: rendered directly on top in the exact same grid space */}
+      <span className="col-start-1 row-start-1">
+        {text.slice(0, displayedLength)}
+        {!isTypingDone && (
+          <span 
+            className="inline-block w-[2.5px] h-[1em] ml-0.5 align-middle animate-pulse rounded-[1px]"
+            style={{ backgroundColor: cursorColor }}
+          />
+        )}
+      </span>
     </span>
   );
 };

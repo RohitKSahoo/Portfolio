@@ -530,7 +530,31 @@ export const DitherVeil: React.FC<DitherVeilProps> = ({
       triggerEntrance
     };
     wakeRef.current();
-  });
+  }, [
+    fit,
+    align,
+    intro,
+    pattern,
+    pixelSize,
+    levels,
+    palette,
+    inkColor,
+    paperColor,
+    contrast,
+    brightness,
+    revealRadius,
+    softness,
+    linger,
+    rimColor,
+    rim,
+    reverse,
+    wander,
+    clickBurst,
+    transparentBg,
+    colorEntrance,
+    colorEntranceDuration,
+    triggerEntrance
+  ]);
 
   useEffect(() => {
     const container = containerRef.current;

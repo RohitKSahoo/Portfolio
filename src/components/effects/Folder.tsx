@@ -47,6 +47,8 @@ export interface FolderProps {
   peek?: boolean;
   intro?: boolean;
   introDelay?: number;
+  outro?: boolean;
+  outroDelay?: number;
   tilt?: number;
   bounce?: number;
   speed?: number;
@@ -227,6 +229,7 @@ interface EngineState {
   suppressClick: boolean;
   dropCount: number;
   intro: { phase: 'wait' | 'run' | 'done'; start: number; opening: boolean };
+  outro: { phase: 'wait' | 'run' | 'done'; start: number };
   anchor: Spring;
   appear: number;
   content: { key: string; entries: FolderEntry[] | null; renderer: Renderer | null };
@@ -239,6 +242,8 @@ interface Settings {
   peek: boolean;
   intro: boolean;
   introDelay?: number;
+  outro?: boolean;
+  outroDelay?: number;
   draggable: boolean;
   zoomOnClick: boolean;
   closeOnOutsideClick: boolean;
@@ -1084,6 +1089,8 @@ const Folder = ({
   peek = true,
   intro = true,
   introDelay = 0,
+  outro = false,
+  outroDelay = 0,
   tilt = 0.5,
   bounce = 0.4,
   speed = 1,
@@ -1168,6 +1175,8 @@ const Folder = ({
     peek,
     intro,
     introDelay: Math.max(0, Number(introDelay) || 0),
+    outro,
+    outroDelay: Math.max(0, Number(outroDelay) || 0),
     draggable,
     zoomOnClick,
     closeOnOutsideClick,
@@ -1224,6 +1233,7 @@ const Folder = ({
       suppressClick: false,
       dropCount: 0,
       intro: { phase: 'done', start: 0, opening: false },
+      outro: { phase: 'wait', start: 0 },
       anchor: spring(0),
       appear: 1,
       content: { key: '', entries: null, renderer: null }
@@ -1446,10 +1456,27 @@ const Folder = ({
       const appear = intro.phase === 'wait' ? 0 : intro.phase === 'run' ? clamp(introTime / (0.34 / s.speed), 0, 1) : 1;
       state.appear = 1 - (1 - appear) ** 3;
 
+      if (s.outro && state.outro.phase === 'wait') {
+        state.outro.phase = 'run';
+        state.outro.start = time;
+        if (state.focus >= 0) state.focus = -1;
+      }
+      const rawOutroTime = state.outro.phase === 'run' ? time - state.outro.start : 0;
+      const outroDelay = s.outroDelay || 0;
+      const outroTime = Math.max(0, rawOutroTime - outroDelay);
+      const outroActive = state.outro.phase === 'run' && rawOutroTime >= outroDelay;
+      const outroCloseAt = (0.16 + inside * 0.08 + 0.35) / s.speed;
+      const holdingOutro = outroActive && outroTime < outroCloseAt;
+      const riseAt = (rank: number) => (0.02 + (inside - 1 - rank) * 0.08) / s.speed;
+      if (state.outro.phase === 'run') {
+        busy = true;
+        if (outroTime > outroCloseAt + 0.3) state.outro.phase = 'done';
+      }
+
       const closing = state.previous === 'open' && phase !== 'open';
       const frontDelay = closing && !reduce ? ((geometry.book ? 0.1 : 0.06) + 0.035 * inside) / s.speed : 0;
       const frontPhase = elapsed < frontDelay ? state.previous : phase;
-      const frontTarget = holding
+      const frontTarget = (holding || holdingOutro)
         ? geometry.book
           ? -150
           : -42
@@ -1564,6 +1591,14 @@ const Folder = ({
             target = introPose(item, target);
             fade = 0;
             lift = geometry.book ? 3 : 0;
+            item.layer = 'inside';
+          } else if (outroActive && outroTime >= riseAt(item.rank)) {
+            const exitProgress = clamp((outroTime - riseAt(item.rank)) / (0.22 / s.speed), 0, 1);
+            target = introPose(item, target);
+            fade = Math.max(0, 1 - exitProgress);
+            lift = geometry.book ? 3 : 0.8;
+            omega = TAU * 4.5 * s.speed;
+            damping = 0.82;
             item.layer = 'inside';
           } else if (item.insertUntil > time) {
             busy = true;

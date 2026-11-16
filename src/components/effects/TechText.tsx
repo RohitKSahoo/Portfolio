@@ -230,7 +230,37 @@ export const TechText: React.FC<TechTextProps> = ({
       dotSize
     };
     wakeRef.current();
-  });
+  }, [
+    text,
+    fontFamily,
+    fontWeight,
+    fontSize,
+    letterSpacing,
+    color,
+    accentColor,
+    align,
+    reach,
+    softness,
+    dashLength,
+    dashGap,
+    strokeWidth,
+    lineStyle,
+    reveal,
+    specks,
+    selection,
+    labels,
+    draggable,
+    bounce,
+    sweep,
+    speed,
+    clickKick,
+    intro,
+    introDuration,
+    guides,
+    endDot,
+    dotColor,
+    dotSize
+  ]);
 
   useEffect(() => {
     const container = containerRef.current;

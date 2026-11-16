@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Github, Linkedin, ArrowRight, User, AtSign, AlignLeft, MessageSquare, X, Instagram } from 'lucide-react';
 import VariableProximity from '../effects/VariableProximity';
 import { SocialsAccordion } from './SocialsAccordion';
-import { MagicBentoCard } from '../effects/MagicBento';
 
 const SOCIALS = [
   {
@@ -36,15 +35,12 @@ const SOCIALS = [
   },
 ];
 
-export const ContactPage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const containerRef = useRef(null);
-  
-  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '', honeypot: '' });
-  const [isSending, setIsSending] = useState(false);
-  const [isSent, setIsSent] = useState(false);
-  const [error, setError] = useState('');
+interface ContactPageProps {
+  isExiting?: boolean;
+}
 
+const TypingHeadline: React.FC = React.memo(() => {
+  const containerRef = useRef<HTMLHeadingElement>(null);
   const fullText1 = "Let's build";
   const fullText2 = "something";
   const fullText3 = "Extraordinary.";
@@ -99,6 +95,43 @@ export const ContactPage = () => {
 
     type1();
   }, []);
+
+  return (
+    <h2 ref={containerRef} className="font-extrabold font-satoshi tracking-tight mb-3 sm:mb-4 lg:mb-5 text-white mt-1 break-words">
+      <span className="text-[clamp(1.75rem,7vw,2.8rem)] sm:text-5xl lg:text-[clamp(3.4rem,4.6vw,5.4rem)] leading-tight whitespace-nowrap block">
+        <VariableProximity label={text1} containerRef={containerRef as any} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />{' '}
+        <VariableProximity label={text2} containerRef={containerRef as any} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
+      </span>
+      <span className="text-red-500 font-alex font-normal text-[clamp(4.2rem,17.5vw,7.2rem)] sm:text-8xl lg:text-[clamp(6.8rem,9.6vw,11rem)] leading-[0.98] sm:leading-[1] lg:leading-[0.92] block mt-1 sm:mt-2 lg:mt-3">
+        <VariableProximity 
+          label={text3} 
+          containerRef={containerRef as any} 
+          radius={110} 
+          falloff="linear" 
+          fromFontVariationSettings="'wght' 400, 'opsz' 9" 
+          toFontVariationSettings="'wght' 1000, 'opsz' 40"
+          className="font-alex"
+        />
+      </span>
+    </h2>
+  );
+});
+
+export const ContactPage: React.FC<ContactPageProps> = ({ isExiting = false }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const hasEnteredRef = useRef(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      hasEnteredRef.current = true;
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
+  
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '', honeypot: '' });
+  const [isSending, setIsSending] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async () => {
     // Honeypot check
@@ -160,8 +193,7 @@ export const ContactPage = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 relative overflow-hidden font-inter pointer-events-auto">
-      
+    <div className="w-full h-full flex flex-col gap-4 relative overflow-hidden font-inter pointer-events-auto">
 
       {/* Main Content Grid */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-9 min-h-0 relative z-10 pt-2 lg:pt-10">
@@ -169,23 +201,7 @@ export const ContactPage = () => {
         <div className="lg:col-span-7 flex flex-col justify-between py-0">
           <div className="relative pt-1 sm:pt-2 lg:pt-6">
 
-            <h2 ref={containerRef} className="font-extrabold font-satoshi tracking-tight mb-3 sm:mb-4 lg:mb-5 text-white mt-1 break-words">
-              <span className="text-[clamp(1.75rem,7vw,2.8rem)] sm:text-5xl lg:text-[clamp(3.4rem,4.6vw,5.4rem)] leading-tight whitespace-nowrap block">
-                <VariableProximity label={text1} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />{' '}
-                <VariableProximity label={text2} containerRef={containerRef} radius={110} falloff="linear" fromFontVariationSettings="'wght' 400, 'opsz' 9" toFontVariationSettings="'wght' 1000, 'opsz' 40" />
-              </span>
-              <span className="text-red-500 font-alex font-normal text-[clamp(4.2rem,17.5vw,7.2rem)] sm:text-8xl lg:text-[clamp(6.8rem,9.6vw,11rem)] leading-[0.98] sm:leading-[1] lg:leading-[0.92] block mt-1 sm:mt-2 lg:mt-3">
-                <VariableProximity 
-                  label={text3} 
-                  containerRef={containerRef} 
-                  radius={110} 
-                  falloff="linear" 
-                  fromFontVariationSettings="'wght' 400, 'opsz' 9" 
-                  toFontVariationSettings="'wght' 1000, 'opsz' 40"
-                  className="font-alex"
-                />
-              </span>
-            </h2>
+            <TypingHeadline />
             <p className="text-xs sm:text-sm lg:text-base text-white/60 max-w-xl font-inter leading-relaxed mt-4 sm:mt-5 lg:mt-6 mb-4 sm:mb-5 lg:mb-6">
               I'm always open to collaborations, exciting projects, and impactful ideas.
             </p>
@@ -212,31 +228,45 @@ export const ContactPage = () => {
 
         {/* Right Column (5/12) */}
         <div className="lg:col-span-5 flex flex-col py-0 mt-0">
-          <div className="my-4 sm:my-5 lg:my-0 lg:mb-6">
+          <motion.div 
+            initial={{ opacity: 0, x: 60 }}
+            animate={
+              isExiting
+                ? { opacity: 0, x: 60, transition: { duration: 0.2, ease: [0.32, 0, 0.67, 0] } }
+                : { opacity: 1, x: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+            }
+            className="my-4 sm:my-5 lg:my-0 lg:mb-6"
+          >
             <div className="text-xs sm:text-sm font-satoshi font-bold text-white/50 tracking-wider">
               <span>SOCIALS</span>
               <div className="w-10 sm:w-12 h-0.5 bg-red-500 mt-1" />
             </div>
-          </div>
+          </motion.div>
 
           {/* Desktop View: Social Cards matching Project Cards style */}
           <div className="hidden lg:flex flex-col gap-6">
-            {SOCIALS.map((social) => {
+            {SOCIALS.map((social, index) => {
               const Icon = social.icon;
+              const enterDelay = index * 0.14;
+              const exitDelay = index * 0.06;
+
               return (
-                <a
+                <motion.a
                   key={social.name}
                   href={social.href}
                   {...(social.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className="group relative block focus:outline-none cursor-pointer rounded-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]"
+                  initial={{ opacity: 0, x: 140 }}
+                  animate={
+                    isExiting
+                      ? { opacity: 0, x: 140, transition: { duration: 0.28, delay: exitDelay, ease: [0.32, 0, 0.67, 0] } }
+                      : { opacity: 1, x: 0, transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1], delay: hasEnteredRef.current ? 0 : enterDelay } }
+                  }
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="group relative block focus:outline-none cursor-pointer rounded-2xl"
                 >
-                  <MagicBentoCard
-                    particleCount={0}
-                    glowColor="239, 68, 68"
-                    enableTilt={false}
-                    enableMagnetism={false}
-                    clickEffect={false}
-                    className="w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-[#0e1017]/45 hover:bg-[#121520]/60 backdrop-blur-xl border border-white/10 hover:border-red-500/40 shadow-[0_10px_35px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.08)] transition-all duration-500"
+                  <div
+                    className="w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-[#0e1017]/45 hover:bg-[#121520]/60 backdrop-blur-xl border border-white/10 hover:border-red-500/40 shadow-[0_10px_35px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.08)] transition-colors duration-300"
                   >
                     <div className="flex items-center gap-5">
                       <div className="p-4 bg-red-500/10 text-red-500 rounded-xl group-hover:bg-red-500/20 group-hover:scale-105 transition-all">
@@ -254,16 +284,24 @@ export const ContactPage = () => {
                     <div className="w-9 h-9 border border-white/10 rounded-full flex items-center justify-center group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
                       <ArrowRight size={16} className="text-white/50 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all" />
                     </div>
-                  </MagicBentoCard>
-                </a>
+                  </div>
+                </motion.a>
               );
             })}
           </div>
 
           {/* Mobile View: Accordion OS Socials Deck */}
-          <div className="block lg:hidden w-full pb-24">
+          <motion.div 
+            initial={{ opacity: 0, x: 100 }}
+            animate={
+              isExiting
+                ? { opacity: 0, x: 100, transition: { duration: 0.25, ease: [0.32, 0, 0.67, 0] } }
+                : { opacity: 1, x: 0, transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1], delay: 0.1 } }
+            }
+            className="block lg:hidden w-full pb-24"
+          >
             <SocialsAccordion defaultOpen={0} />
-          </div>
+          </motion.div>
         </div>
       </div>
 

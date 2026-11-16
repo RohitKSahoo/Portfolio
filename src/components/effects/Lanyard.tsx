@@ -660,9 +660,9 @@ const placeHanging = (sim: any, layout: any, intro: boolean, introDir: 'left' | 
         nodes[i].x -= sim.rest;
       } else if (introDir === 'top') {
         const frac = i / JOINTS;
-        nodes[i].y += sim.rest * (0.68 + 0.12 * Math.cos(frac * Math.PI));
-        nodes[i].x += Math.sin(frac * Math.PI * 1.8) * (sim.rest * 0.42);
-        nodes[i].z += Math.cos(frac * Math.PI * 1.4) * (sim.rest * 0.28);
+        nodes[i].y += sim.rest * (0.85 + 0.1 * Math.cos(frac * Math.PI));
+        nodes[i].x += Math.sin(frac * Math.PI) * (sim.rest * 0.2);
+        nodes[i].z += Math.cos(frac * Math.PI) * (sim.rest * 0.15);
       } else {
         nodes[i].x += sim.rest;
       }
@@ -675,7 +675,7 @@ const placeHanging = (sim: any, layout: any, intro: boolean, introDir: 'left' | 
     if (introDir === 'left') {
       body.quaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2);
     } else if (introDir === 'top') {
-      body.quaternion.setFromEuler(new THREE.Euler(0.4, 0.75, -0.35, 'XYZ'));
+      body.quaternion.setFromEuler(new THREE.Euler(0.2, 0.35, -0.15, 'XYZ'));
     } else {
       body.quaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 2);
     }
@@ -687,20 +687,20 @@ const placeHanging = (sim: any, layout: any, intro: boolean, introDir: 'left' | 
   body.previousQuaternion.copy(body.quaternion);
 
   if (intro && introDir === 'top') {
-    body.velocity.set(0.38, -0.75, 0.24);
-    body.angular.set(0.35, 1.45, -0.4);
+    body.velocity.set(0.12, -0.3, 0.08);
+    body.angular.set(0.15, 0.45, -0.12);
     for (let i = 0; i <= JOINTS; i++) {
       previous[i].copy(nodes[i]);
       if (i > 0) {
-        velocities[i].set(0.2 * Math.sin(i * 1.4), -0.5, 0.14 * Math.cos(i * 1.4));
+        velocities[i].set(0.1 * Math.sin(i * 1.4), -0.2, 0.06 * Math.cos(i * 1.4));
       } else {
         velocities[i].set(0, 0, 0);
       }
     }
     sim.lengths.fill(sim.rest);
     sim.turn = 0;
-    sim.twist = 0.85;
-    sim.twistRaw = 0.85;
+    sim.twist = 0.3;
+    sim.twistRaw = 0.3;
     sim.calm = 0;
   } else {
     body.velocity.set(0, 0, 0);
@@ -1116,6 +1116,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
         if (!placed) {
           placeHanging(sim, layout, s.intro && !reducedMotion, s.introDirection);
           placed = true;
+          applied.triggerDrop = s.triggerDrop ?? 0;
         } else if (layoutKey !== applied.layoutKey) {
           placeHanging(sim, layout, false, s.introDirection);
         }
@@ -1327,7 +1328,7 @@ export const Lanyard: React.FC<LanyardProps> = ({
           exitStartTime = now;
           initialAnchorY = sim.anchor.y;
         }
-        const exitDuration = 280;
+        const exitDuration = 500;
         const elapsed = now - exitStartTime;
         const progress = Math.min(1, Math.max(0, elapsed / exitDuration));
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Mail } from 'lucide-react';
 
 interface HeaderProps {
@@ -73,7 +74,12 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
   const scrambledTitle = useScrambleText(currentTitle, GLYPHS, 25);
 
   return (
-    <header className="fixed top-3 sm:top-4 lg:top-5 left-3 sm:left-4 lg:left-5 right-3 sm:right-4 lg:right-5 h-14 sm:h-16 lg:h-20 px-4 sm:px-6 lg:px-8 flex justify-between items-center z-[130] transition-all duration-500 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md overflow-hidden pointer-events-auto">
+    <motion.header 
+      initial={{ opacity: 0, y: -60 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 100, damping: 14, mass: 1, delay: 0.1 }}
+      className="fixed top-3 sm:top-4 lg:top-5 left-3 sm:left-4 lg:left-5 right-3 sm:right-4 lg:right-5 h-14 sm:h-16 lg:h-20 px-4 sm:px-6 lg:px-8 flex justify-between items-center z-[130] transition-[background,border-color] duration-500 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md overflow-hidden pointer-events-auto"
+    >
       {/* Subtle accent line on top */}
       <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/20 to-transparent" />
 
@@ -107,6 +113,6 @@ export const Header: React.FC<HeaderProps> = ({ activeTab = 'profile', onMenuTog
           </div>
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 };
